@@ -219,9 +219,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\Manager\EnemyManager\EnemyController.cs" />
     <Compile Include="Assets\Script\Manager\FollowTarget.cs" />
+    <Compile Include="Assets\Script\Manager\HurtManager.cs" />
+    <Compile Include="Assets\Script\Manager\Manager.cs" />
+    <Compile Include="Assets\Script\Manager\Messenger.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\BodyAnimEvents.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerController.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\PlayerDataManager.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\PlayerManager.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\PlayerMessenger.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\PlayerStateDisplay.cs" />
+    <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeaponManager.cs" />
+    <Compile Include="Assets\Script\Manager\WeaponManager\WeaponManager.cs" />
+    <Compile Include="Assets\Script\Observer\AttackOB\AttackOB.cs" />
+    <Compile Include="Assets\Script\Observer\AttackOB\DistantAttackOB.cs" />
+    <Compile Include="Assets\Script\Observer\AttackOB\MeleeAttackOB.cs" />
+    <Compile Include="Assets\Script\Observer\Observer.cs" />
+    <Compile Include="Assets\Script\Utils\Utils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>

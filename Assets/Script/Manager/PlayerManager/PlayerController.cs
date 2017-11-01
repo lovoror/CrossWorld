@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
 	private Animator legAnim;
 	private Animator bodyAnim;
 	private Camera camera;
+	private Vector2 moveDir; // 当前移动的方向
 
 	void Start ()
 	{
@@ -27,13 +28,12 @@ public class PlayerController : MonoBehaviour {
 
 	void Update()
 	{
-
+		// Store Input and normalize vector for consistant speed on diagonals
+		moveDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 	}
 
-	void FixedUpdate()
+	void LateUpdate()
 	{
-		// Store Input and normalize vector for consistant speed on diagonals
-		Vector2 moveDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
 		// Move the player
 		rb2d.velocity = Vector2.Lerp(rb2d.velocity, moveDir * speed, Time.fixedDeltaTime * moveSmooth);
 		// 设置状态机
@@ -48,6 +48,31 @@ public class PlayerController : MonoBehaviour {
 		body.rotation = Quaternion.Euler(new Vector3(0, 0, GetAngle(Vector3.right, mouseV)));
 	}
 
+	void FixedUpdate()
+	{
+
+	}
+
+	void OnEnable()
+	{
+		// 注册死亡事件监听
+		PlayerDataManager.DeadEvent += new PlayerDataManager.DeadEventHandler(DeadEventFunc);
+	}
+
+	void OnDisable()
+	{
+		PlayerDataManager.DeadEvent -= DeadEventFunc;
+	}
+
+	void DeadEventFunc(Transform target)
+	{
+		if (transform == target) {
+			// 设置死亡状态
+			legAnim.SetBool("Dead", true);
+			bodyAnim.SetBool("Dead", true);
+		}
+	}
+
 	// 获得一个0-360度的夹角
 	float GetAngle(Vector3 from, Vector3 to)
 	{
@@ -57,5 +82,14 @@ public class PlayerController : MonoBehaviour {
 			angle = 360 - angle;
 		}
 		return angle;
+	}
+
+	void OnCollisionEnter2D(Collision2D other)
+	{
+		rb2d.velocity = Vector3.zero;
+	}
+	void OnCollisionStay2D(Collision2D other)
+	{
+		rb2d.velocity = Vector3.zero;
 	}
 }
