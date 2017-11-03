@@ -230,7 +230,6 @@
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyMessenger.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyStateDisplay.cs" />
     <Compile Include="Assets\Script\Manager\FollowTarget.cs" />
-    <Compile Include="Assets\Script\Manager\HurtManager.cs" />
     <Compile Include="Assets\Script\Manager\Manager.cs" />
     <Compile Include="Assets\Script\Manager\Messenger.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerController.cs" />
