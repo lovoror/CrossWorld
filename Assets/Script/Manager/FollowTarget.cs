@@ -19,7 +19,7 @@ public class FollowTarget : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		Vector3 tarPosition = follow.position + new Vector3(0, 0, -5);
+		Vector3 tarPosition = follow.position + new Vector3(0, 10, 0);
 		transform.position = Vector3.Lerp(transform.position, tarPosition, Time.fixedDeltaTime * smooth);
 	}
 }

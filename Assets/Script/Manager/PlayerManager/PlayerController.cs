@@ -6,46 +6,49 @@ public class PlayerController : MonoBehaviour {
 	[Header("移动平滑度，越大越不平滑")]
 	public float moveSmooth = 10;
 
-	private Rigidbody2D rb2d;
+	private Rigidbody rb;
 	private Transform player;
 	private Transform body;
 	private Transform leg;
 	private Animator legAnim;
 	private Animator bodyAnim;
-	private Camera camera;
-	private Vector2 moveDir; // 当前移动的方向
+	private Camera mainCamera;
+	private Vector3 moveDir; // 当前移动的方向
+	private float speedTmp;
 
 	void Start ()
 	{
 		player = transform;
-		rb2d = player.GetComponent<Rigidbody2D>();
+		rb = player.GetComponent<Rigidbody>();
 		body = player.Find("Body");
 		leg = player.Find("Leg");
 		legAnim = leg.GetComponent<Animator>();
 		bodyAnim = body.GetComponent<Animator>();
-		camera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+		mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+		speedTmp = speed;
 	}
 
 	void Update()
 	{
 		// Store Input and normalize vector for consistant speed on diagonals
-		moveDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+		moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
 	}
 
 	void LateUpdate()
 	{
 		// Move the player
-		rb2d.velocity = Vector2.Lerp(rb2d.velocity, moveDir * speed, Time.fixedDeltaTime * moveSmooth);
+		rb.velocity = Vector3.Lerp(rb.velocity, moveDir * speed, Time.fixedDeltaTime * moveSmooth);
 		// 设置状态机
 		legAnim.SetBool("Walk", moveDir.magnitude > 0);
 		bodyAnim.SetBool("Walk", moveDir.magnitude > 0);
 		bodyAnim.SetBool("Attack", Input.GetButton("Fire1"));
 		// 改变Leg的朝向
-		leg.rotation = Quaternion.Euler(new Vector3(0, 0, GetAngle(Vector3.right, moveDir)));
+		leg.eulerAngles = new Vector3(90, 0, GetAngle(Vector3.right, moveDir));
 		// 人物转向
-		Vector3 mouseV = camera.ScreenToWorldPoint(Input.mousePosition) - player.position;
-		mouseV.z = 0;
-		body.rotation = Quaternion.Euler(new Vector3(0, 0, GetAngle(Vector3.right, mouseV)));
+		Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - player.position;
+		mouseV.y = 0;
+		//body.rotation = Quaternion.Euler(new Vector3(90, 0, GetAngle(Vector3.right, mouseV)));
+		body.eulerAngles = new Vector3(90, 0, GetAngle(Vector3.right, mouseV));
 	}
 
 	void FixedUpdate()
@@ -55,13 +58,12 @@ public class PlayerController : MonoBehaviour {
 
 	void OnEnable()
 	{
-		// 注册死亡事件监听
-		PlayerDataManager.DeadEvent += new PlayerDataManager.DeadEventHandler(DeadEventFunc);
+
 	}
 
 	void OnDisable()
 	{
-		PlayerDataManager.DeadEvent -= DeadEventFunc;
+
 	}
 
 	void DeadEventFunc(Transform target)
@@ -78,18 +80,28 @@ public class PlayerController : MonoBehaviour {
 	{
 		float angle = Vector3.Angle(from, to);
 		Vector3 normal = Vector3.Cross(from, to);
-		if (normal.z < 0) {
+		if (normal.y > 0) {
 			angle = 360 - angle;
 		}
 		return angle;
 	}
 
-	void OnCollisionEnter2D(Collision2D other)
+	void OnCollisionEnter(Collision other)
 	{
-		rb2d.velocity = Vector3.zero;
+		string tag = other.transform.tag;
+		if (Constant.TAGS.Attacker.Contains(tag)) {
+			speed /= 1.8f;
+		}
 	}
-	void OnCollisionStay2D(Collision2D other)
+	void OnCollisionStay(Collision other)
 	{
-		rb2d.velocity = Vector3.zero;
+
+	}
+	void OnCollisionExit(Collision other)
+	{
+		string tag = other.transform.tag;
+		if (Constant.TAGS.Attacker.Contains(tag)) {
+			speed = speedTmp;
+		}
 	}
 }

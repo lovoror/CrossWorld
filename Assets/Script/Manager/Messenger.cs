@@ -8,15 +8,35 @@ using UnityEngine;
 public class Messenger : MonoBehaviour {
 
 	protected Transform owner;
+	protected Manager I_Manager;
 
-	void Start()
+	protected void Awake()
 	{
-		List<string> tags = new List<string>{"Player", "Enemy"};
-		owner = Utils.GetOwner(transform, tags);
+		owner = Utils.GetOwner(transform, Constant.TAGS.Attacker);
+		if (owner) {
+			I_Manager = owner.GetComponent<Manager>();
+		}
 	}
 
-	/*--------------------- 调用: Self --> OB ---------------------*/
-	// 通知Observer伤害了某（些）人
+	protected void Start()
+	{
+
+	}
+
+	void OnEnable()
+	{
+		// 受伤事件
+		AttackOB.HurtNotifyEvent += new AttackOB.HurtNotifyEventHandler(HurtNotifyEventFunc);
+	}
+
+	void OnDisable()
+	{
+		AttackOB.HurtNotifyEvent -= HurtNotifyEventFunc;
+	}
+
+
+	/*--------------------- HurtEvent ---------------------*/
+		/*----------- Messenger -> Observer -----------*/
 	public void HurtDeclaration(Transform attacker, List<Transform> suffers, List<float> damages)
 	{
 		AttackOB.HurtDeclaration(attacker, suffers, damages);
@@ -30,32 +50,21 @@ public class Messenger : MonoBehaviour {
 		AttackOB.HurtDeclaration(attacker, suffer, damage);
 	}
 
-	// 自己受伤事件
-	protected void SelfHurtedFunc(Transform attacker, Transform suffer, float damage)
-	{
-
-	}
-
-
-	/*--------------------- 事件: OB --> Self ---------------------*/
-	void OnEnable()
-	{
-		// 受伤事件
-		AttackOB.HurtEvent += new AttackOB.HurtEventHandler(HurtNotified);
-	}
-
-	void OnDisable()
-	{
-		AttackOB.HurtEvent -= HurtNotified;
-	}
-
-	// 得到通知被某（些）人伤害了
-	void HurtNotified(Transform attacker, List<Transform> suffers, List<float> damages)
+		/*----------- Observer -> Messenger -----------*/	
+	void HurtNotifyEventFunc(Transform attacker, List<Transform> suffers, List<float> damages)
 	{
 		int index = suffers.IndexOf(owner);
 		if (owner != attacker && (index >= 0)) {
 			float damage = index < damages.Count ? damages[index] : damages[0];
-			SelfHurtedFunc(attacker, owner, damage);
+			HurtNotifyEventDeal(attacker, owner, damage);
 		}
 	}
+
+	protected void HurtNotifyEventDeal(Transform attacker, Transform suffer, float damage)
+	{
+		if (I_Manager != null) {
+			I_Manager.HurtNotifyEventDeal(attacker, suffer, damage);
+		}
+	}
+	/*--------------------- HurtEvent ---------------------*/
 }

@@ -12,8 +12,8 @@ public class EnemyController : MonoBehaviour {
 	private Transform leg;
 	private Animator legAnim;
 	private Animator bodyAnim;
-	private Camera camera;
-	private Vector2 moveDir; // 当前移动的方向
+	private Camera mainCamera;
+	//private Vector2 moveDir; // 当前移动的方向
 
 	void Start ()
 	{
@@ -23,7 +23,7 @@ public class EnemyController : MonoBehaviour {
 		leg = player.Find("Leg");
 		legAnim = leg.GetComponent<Animator>();
 		bodyAnim = body.GetComponent<Animator>();
-		camera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+		mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
 	}
 
 	void Update()
@@ -55,13 +55,12 @@ public class EnemyController : MonoBehaviour {
 
 	void OnEnable()
 	{
-		// 注册死亡事件监听
-		PlayerDataManager.DeadEvent += new PlayerDataManager.DeadEventHandler(DeadEventFunc);
+
 	}
 
 	void OnDisable()
 	{
-		PlayerDataManager.DeadEvent -= DeadEventFunc;
+		
 	}
 
 	void DeadEventFunc(Transform target)

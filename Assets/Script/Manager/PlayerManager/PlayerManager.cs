@@ -9,32 +9,27 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PlayerManager : Manager {
 
-	protected PlayerMessenger PlayerMSG;
+	protected PlayerMessenger I_PlayerMessenger;
+	protected PlayerDataManager I_PlayerDataManager;
 
-	void Start () {
-		PlayerMSG = transform.GetComponent<PlayerMessenger>();
+	new void Awake()
+	{
+		base.Awake();
+		if (owner) {
+			I_PlayerMessenger = owner.GetComponent<PlayerMessenger>();
+			I_PlayerDataManager = owner.GetComponent<PlayerDataManager>();
+		}
+	}
+
+	new void Start () 
+	{
+		base.Start();
 	}
 	
 	void Update () {
 		
 	}
 
-	void SelfHurtedFunc(Transform attacker, Transform suffer, float damage)
-	{
-
-	}
-
-	public void HurtDeclaration(Transform owner, List<Transform> suffers, List<float> damages)
-	{
-		PlayerMSG.HurtDeclaration(owner, suffers, damages);
-	}
-	public void HurtDeclaration(Transform owner, List<Transform> suffers, float damage)
-	{
-		PlayerMSG.HurtDeclaration(owner, suffers, damage);
-	}
-	public void HurtDeclaration(Transform owner, Transform suffer, float damage)
-	{
-		PlayerMSG.HurtDeclaration(owner, suffer, damage);
-	}
-
+	/*--------------------- HurtEvent ---------------------*/
+		/*------------ Observer -> Manager ------------*/
 }

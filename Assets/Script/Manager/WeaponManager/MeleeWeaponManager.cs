@@ -6,20 +6,27 @@ public class MeleeWeaponManager : WeaponManager {
 
 	public float damage = 10;
 
+	protected BodyAnimEvents I_BodyAnimEvents;
+	protected Transform body;  // owner的Body子物体
+
 	private List<Transform> enemysInRange = new List<Transform>();  // 在近战攻击范围内的敌人
 	private List<Transform> suffers = new List<Transform>();  // 本次近战攻击到的敌人
 	private bool inDamaging;  // 是否处于可造成伤害的阶段
-	private Transform owner;   // 此近战武器的拥有者
-	private PlayerManager PlayerMG;  // owner的PlayerManager管理类
 
-	private List<string> ownerTags = new List<string> { "Player", "Enemy" };
-
-	void Start()
+	new void Awake()
 	{
-		owner = Utils.GetOwner(transform, ownerTags);
+		base.Awake();
 		if (owner) {
-			PlayerMG = owner.GetComponent<PlayerManager>();
+			body = owner.Find("Body");
+			if (body) {
+				I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
+			}
 		}
+	}
+
+	new void Start()
+	{
+		base.Start();
 	}
 
 	void Update()
@@ -30,7 +37,7 @@ public class MeleeWeaponManager : WeaponManager {
 	{
 		if (inDamaging) {
 			foreach (Transform enemy in enemysInRange) {
-				if (suffers.IndexOf(enemy) < 0) {
+				if (!suffers.Contains(enemy)) {
 					suffers.Add(enemy);
 				}
 			}
@@ -40,13 +47,15 @@ public class MeleeWeaponManager : WeaponManager {
 	void OnEnable()
 	{
 		// 伤害开始和结束事件
-		BodyAnimEvents.MeleeHurtEvent += new BodyAnimEvents.MeleeDamageEventHandler(MeleeHurtEventFunc);
+		I_BodyAnimEvents.MeleeHurtEvent += new BodyAnimEvents.MeleeDamageEventHandler(MeleeHurtEventFunc);
 	}
 	void OnDisable()
 	{
-		BodyAnimEvents.MeleeHurtEvent -= MeleeHurtEventFunc;
+		I_BodyAnimEvents.MeleeHurtEvent -= MeleeHurtEventFunc;
 	}
-	/*--------------------- 事件: BodyAnimEvents --> Self ---------------------*/
+
+	/*--------------------- HurtEvent ---------------------*/
+		/*------------ Self -> Manager ------------*/
 	void MeleeHurtEventFunc(bool canDamage)
 	{
 		inDamaging = canDamage;
@@ -60,33 +69,46 @@ public class MeleeWeaponManager : WeaponManager {
 			}
 		}
 	}
+	/*--------------------- HurtEvent ---------------------*/
 
-	void OnTriggerEnter2D(Collider2D other)
+	void OnTriggerEnter(Collider other)
 	{
-		Transform suffer;
-		if (owner.tag == "Player") {
-			suffer = Utils.GetOwner(other.transform, "Enemy");
-		}
-		else {
-			suffer = Utils.GetOwner(other.transform, "Player");
-		}
-		if(suffer && enemysInRange.IndexOf(suffer) < 0 ){
+		Transform suffer = GetSuffer(owner, other);
+		if(suffer && !enemysInRange.Contains(suffer)) {
 			enemysInRange.Add(suffer);
 		}
 	}
 
-	void OnTriggerExit2D(Collider2D other)
+	void OnTriggerExit(Collider other)
 	{
-		Transform suffer;
-		if (owner.tag == "Player") {
-			suffer = Utils.GetOwner(other.transform, "Enemy");
-		}
-		else {
-			suffer = Utils.GetOwner(other.transform, "Player");
-		}
+		Transform suffer = GetSuffer(owner, other);
 		if (suffer) {
 			enemysInRange.Remove(suffer);
 		}
+	}
+
+	Transform GetSuffer(Transform owner, Collider other)
+	{
+		Transform suffer = null;
+		if (owner.tag == "Player") {
+			List<string> sufferTags = new List<string>();
+			foreach (string tag in Constant.TAGS.Attackable) {
+				if (tag != "Player" && !other.isTrigger) {  // 必须碰到Enemy的身体，而不是Trigger
+					sufferTags.Add(tag);
+				}
+			}
+			suffer = Utils.GetOwner(other.transform, sufferTags);
+		}
+		else if (owner.tag == "Enemy") {
+			List<string> sufferTags = new List<string>();
+			foreach (string tag in Constant.TAGS.Attackable) {
+				if (tag != "Enemy" && !other.isTrigger) {
+					sufferTags.Add(tag);
+				}
+			}
+			suffer = Utils.GetOwner(other.transform, sufferTags);
+		}
+		return suffer;
 	}
 
 	//void OnCollisionEnter2D(Collision2D other)

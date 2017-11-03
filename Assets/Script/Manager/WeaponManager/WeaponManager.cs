@@ -3,35 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponManager : MonoBehaviour {
-	private Transform owner;   // 此近战武器的拥有者
-	private PlayerManager PlayerMG;  // owner的PlayerManager管理类
+	[HideInInspector]
+	public Transform owner;   // 此近战武器的拥有者
+	protected PlayerManager I_PlayerManager;  // attacker的PlayerManager管理类
 
-	private List<string> ownerTags = new List<string> { "Player", "Enemy" };
-
-	// Use this for initialization
-	void Start () {
-		owner = Utils.GetOwner(transform, ownerTags);
+	protected void Awake()
+	{
+		owner = Utils.GetOwner(transform, Constant.TAGS.Attacker);
 		if (owner) {
-			PlayerMG = owner.GetComponent<PlayerManager>();
+			I_PlayerManager = owner.GetComponent<PlayerManager>();
 		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	protected void Start () {
+
 	}
 
+	/*--------------------- 事件: Self --> Player/Enemy ---------------------*/
+	// 受伤事件:WeaponManager通知attacker的Manager
+	public delegate void HurtDeclarationEventHandler(Transform attacker, List<Transform> suffers, List<float> damages);
+	public event HurtDeclarationEventHandler HurtDeclarationEvent;
+	
+
 	// 通知PlayerManager伤害了某（些）人
-	protected void BasicHurt(Transform owner, List<Transform> suffers, List<float> damages)
+	protected void BasicHurt(Transform attacker, List<Transform> suffers, List<float> damages)
 	{
-		PlayerMG.HurtDeclaration(owner, suffers, damages);
+		if (HurtDeclarationEvent != null) {
+			HurtDeclarationEvent(attacker, suffers, damages);
+		}
 	}
-	protected void BasicHurt(Transform owner, List<Transform> suffers, float damage)
+	protected void BasicHurt(Transform attacker, List<Transform> suffers, float damage)
 	{
-		PlayerMG.HurtDeclaration(owner, suffers, damage);
+		List<float> damages = new List<float> { damage };
+		BasicHurt(attacker, suffers, damages);
 	}
-	protected void BasicHurt(Transform owner, Transform suffer, float damage)
+	protected void BasicHurt(Transform attacker, Transform suffer, float damage)
 	{
-		PlayerMG.HurtDeclaration(owner, suffer, damage);
+		List<float> damages = new List<float> { damage };
+		List<Transform> suffers = new List<Transform> { suffer };
+		BasicHurt(attacker, suffers, damages);
 	}
 }

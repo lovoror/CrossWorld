@@ -4,18 +4,8 @@ using UnityEngine;
 
 public class AttackOB : Observer {
 
-	/*--------------------- 事件: OB --> Player/Enemy ---------------------*/
-	// 通知对象受伤。
-	public delegate void HurtEventHandler(Transform attacker, List<Transform> suffers, List<float> damages);
-	public static event HurtEventHandler HurtEvent;
-	public static void HurtNotify(Transform attacker, List<Transform> suffers, List<float> damages)
-	{
-		if (HurtEvent != null) {
-			HurtEvent(attacker, suffers, damages);
-		}
-	}
-
-	/*--------------------- 事件: Player/Enemy --> OB ---------------------*/
+	/*--------------------- HurtEvent ---------------------*/
+		/*----------- Messenger -> Observer -----------*/
 	// 通知对象受伤。
 	public static void HurtDeclaration(Transform attacker, List<Transform> suffers, List<float> damages)
 	{
@@ -35,4 +25,15 @@ public class AttackOB : Observer {
 		damages.Add(damage);
 		HurtNotify(attacker, suffers, damages);
 	}
+
+		/*----------- Observer -> Messenger -----------*/
+	public delegate void HurtNotifyEventHandler(Transform attacker, List<Transform> suffers, List<float> damages);
+	public static event HurtNotifyEventHandler HurtNotifyEvent;
+	public static void HurtNotify(Transform attacker, List<Transform> suffers, List<float> damages)
+	{
+		if (HurtNotifyEvent != null) {
+			HurtNotifyEvent(attacker, suffers, damages);
+		}
+	}
+	/*--------------------- HurtEvent ---------------------*/
 }

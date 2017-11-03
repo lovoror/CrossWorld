@@ -10,12 +10,23 @@ using UnityEngine;
 
 public class PlayerMessenger : Messenger {
 
-	// Use this for initialization
-	void Start () {
-		
+	protected PlayerManager I_PlayerManager;
+
+
+	new void Awake()
+	{
+		base.Awake();
+		if (owner) {
+			I_PlayerManager = owner.GetComponent<PlayerManager>();
+		}
+	}
+
+	new void Start()
+	{
+		base.Start();
+
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		
 	}
