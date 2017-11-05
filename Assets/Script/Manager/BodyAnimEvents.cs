@@ -7,8 +7,17 @@ public class BodyAnimEvents : MonoBehaviour {
 	// 伤害有效期事件：BodyAnimEvents -> MeleeWeaponManager
 	public delegate void MeleeDamageEventHandler(bool canDamage);  // 通知MeleeWeaponManager是否是可造成伤害状态
 	public event MeleeDamageEventHandler MeleeHurtEvent;
+	// 发射子弹事件
+	public delegate void BulletShootEventHandler(Transform shooter, string weaponName);
+	public event BulletShootEventHandler BulletShootEvent;
 
-	// Use this for initialization
+	private Transform owner;
+
+	void Awake()
+	{
+		owner = Utils.GetOwner(transform, Constant.TAGS.Attacker);
+	}
+
 	void Start()
 	{
 
@@ -25,6 +34,7 @@ public class BodyAnimEvents : MonoBehaviour {
 		transform.localScale = new Vector3(1, -yScale, 1);
 	}
 
+	/*--------------- 帧动画响应函数 ---------------*/
 	// 检测近战武器是否攻击到目标
 	void OnMeleeAtkBegan()
 	{
@@ -36,6 +46,14 @@ public class BodyAnimEvents : MonoBehaviour {
 	{
 		if (MeleeHurtEvent != null) {
 			MeleeHurtEvent(false);
+		}
+	}
+
+	// 远程武器发射子弹
+	void OnBulletCreate(string weaponName)
+	{
+		if (owner) {
+			BulletShootEvent(owner, weaponName);
 		}
 	}
 

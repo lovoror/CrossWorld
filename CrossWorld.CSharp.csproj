@@ -221,6 +221,7 @@
   <ItemGroup>
     <Compile Include="Assets\Script\Common\Constant.cs" />
     <Compile Include="Assets\Script\Common\Utils.cs" />
+    <Compile Include="Assets\Script\Effect\BulletController.cs" />
     <Compile Include="Assets\Script\FollowPlayer.cs" />
     <Compile Include="Assets\Script\Manager\BodyAnimEvents.cs" />
     <Compile Include="Assets\Script\Manager\DataManager.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerManager.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerMessenger.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerStateDisplay.cs" />
+    <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\WeaponManager.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\AttackOB.cs" />
