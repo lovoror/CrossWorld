@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PlayerManager : Manager {
 
-	protected PlayerMessenger I_PlayerMessenger;
-	protected PlayerDataManager I_PlayerDataManager;
+	public PlayerMessenger I_PlayerMessenger;
+	public PlayerDataManager I_PlayerDataManager;
 
 	new void Awake()
 	{

@@ -24,4 +24,17 @@ public class Utils {
 			return GetOwner(son.parent, tag);
 		}
 	}
+
+	public static Transform FindChildRecursively(Transform top, string name)
+	{
+		Transform tar;
+		tar = top.Find(name);
+		if (!tar) {
+			foreach (Transform child in top) {
+				tar = FindChildRecursively(child, name);
+				if (tar) break;
+			}
+		}
+		return tar;
+	}
 }

@@ -4,13 +4,26 @@ using UnityEngine;
 
 public class DistantAttackOB : AttackOB {
 
-	// Use this for initialization
-	void Start () {
-		
+	new void Start () {
+		base.Start();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	void OnEnable()
+	{
+		BulletController.BulletHitEvent += new BulletController.BulletHitEventHandler(BulletHitEventFunc);
+	}
+
+	void OnDisable()
+	{
+		BulletController.BulletHitEvent -= BulletHitEventFunc;
+	}
+
+	/*----------------- BulletHitEvent -----------------*/
+	// Bullet --> Observer
+	void BulletHitEventFunc(Transform shooter, Transform suffer, float damage)
+	{
+		List<Transform> suffers = new List<Transform>() { suffer };
+		HurtDeal(shooter, suffers);
+		HurtNotify(shooter, suffers);
 	}
 }

@@ -10,6 +10,9 @@ public class BodyAnimEvents : MonoBehaviour {
 	// 发射子弹事件
 	public delegate void BulletShootEventHandler(Transform shooter, string weaponName);
 	public event BulletShootEventHandler BulletShootEvent;
+	// 播放攻击声音事件
+	public delegate void PlayAttackSoundEventHandler();
+	public event PlayAttackSoundEventHandler PlayAttackSoundEvent;
 
 	private Transform owner;
 
@@ -57,4 +60,11 @@ public class BodyAnimEvents : MonoBehaviour {
 		}
 	}
 
+	// 播放攻击音效
+	void PlayAttackSound(string weaponName)
+	{
+		if (PlayAttackSoundEvent != null) {
+			PlayAttackSoundEvent();
+		}
+	}
 }

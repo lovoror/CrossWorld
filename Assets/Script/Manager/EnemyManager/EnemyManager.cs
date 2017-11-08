@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class EnemyManager : Manager {
 
-	protected EnemyMessenger I_EnemyMessenger;
-	protected EnemyDataManager I_EnemyDataManager;
+	public EnemyMessenger I_EnemyMessenger;
+	public EnemyDataManager I_EnemyDataManager;
 
 	new void Awake()
 	{

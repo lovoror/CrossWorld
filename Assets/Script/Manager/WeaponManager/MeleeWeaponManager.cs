@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class MeleeWeaponManager : WeaponManager {
 
-	public float damage = 10;
-
-	protected BodyAnimEvents I_BodyAnimEvents;
-	protected Transform body;  // owner的Body子物体
-
 	private List<Transform> enemysInRange = new List<Transform>();  // 在近战攻击范围内的敌人
 	private List<Transform> suffers = new List<Transform>();  // 本次近战攻击到的敌人
 	private bool inDamaging;  // 是否处于可造成伤害的阶段
@@ -16,12 +11,7 @@ public class MeleeWeaponManager : WeaponManager {
 	new void Awake()
 	{
 		base.Awake();
-		if (owner) {
-			body = owner.Find("Body");
-			if (body) {
-				I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
-			}
-		}
+
 	}
 
 	new void Start()
@@ -44,13 +34,15 @@ public class MeleeWeaponManager : WeaponManager {
 		}
 	}
 
-	void OnEnable()
+	new void OnEnable()
 	{
+		base.OnEnable();
 		// 伤害开始和结束事件
 		I_BodyAnimEvents.MeleeHurtEvent += new BodyAnimEvents.MeleeDamageEventHandler(MeleeHurtEventFunc);
 	}
-	void OnDisable()
+	new void OnDisable()
 	{
+		base.OnDisable();
 		I_BodyAnimEvents.MeleeHurtEvent -= MeleeHurtEventFunc;
 	}
 
@@ -65,7 +57,7 @@ public class MeleeWeaponManager : WeaponManager {
 		else {
 			// 计算伤害
 			if (owner) {
-				BasicHurt(owner, suffers, damage);
+				BasicHurt(owner, suffers);
 			}
 		}
 	}
@@ -111,8 +103,10 @@ public class MeleeWeaponManager : WeaponManager {
 		return suffer;
 	}
 
-	//void OnCollisionEnter2D(Collision2D other)
-	//{
-	//	print("OnCollisionEnter2D");
-	//}
+	/*----------------- Tool --------------------*/
+	// 攻击范围内存在敌人
+	protected bool HasEnemyInRange()
+	{
+		return enemysInRange.Count > 0;
+	}
 }

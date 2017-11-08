@@ -5,13 +5,13 @@ using UnityEngine;
 public class DistantWeaponManager : WeaponManager {
 
 	public Transform bullet;
-
-	protected BodyAnimEvents I_BodyAnimEvents;
-	protected Transform body;  // owner的Body子物体
+	public float damage = 10;
+	public float bulletSpeed = 20;
+	public bool canPenetrate = false;
 
 	private Transform muzzle;
 
-	new void Awake()
+	new protected void Awake()
 	{
 		base.Awake();
 		if (owner) {
@@ -19,24 +19,26 @@ public class DistantWeaponManager : WeaponManager {
 			if (body) {
 				I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
 				foreach (Transform child in body) {
-					if (child.tag == "FirePos") {
+					if (child.tag == "RangeWeapon") {  // RangeWeapon的所在位置即为射击点
 						muzzle = child;
 					}
 				}
 			}
 		}
 	}
-	void Start ()
+	new void Start ()
 	{
-		
+		base.Start();
 	}
 
-	void OnEnable()
+	new void OnEnable()
 	{
+		base.OnEnable();
 		I_BodyAnimEvents.BulletShootEvent += new BodyAnimEvents.BulletShootEventHandler(BulletShootEventFunc);
 	}
-	void OnDisable()
+	new void OnDisable()
 	{
+		base.OnEnable();
 		I_BodyAnimEvents.BulletShootEvent -= BulletShootEventFunc;
 	}
 
@@ -44,6 +46,11 @@ public class DistantWeaponManager : WeaponManager {
 	{
 		Vector3 firePos = muzzle.position;
 		Instantiate(bullet, firePos, body.rotation);
+		BulletController I_BulletController = bullet.GetComponent<BulletController>();
+		I_BulletController.shooter = shooter;
+		I_BulletController.speed = bulletSpeed;
+		I_BulletController.damage = damage;
+		I_BulletController.canPenetrate = canPenetrate;
 	}
 
 	//void OnTriggerEnter(Collider other)
