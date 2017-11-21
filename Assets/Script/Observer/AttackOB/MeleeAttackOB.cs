@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class MeleeAttackOB : AttackOB {
 
-	// Use this for initialization
-	new void Start () {
-		base.Start();
+	protected new void OnEnable()
+	{
+		base.OnEnable();
+	}
+
+	protected new void OnDisable()
+	{
+		base.OnDisable();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
+	new void Start () {
+		base.Start();
 	}
 }

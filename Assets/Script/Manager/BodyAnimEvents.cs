@@ -14,11 +14,11 @@ public class BodyAnimEvents : MonoBehaviour {
 	public delegate void PlayAttackSoundEventHandler();
 	public event PlayAttackSoundEventHandler PlayAttackSoundEvent;
 
-	private Transform owner;
+	private Transform self;
 
 	void Awake()
 	{
-		owner = Utils.GetOwner(transform, Constant.TAGS.Attacker);
+		self = Utils.GetOwner(transform, Constant.TAGS.Attacker);
 	}
 
 	void Start()
@@ -55,8 +55,8 @@ public class BodyAnimEvents : MonoBehaviour {
 	// 远程武器发射子弹
 	void OnBulletCreate(string weaponName)
 	{
-		if (owner) {
-			BulletShootEvent(owner, weaponName);
+		if (self) {
+			BulletShootEvent(self, weaponName);
 		}
 	}
 

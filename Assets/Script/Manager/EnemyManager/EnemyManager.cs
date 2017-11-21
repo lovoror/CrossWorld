@@ -15,9 +15,9 @@ public class EnemyManager : Manager {
 	new void Awake()
 	{
 		base.Awake();
-		if (owner) {
-			I_EnemyMessenger = owner.GetComponent<EnemyMessenger>();
-			I_EnemyDataManager = owner.GetComponent<EnemyDataManager>();
+		if (self) {
+			I_EnemyMessenger = self.GetComponent<EnemyMessenger>();
+			I_EnemyDataManager = self.GetComponent<EnemyDataManager>();
 		}
 	}
 

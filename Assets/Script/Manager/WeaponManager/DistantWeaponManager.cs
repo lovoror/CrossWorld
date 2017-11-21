@@ -6,7 +6,7 @@ public class DistantWeaponManager : WeaponManager {
 
 	public Transform bullet;
 	public float damage = 10;
-	public float bulletSpeed = 20;
+	public float bulletSpeed = 100;
 	public bool canPenetrate = false;
 
 	private Transform muzzle;
@@ -14,8 +14,8 @@ public class DistantWeaponManager : WeaponManager {
 	new protected void Awake()
 	{
 		base.Awake();
-		if (owner) {
-			body = owner.Find("Body");
+		if (self) {
+			body = self.Find("Body");
 			if (body) {
 				I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
 				foreach (Transform child in body) {
@@ -42,31 +42,14 @@ public class DistantWeaponManager : WeaponManager {
 		I_BodyAnimEvents.BulletShootEvent -= BulletShootEventFunc;
 	}
 
+
+	/*------------------ BulletShootEvent ------------------*/
 	void BulletShootEventFunc(Transform shooter, string weaponName)
 	{
 		Vector3 firePos = muzzle.position;
-		Instantiate(bullet, firePos, body.rotation);
-		BulletController I_BulletController = bullet.GetComponent<BulletController>();
-		I_BulletController.shooter = shooter;
-		I_BulletController.speed = bulletSpeed;
-		I_BulletController.damage = damage;
-		I_BulletController.canPenetrate = canPenetrate;
+		Transform I_Bullet = Instantiate(bullet, firePos, body.rotation);
+		BulletController I_BulletController = I_Bullet.GetComponent<BulletController>();
+		I_BulletController.Init(shooter, damage, bulletSpeed, canPenetrate);
 	}
-
-	//void OnTriggerEnter(Collider other)
-	//{
-	//	if(other.tag == "")
-	//}
-
-	//void OnTriggerExit(Collider other)
-	//{
-	//	if (other.tag == "Wall") {
-
-	//	}
-	//}
-	
-	void Update ()
-	{
-		
-	}
+	/*------------------ BulletShootEvent ------------------*/
 }

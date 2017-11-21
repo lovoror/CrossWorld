@@ -9,6 +9,15 @@ public class PlayerController : Controller {
 	private Vector3 moveDir; // 当前移动的方向
 	private float speedTmp;
 
+	[HideInInspector]
+	PlayerManager I_PlayerManager;
+
+	new void Awake()
+	{
+		base.Awake();
+		I_PlayerManager = transform.GetComponent<PlayerManager>();
+	}
+
 	new void Start ()
 	{
 		base.Start();
@@ -16,8 +25,9 @@ public class PlayerController : Controller {
 		canControl = true;
 	}
 
-	void Update()
+	new void Update()
 	{
+		base.Update();
 		// Store Input and normalize vector for consistant speed on diagonals
 		moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
 	}
@@ -31,12 +41,12 @@ public class PlayerController : Controller {
 			ShowWalkAnim(moveDir.magnitude > 0);
 			ShowAttackAnim(Input.GetButton("Fire1"));
 			// 改变Leg的朝向
-			leg.eulerAngles = new Vector3(90, 0, GetAngle(Vector3.right, moveDir));
+			leg.eulerAngles = new Vector3(90, 0, Utils.GetAngle(Vector3.right, moveDir));
 			// 人物转向
 			Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 			mouseV.y = 0;
 			//body.rotation = Quaternion.Euler(new Vector3(90, 0, GetAngle(Vector3.right, mouseV)));
-			body.eulerAngles = new Vector3(90, 0, GetAngle(Vector3.right, mouseV));
+			body.eulerAngles = new Vector3(90, 0, Utils.GetAngle(Vector3.right, mouseV));
 		}
 	}
 
@@ -45,25 +55,14 @@ public class PlayerController : Controller {
 
 	}
 
-	void OnEnable()
+	new void OnEnable()
 	{
-
+		base.OnEnable();
 	}
 
-	void OnDisable()
+	new void OnDisable()
 	{
-
-	}
-
-	// 获得一个0-360度的夹角
-	float GetAngle(Vector3 from, Vector3 to)
-	{
-		float angle = Vector3.Angle(from, to);
-		Vector3 normal = Vector3.Cross(from, to);
-		if (normal.y > 0) {
-			angle = 360 - angle;
-		}
-		return angle;
+		base.OnDisable();
 	}
 
 	void OnCollisionEnter(Collision other)
@@ -84,4 +83,24 @@ public class PlayerController : Controller {
 			speed = speedTmp;
 		}
 	}
+
+	/*--------------------- DeadNotifyEvent ---------------------*/
+	protected override void DeadNotifyEventFunc(Transform killer, Transform dead)
+	{
+		base.DeadNotifyEventFunc(killer, dead);
+		if (killer == transform) {
+			speed = speedTmp;
+		}
+		if (dead == transform) {
+			rb.velocity = Vector3.zero;
+		}
+	}
+	/*--------------------- DeadNotifyEvent ---------------------*/
+
+	/*----------------- WeaponNoiseEvent ------------------*/
+	protected override void WeaponNoiseNotifyEventFunc(Transform source, float radius)
+	{
+
+	}
+	/*----------------- WeaponNoiseEvent ------------------*/
 }

@@ -15,8 +15,8 @@ public class EnemyMessenger : Messenger {
 	new void Awake()
 	{
 		base.Awake();
-		if (owner) {
-			I_EnemyManager = owner.GetComponent<EnemyManager>();
+		if (self) {
+			I_EnemyManager = self.GetComponent<EnemyManager>();
 		}
 	}
 

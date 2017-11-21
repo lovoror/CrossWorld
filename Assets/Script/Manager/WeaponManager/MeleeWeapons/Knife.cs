@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Knife : MeleeWeaponManager
 {
-	private bool isCutSound = false;
 	private string[] cutSounds = { "Sounds/sndCut1", "Sounds/sndCut2" };
 	private string unCutSound = "Sounds/sndKnife";
 	private int cutCount = 0;
@@ -17,7 +16,7 @@ public class Knife : MeleeWeaponManager
 	new void Start()
 	{
 		base.Start();
-		weaponName = "Knife";
+		weaponName = (int)Constant.WEAPON_NAME.Knife;
 	}
 
 	protected override void PlayAttackShoundEventFunc()

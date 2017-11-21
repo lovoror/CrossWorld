@@ -9,15 +9,17 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PlayerManager : Manager {
 
+	[HideInInspector]
 	public PlayerMessenger I_PlayerMessenger;
+	[HideInInspector]
 	public PlayerDataManager I_PlayerDataManager;
 
 	new void Awake()
 	{
 		base.Awake();
-		if (owner) {
-			I_PlayerMessenger = owner.GetComponent<PlayerMessenger>();
-			I_PlayerDataManager = owner.GetComponent<PlayerDataManager>();
+		if (self) {
+			I_PlayerMessenger = self.GetComponent<PlayerMessenger>();
+			I_PlayerDataManager = self.GetComponent<PlayerDataManager>();
 		}
 	}
 

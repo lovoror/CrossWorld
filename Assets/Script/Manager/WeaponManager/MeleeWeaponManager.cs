@@ -5,7 +5,7 @@ using UnityEngine;
 public class MeleeWeaponManager : WeaponManager {
 
 	private List<Transform> enemysInRange = new List<Transform>();  // 在近战攻击范围内的敌人
-	private List<Transform> suffers = new List<Transform>();  // 本次近战攻击到的敌人
+	private List<Transform> suffers  = new List<Transform>();  // 本次近战攻击到的敌人
 	private bool inDamaging;  // 是否处于可造成伤害的阶段
 
 	new void Awake()
@@ -25,13 +25,7 @@ public class MeleeWeaponManager : WeaponManager {
 	}
 	void LateUpdate()
 	{
-		if (inDamaging) {
-			foreach (Transform enemy in enemysInRange) {
-				if (!suffers.Contains(enemy)) {
-					suffers.Add(enemy);
-				}
-			}
-		}
+
 	}
 
 	new void OnEnable()
@@ -51,50 +45,78 @@ public class MeleeWeaponManager : WeaponManager {
 	void MeleeHurtEventFunc(bool canDamage)
 	{
 		inDamaging = canDamage;
+		// 攻击状态开始时，suffers记录此刻攻击范围内的敌人。
 		if (canDamage) {
-			suffers.RemoveRange(0, suffers.Count);
+			foreach (Transform suffer in enemysInRange) {
+				if (!suffers.Contains(suffer)) {
+					suffers.Add(suffer);
+				}
+			}
 		}
 		else {
 			// 计算伤害
-			if (owner) {
-				BasicHurt(owner, suffers);
+			if (self) {
+				BasicHurt(self, suffers);
 			}
+			suffers.RemoveRange(0, suffers.Count);
 		}
 	}
 	/*--------------------- HurtEvent ---------------------*/
 
-	void OnTriggerEnter(Collider other)
+	/*--------------------- DeadEvent ---------------------*/
+	// 将dead从enemysInRange中排除出去
+	public override void DeadNotifyEventFunc(Transform killer, Transform dead)
 	{
-		Transform suffer = GetSuffer(owner, other);
-		if(suffer && !enemysInRange.Contains(suffer)) {
+		if (killer == self && enemysInRange.Contains(dead)) {
+			enemysInRange.Remove(dead);
+		}
+	}
+	/*--------------------- DeadEvent ---------------------*/
+
+	protected new void OnTriggerEnter(Collider other)
+	{
+		base.OnTriggerEnter(other);
+		Transform suffer = GetSuffer(self, other);
+		// enemysInRange始终记录当前攻击氛围内的敌人
+		if (suffer && !enemysInRange.Contains(suffer)) {
 			enemysInRange.Add(suffer);
 		}
-	}
-
-	void OnTriggerExit(Collider other)
-	{
-		Transform suffer = GetSuffer(owner, other);
-		if (suffer) {
-			enemysInRange.Remove(suffer);
+		// 当处于攻击状态时，suffers记录下新进入攻击范围内的人
+		if (inDamaging) {
+			if (suffer && !suffers.Contains(suffer)) {
+				suffers.Add(suffer);
+			}
 		}
 	}
 
-	Transform GetSuffer(Transform owner, Collider other)
+	protected new void OnTriggerExit(Collider other)
 	{
+		base.OnTriggerExit(other);
+		Transform suffer = GetSuffer(self, other);
+		if (suffer) {
+			if (enemysInRange.Contains(suffer)) {
+				enemysInRange.Remove(suffer);
+			}
+		}
+	}
+
+	Transform GetSuffer(Transform self, Collider other)
+	{
+		if (other.isTrigger) return null;
 		Transform suffer = null;
-		if (owner.tag == "Player") {
+		if (self.tag == "Player") {
 			List<string> sufferTags = new List<string>();
 			foreach (string tag in Constant.TAGS.Attackable) {
-				if (tag != "Player" && !other.isTrigger) {  // 必须碰到Enemy的身体，而不是Trigger
+				if (tag != "Player") {  // 必须碰到Enemy的身体，而不是Trigger
 					sufferTags.Add(tag);
 				}
 			}
 			suffer = Utils.GetOwner(other.transform, sufferTags);
 		}
-		else if (owner.tag == "Enemy") {
+		else if (self.tag == "Enemy") {
 			List<string> sufferTags = new List<string>();
 			foreach (string tag in Constant.TAGS.Attackable) {
-				if (tag != "Enemy" && !other.isTrigger) {
+				if (tag != "Enemy") {
 					sufferTags.Add(tag);
 				}
 			}
@@ -107,6 +129,6 @@ public class MeleeWeaponManager : WeaponManager {
 	// 攻击范围内存在敌人
 	protected bool HasEnemyInRange()
 	{
-		return enemysInRange.Count > 0;
+		return suffers.Count > 0;
 	}
 }

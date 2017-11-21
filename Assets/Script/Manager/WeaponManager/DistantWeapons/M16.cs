@@ -12,6 +12,6 @@ public class M16 : DistantWeaponManager {
 	new void Start()
 	{
 		base.Start();
-		weaponName = "M16";
+		weaponName = (int) Constant.WEAPON_NAME.M16;
 	}
 }

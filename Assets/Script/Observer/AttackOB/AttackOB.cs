@@ -2,7 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackOB : Observer {
+public class AttackOB : Observer
+{
+	private static bool isRegisted = false;
+	protected new void OnEnable()
+	{
+		if (isRegisted) return;
+		isRegisted = true;
+		Messenger.HurtDeclarationEvent += new Messenger.HurtDeclarationEventHandler(HurtDeclarationEventFunc);
+		Messenger.WeaponNoiseDeclarationEvent += new Messenger.WeaponNoiseDeclarationEventHandler(WeaponNoiseDeclarationEventFunc);
+
+	}
+
+	protected new void OnDisable()
+	{
+		Messenger.HurtDeclarationEvent -= HurtDeclarationEventFunc;
+		Messenger.WeaponNoiseDeclarationEvent -= WeaponNoiseDeclarationEventFunc;
+	}
 
 	protected new void Start(){
 		base.Start();
@@ -11,31 +27,25 @@ public class AttackOB : Observer {
 	/*--------------------- HurtEvent ---------------------*/
 		/*----------- Messenger -> Observer -----------*/
 	// 通知对象受伤。
-	public static void HurtDeclaration(Transform attacker, List<Transform> suffers)
-	{
+	protected static void HurtDeclarationEventFunc(Transform attacker, List<Transform> suffers) {
 		HurtDeal(attacker, suffers);
 		HurtNotify(attacker, suffers);
-	}
-	public static void HurtDeclaration(Transform attacker, Transform suffer)
-	{
-		List<Transform> suffers = new List<Transform>();
-		suffers.Add(suffer);
-		HurtDeclaration(attacker, suffers);
 	}
 
 	protected static void HurtDeal(Transform attacker, List<Transform> suffers)
 	{
-		string atkWeapon = gamerInfos[attacker.name].curWeapon;
+		int atkWeapon = gamerInfos[attacker.name].curWeaponName;
 		float damage = baseDamage[atkWeapon];
 		foreach (Transform suffer in suffers) {
 			bool isDead = GamerHurt(suffer.name, damage);
 			if (isDead) {
 				if (DeadNotifyEvent != null) {
-					DeadNotifyEvent(suffer, true);
+					DeadNotifyEvent(attacker, suffer);
 				}
 			}
+			// 武器能量改变
+			WeaponEnergyChangeDeal(attacker, suffers);
 		}
-
 	}
 
 		/*----------- Observer -> Messenger -----------*/
@@ -55,9 +65,50 @@ public class AttackOB : Observer {
 	/*--------------------- HurtEvent ---------------------*/
 
 	/*--------------------- DeadEvent ---------------------*/
-	public delegate void DeadNotifyEventHandler(Transform target, bool isDead);
-	public static event DeadNotifyEventHandler DeadNotifyEvent;
-
+	public delegate void DeadNotifyEventHandler(Transform killer, Transform dead);
+	public static event DeadNotifyEventHandler DeadNotifyEvent;   // 通知死亡目标
 	/*--------------------- DeadEvent ---------------------*/
+
+	/*------------ WeaponEnergyChangeEvent -------------*/
+	public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target, int level, float energy);
+	public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
+	private static float increase = 10;
+	private static float decrease = -8;
+	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers)
+	{
+		ChangeEnergy(shooter, increase);
+
+		foreach (Transform suffer in suffers) {
+			ChangeEnergy(suffer, decrease);
+		}
+	}
+
+	protected static void ChangeEnergy(Transform target, float delta)
+	{
+		GamerInfo gamerInfo = gamerInfos[target.name];
+		float preEnergy = gamerInfo.GetTotalEnergy();
+		gamerInfo.ChangeEnergy(delta);
+		float curEnergy = gamerInfo.GetTotalEnergy();
+		if (preEnergy != curEnergy) {
+			int level = gamerInfo.GetWeaponLevel();
+			float leftEnergy = gamerInfo.GetEnergy();
+			if (WeaponEnergyChangeNotifyEvent != null && leftEnergy >= 0) {
+				WeaponEnergyChangeNotifyEvent(target, level, leftEnergy);
+			}
+		}
+	}
+	/*------------ WeaponEnergyChangeEvent -------------*/
+
+	/*----------------- WeaponNoiseEvent ------------------*/
+	public delegate void WeaponNoiseNotifyEventHandler(Transform source, float radius);
+	public static event WeaponNoiseNotifyEventHandler WeaponNoiseNotifyEvent;
+	public static void WeaponNoiseDeclarationEventFunc(Transform source, float radius)
+	{
+		if (radius > 0 && WeaponNoiseNotifyEvent != null) {
+			WeaponNoiseNotifyEvent(source, radius);
+		}
+	}
+	/*----------------- WeaponNoiseEvent ------------------*/
+
 
 }

@@ -4,24 +4,28 @@ using UnityEngine;
 
 public class Manager : MonoBehaviour {
 	[HideInInspector]
-	public Transform owner;
+	public Transform self;
 	[HideInInspector]
 	public Transform body;
 	[HideInInspector]
 	public Transform weapon;
-
+	[HideInInspector]
 	public WeaponManager I_WeaponManager;
+	[HideInInspector]
 	public Messenger I_Messenger;
+	[HideInInspector]
 	public DataManager I_DataManager;
+	[HideInInspector]
 	public Controller I_Controller;
-
+	[HideInInspector]
+	public BodyAnimEvents I_BodyAnimEvents;
 
 	private List<string> ownerTags = new List<string> { "Player", "Enemy" };
 
 	protected void Awake()
 	{
-		owner = Utils.GetOwner(transform, ownerTags);
-		body = owner.Find("Body");
+		self = Utils.GetOwner(transform, ownerTags);
+		body = self.Find("Body");
 		foreach (Transform child in body) {
 			if (child.tag == "MeleeWeapon" || child.tag == "RangeWeapon") {
 				weapon = child;
@@ -31,9 +35,12 @@ public class Manager : MonoBehaviour {
 		if (weapon) {
 			I_WeaponManager = weapon.GetComponent<WeaponManager>();
 		}
-		I_Messenger = owner.GetComponent<Messenger>();
-		I_DataManager = owner.GetComponent<DataManager>();
-		I_Controller = owner.GetComponent<Controller>();
+		if (body) {
+			I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
+		}
+		I_Messenger = self.GetComponent<Messenger>();
+		I_DataManager = self.GetComponent<DataManager>();
+		I_Controller = self.GetComponent<Controller>();
 	}
 
 	protected void Start()
@@ -61,6 +68,19 @@ public class Manager : MonoBehaviour {
 		}
 	}
 
+	/*----------------------- Utils -----------------------*/
+	public bool IsPlayerDead()
+	{
+		return I_DataManager.isDead;
+	}
+
+	public void SetPlayerDead(bool isDead)
+	{
+		I_DataManager.isDead = isDead;
+	}
+	
+	/*----------------------- Utils -----------------------*/
+
 	/*--------------------- HurtEvent ---------------------*/
 		/*------------ Manager -> Observer ------------*/
 	void HurtDeclarationEventFunc(Transform attacker, List<Transform> suffers)
@@ -75,7 +95,7 @@ public class Manager : MonoBehaviour {
 	public void HurtNotifyEventDeal(Transform attacker, Transform suffer, float health)
 	{
 		// 受伤相关处理
-		if (owner == suffer) {
+		if (self == suffer) {
 			if (I_DataManager) {
 				I_DataManager.SetHealth(health);
 			}
@@ -83,12 +103,11 @@ public class Manager : MonoBehaviour {
 	}
 	/*--------------------- HurtEvent ---------------------*/
 
-	/*--------------------- DeadEvent ---------------------*/
-	public void DeadNotifyEventDeal(Transform target, bool isDead)
+	/*----------------- WeaponNoiseEvent ------------------*/
+	public void WeaponNoiseDeclaration(Transform source, float radius)
 	{
-		I_Controller.DeadEventFunc(target);
+		I_Messenger.WeaponNoiseDeclaration(source, radius);
 	}
-	/*--------------------- DeadEvent ---------------------*/
-
+	/*----------------- WeaponNoiseEvent ------------------*/
 
 }

@@ -12,12 +12,11 @@ public class PlayerMessenger : Messenger {
 
 	protected PlayerManager I_PlayerManager;
 
-
 	new void Awake()
 	{
 		base.Awake();
-		if (owner) {
-			I_PlayerManager = owner.GetComponent<PlayerManager>();
+		if (self) {
+			I_PlayerManager = self.GetComponent<PlayerManager>();
 		}
 	}
 
