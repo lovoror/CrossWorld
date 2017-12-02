@@ -1,11 +1,19 @@
 ﻿using UnityEngine;
+using BehaviorDesigner.Runtime;
 using System.Collections;
 
 public class EnemyController : Controller {
 
 	private PathMover I_PathMover;
+	private BehaviorTree behaviorTree;
 	private bool isMoving = false;
 	private Transform atkTarget = null;  // 发现所要攻击的目标
+
+	protected new void Awake()
+	{
+		base.Awake();
+		behaviorTree = self.GetComponent<BehaviorTree>();
+	}
 
 	protected new void Start()
 	{
@@ -13,12 +21,20 @@ public class EnemyController : Controller {
 		I_PathMover = self.GetComponent<PathMover>();
 	}
 
+	public void handler(Vector3 pos)
+	{
+		print("In handler:" + pos);
+	}
+
 	protected new void OnEnable()
 	{
 		base.OnEnable();
 		// 敌人（对Enemy来说就是Player）进入攻击范围事件
 		I_Manager.I_WeaponManager.EnemyInATKRangeEvent += new WeaponManager.EnemyInATKRangeEventHandler(EnemyInATKRangeEventFunc);
+		//behaviorTree.RegisterEvent<Vector3>("PlayerNoiseEvent", handler);
+
 	}
+
 
 	protected new void OnDisable()
 	{
@@ -75,6 +91,7 @@ public class EnemyController : Controller {
 			if (delta.magnitude <= radius) {
 				isMoving = true;
 				I_PathMover.MoveTo(source.position, OnTargetReached);
+				behaviorTree.SendEvent<object>("PlayerNoiseEvent", source.position);
 			}
 		}
 	}
@@ -95,5 +112,4 @@ public class EnemyController : Controller {
 		}
 	}
 	/*----------------- EnemyInATKRangeEvent ------------------*/
-
 }

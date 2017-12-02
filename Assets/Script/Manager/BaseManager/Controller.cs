@@ -21,11 +21,11 @@ public class Controller : MonoBehaviour {
 	protected void Awake()
 	{
 		I_Manager = transform.GetComponent<Manager>();
+		self = transform;
 	}
 
 	protected void Start ()
 	{
-		self = transform;
 		rb = transform.GetComponent<Rigidbody>();
 		body = transform.Find("Body");
 		leg = transform.Find("Leg");
