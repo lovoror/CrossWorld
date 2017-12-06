@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-#if !(UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4)
+#if !(UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4)
 using UnityEngine.AI;
 #endif
 
@@ -27,7 +27,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
                 navMeshAgents[i] = agents[i].Value.GetComponent<NavMeshAgent>();
                 navMeshAgents[i].speed = speed.Value;
                 navMeshAgents[i].angularSpeed = angularSpeed.Value;
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5
                 navMeshAgents[i].Resume();
+#else
+                navMeshAgents[i].isStopped = false;
+#endif
             }
         }
 
@@ -49,7 +53,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
             // Disable the nav mesh
             for (int i = 0; i < navMeshAgents.Length; ++i) {
                 if (navMeshAgents[i] != null) {
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5
                     navMeshAgents[i].Stop();
+#else
+                    navMeshAgents[i].isStopped = true;
+#endif
                 }
             }
         }

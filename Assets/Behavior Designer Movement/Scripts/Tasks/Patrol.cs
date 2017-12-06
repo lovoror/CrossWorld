@@ -93,14 +93,18 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         public override void OnDrawGizmos()
         {
 #if UNITY_EDITOR
-            if (waypoints == null) {
+            if (waypoints == null || waypoints.Value == null) {
                 return;
             }
             var oldColor = UnityEditor.Handles.color;
             UnityEditor.Handles.color = Color.yellow;
             for (int i = 0; i < waypoints.Value.Count; ++i) {
                 if (waypoints.Value[i] != null) {
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5
                     UnityEditor.Handles.SphereCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1);
+#else
+                    UnityEditor.Handles.SphereHandleCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1, EventType.Repaint);
+#endif
                 }
             }
             UnityEditor.Handles.color = oldColor;

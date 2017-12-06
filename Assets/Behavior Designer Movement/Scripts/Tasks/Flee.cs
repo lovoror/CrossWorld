@@ -15,6 +15,17 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         [Tooltip("The GameObject that the agent is fleeing from")]
         public SharedGameObject target;
 
+        private bool hasMoved;
+
+        public override void OnStart()
+        {
+            base.OnStart();
+
+            hasMoved = false;
+
+            SetDestination(Target());
+        }
+
         // Flee from the target. Return success once the agent has fleed the target by moving far enough away from it
         // Return running if the agent is still fleeing
         public override TaskStatus OnUpdate()
@@ -23,7 +34,23 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
                 return TaskStatus.Success;
             }
 
-            SetDestination(Target());
+            if (HasArrived()) {
+                if (!hasMoved) {
+                    return TaskStatus.Failure;
+                }
+                if (!SetDestination(Target())) {
+                    return TaskStatus.Failure;
+                }
+                hasMoved = false;
+            } else {
+                // If the agent is stuck the task shouldn't continue to return a status of running.
+                var velocityMagnitude = Velocity().sqrMagnitude;
+                if (hasMoved && velocityMagnitude <= 0f) {
+                    return TaskStatus.Failure;
+                }
+                hasMoved = velocityMagnitude > 0f;
+            }
+
             return TaskStatus.Running;
         }
 
@@ -31,6 +58,15 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         private Vector3 Target()
         {
             return transform.position + (transform.position - target.Value.transform.position).normalized * lookAheadDistance.Value;
+        }
+
+        // Return false if the position isn't valid on the NavMesh.
+        protected override bool SetDestination(Vector3 destination)
+        {
+            if (!SamplePosition(destination)) {
+                return false;
+            }
+            return base.SetDestination(destination);
         }
 
         // Reset the public variables

@@ -38,12 +38,23 @@ public class Utils {
 		return tar;
 	}
 
-	// 以Y轴负方向为参考，获得一个0-360度的夹角
-	public static float GetAngle(Vector3 from, Vector3 to)
+	// 以Y轴正方向为参考，获得一个0-360度的夹角
+	public static float GetAnglePY(Vector3 from, Vector3 to)
 	{
 		float angle = Vector3.Angle(from, to);
 		Vector3 normal = Vector3.Cross(from, to);
-		if (normal.y > 0) {
+		if (normal.y < 0) {
+			angle = 360 - angle;
+		}
+		return angle;
+	}
+	// 以Z轴正方向为参考，获得一个0-360度的夹角
+	public static float GetAnglePZ(Vector3 from, Vector3 to)
+	{
+		float angle = Vector3.Angle(from, to);
+		Vector3 normal = Vector3.Cross(from, to);
+		MonoBehaviour.print("normal:" + normal);
+		if (normal.z < 0) {
 			angle = 360 - angle;
 		}
 		return angle;

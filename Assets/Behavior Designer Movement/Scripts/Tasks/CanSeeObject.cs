@@ -12,6 +12,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         public bool usePhysics2D;
         [Tooltip("The object that we are searching for")]
         public SharedGameObject targetObject;
+        [Tooltip("The objects that we are searching for")]
+        public SharedGameObjectList targetObjects;
         [Tooltip("The tag of the object that we are searching for")]
         public SharedString targetTag;
         [Tooltip("The LayerMask of the objects that we are searching for")]
@@ -28,19 +30,19 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         public SharedVector3 targetOffset;
         [Tooltip("The offset to apply to 2D angles")]
         public SharedFloat angleOffset2D;
+        [Tooltip("Should the target bone be used?")]
+        public SharedBool useTargetBone;
+        [Tooltip("The target's bone if the target is a humanoid")]
+        public HumanBodyBones targetBone;
         [Tooltip("The object that is within sight")]
         public SharedGameObject returnedObject;
 
-		private GameObject[] possibleTargets;
+		private GameObject possibleTarget;
 		public override void OnAwake()
 		{
 			base.OnAwake();
 			if (!string.IsNullOrEmpty(targetTag.Value)) {
-				GameObject[] targets = GameObject.FindGameObjectsWithTag(targetTag.Value);
-				possibleTargets = new GameObject[targets.Length];
-				for (int i = 0; i < targets.Length; ++i) {
-					possibleTargets[i] = targets[i];
-				}
+				possibleTarget = GameObject.FindGameObjectWithTag(targetTag.Value);
 			}
 		}
 
@@ -48,32 +50,50 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         public override TaskStatus OnUpdate()
         {
             if (usePhysics2D) {
-                if (!string.IsNullOrEmpty(targetTag.Value)) { // If the target tag is not null then determine if there are any objects within sight based on the tag
-					if (possibleTargets != null) {
-						foreach (GameObject target in possibleTargets) {
-							returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value,
-								viewDistance.Value, target, targetOffset.Value, ignoreLayerMask);
-							if (returnedObject.Value != null) break;
-						}
-					}
-                } else if (targetObject.Value == null) { // If the target object is null then determine if there are any objects within sight based on the layer mask
-                    returnedObject.Value = MovementUtility.WithinSight2D(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, objectLayerMask, targetOffset.Value, angleOffset2D.Value, ignoreLayerMask);
-                } else { // If the target is not null then determine if that object is within sight
-                    returnedObject.Value = MovementUtility.WithinSight2D(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, targetObject.Value, targetOffset.Value, angleOffset2D.Value, ignoreLayerMask);
+                if (targetObjects.Value != null && targetObjects.Value.Count > 0) { // If there are objects in the group list then search for the object within that list
+                    GameObject objectFound = null;
+                    float minAngle = Mathf.Infinity;
+                    for (int i = 0; i < targetObjects.Value.Count; ++i) {
+                        float angle;
+                        GameObject obj;
+                        if ((obj = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, targetObjects.Value[i], targetOffset.Value, true, angleOffset2D.Value, out angle, ignoreLayerMask, useTargetBone.Value, targetBone)) != null) {
+                            // This object is within sight. Set it to the objectFound GameObject if the angle is less than any of the other objects
+                            if (angle < minAngle) {
+                                minAngle = angle;
+                                objectFound = obj;
+                            }
+                        }
+                    }
+                    returnedObject.Value = objectFound;
+                } else if (!string.IsNullOrEmpty(targetTag.Value)) { // If the target tag is not null then determine if there are any objects within sight based on the tag
+					returnedObject.Value = MovementUtility.WithinSight2D(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, possibleTarget, targetOffset.Value, angleOffset2D.Value, ignoreLayerMask, useTargetBone.Value, targetBone);
+				} else if (targetObject.Value == null) { // If the target object is null then determine if there are any objects within sight based on the layer mask
+					returnedObject.Value = MovementUtility.WithinSight2D(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, objectLayerMask, targetOffset.Value, angleOffset2D.Value, ignoreLayerMask);
+				} else { // If the target is not null then determine if that object is within sight
+                    returnedObject.Value = MovementUtility.WithinSight2D(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, targetObject.Value, targetOffset.Value, angleOffset2D.Value, ignoreLayerMask, useTargetBone.Value, targetBone);
                 }
             } else {
-                if (!string.IsNullOrEmpty(targetTag.Value)) { // If the target tag is not null then determine if there are any objects within sight based on the tag
-					if (possibleTargets != null) {
-						foreach (GameObject target in possibleTargets) {
-							returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, 
-								viewDistance.Value, target, targetOffset.Value, ignoreLayerMask);
-							if (returnedObject.Value != null) break;
-						}
-					}
-                } else if (targetObject.Value == null) { // If the target object is null then determine if there are any objects within sight based on the layer mask
-                    returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, objectLayerMask, targetOffset.Value, ignoreLayerMask);
-                } else { // If the target is not null then determine if that object is within sight
-                    returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, targetObject.Value, targetOffset.Value, ignoreLayerMask);
+                if (targetObjects.Value != null && targetObjects.Value.Count > 0) { // If there are objects in the group list then search for the object within that list
+                    GameObject objectFound = null;
+                    float minAngle = Mathf.Infinity;
+                    for (int i = 0; i < targetObjects.Value.Count; ++i) {
+                        float angle;
+                        GameObject obj;
+                        if ((obj = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, targetObjects.Value[i], targetOffset.Value, false, angleOffset2D.Value, out angle, ignoreLayerMask, useTargetBone.Value, targetBone)) != null) {
+                            // This object is within sight. Set it to the objectFound GameObject if the angle is less than any of the other objects
+                            if (angle < minAngle) {
+                                minAngle = angle;
+                                objectFound = obj;
+                            }
+                        }
+                    }
+                    returnedObject.Value = objectFound;
+                } else if (!string.IsNullOrEmpty(targetTag.Value)) { // If the target tag is not null then determine if there are any objects within sight based on the tag
+					returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, possibleTarget, targetOffset.Value, ignoreLayerMask, useTargetBone.Value, targetBone);
+				} else if (targetObject.Value == null) { // If the target object is null then determine if there are any objects within sight based on the layer mask
+					returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, objectLayerMask, targetOffset.Value, ignoreLayerMask, useTargetBone.Value, targetBone);
+				} else { // If the target is not null then determine if that object is within sight
+                    returnedObject.Value = MovementUtility.WithinSight(transform, offset.Value, fieldOfViewAngle.Value, viewDistance.Value, targetObject.Value, targetOffset.Value, ignoreLayerMask, useTargetBone.Value, targetBone);
                 }
             }
             if (returnedObject.Value != null) {
@@ -99,6 +119,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         public override void OnDrawGizmos()
         {
             MovementUtility.DrawLineOfSight(Owner.transform, offset.Value, fieldOfViewAngle.Value, angleOffset2D.Value, viewDistance.Value, usePhysics2D);
+        }
+
+        public override void OnBehaviorComplete()
+        {
+            MovementUtility.ClearCache();
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class init : MonoBehaviour {
-	public Collider enemyCollider;
 	void Awake()
 	{
 
@@ -12,6 +11,8 @@ public class init : MonoBehaviour {
 	void Start ()
 	{
 		int enemyColliderLayer = LayerMask.NameToLayer("EnemyCollider");
+		int playerColliderLayer = LayerMask.NameToLayer("PlayerCollider");
 		Physics.IgnoreLayerCollision(enemyColliderLayer, enemyColliderLayer);
+		Physics.IgnoreLayerCollision(playerColliderLayer, enemyColliderLayer);
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-#if !(UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4)
+#if !(UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4)
 using UnityEngine.AI;
 #endif
 
@@ -12,9 +12,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         [Tooltip("The angular speed of the agent")]
         public SharedFloat angularSpeed = 120;
         [Tooltip("The agent has arrived when the destination is less than the specified amount")]
-        [SerializeField] private SharedFloat arriveDistance = 0.2f;
+        public SharedFloat arriveDistance = 0.2f;
         [Tooltip("Should the NavMeshAgent be stopped when the task ends?")]
-        [SerializeField] private SharedBool stopOnTaskEnd = true;
+        public SharedBool stopOnTaskEnd = true;
+        [Tooltip("Should the NavMeshAgent rotation be updated when the task ends?")]
+        public SharedBool updateRotation = true;
 
         // Component references
         protected NavMeshAgent navMeshAgent;
@@ -34,7 +36,14 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         {
             navMeshAgent.speed = speed.Value;
             navMeshAgent.angularSpeed = angularSpeed.Value;
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5
             navMeshAgent.Resume();
+#else
+            navMeshAgent.isStopped = false;
+#endif
+            if (!updateRotation.Value) {
+                UpdateRotation(true);
+            }
         }
 
         /// <summary>
@@ -44,7 +53,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         /// <returns>True if the destination is valid.</returns>
         protected override bool SetDestination(Vector3 destination)
         {
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5
             navMeshAgent.Resume();
+#else
+            navMeshAgent.isStopped = false;
+#endif
             return navMeshAgent.SetDestination(destination);
         }
 
@@ -108,8 +121,14 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         /// </summary>
         protected override void Stop()
         {
-            UpdateRotation(true);
-            navMeshAgent.Stop();
+            UpdateRotation(updateRotation.Value);
+            if (navMeshAgent.hasPath) {
+#if UNITY_5_1 || UNITY_5_2 || UNITY_5_3 || UNITY_5_4 || UNITY_5_5
+                navMeshAgent.Stop();
+#else
+                navMeshAgent.isStopped = true;
+#endif
+            }
         }
 
         /// <summary>
@@ -120,7 +139,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
             if (stopOnTaskEnd.Value) {
                 Stop();
             } else {
-                UpdateRotation(true);
+                UpdateRotation(updateRotation.Value);
             }
         }
 

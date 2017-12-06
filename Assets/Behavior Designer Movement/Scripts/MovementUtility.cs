@@ -1,15 +1,17 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 namespace BehaviorDesigner.Runtime.Tasks.Movement
 {
     public static class MovementUtility
     {
-        private static Dictionary<GameObject, AudioSource[]> transformAudioSourceMap;
+        private static Dictionary<GameObject, Dictionary<Type, Component>> gameObjectComponentMap = new Dictionary<GameObject, Dictionary<Type, Component>>();
+        private static Dictionary<GameObject, Dictionary<Type, Component[]>> gameObjectComponentsMap = new Dictionary<GameObject, Dictionary<Type, Component[]>>();
 
         // Cast a sphere with the desired distance. Check each collider hit to see if it is within the field of view. Set objectFound
         // to the object that is most directly in front of the agent
-        public static GameObject WithinSight(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, LayerMask objectLayerMask, Vector3 targetOffset, LayerMask ignoreLayerMask)
+        public static GameObject WithinSight(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, LayerMask objectLayerMask, Vector3 targetOffset, LayerMask ignoreLayerMask, bool useTargetBone, HumanBodyBones targetBone)
         {
             GameObject objectFound = null;
             var hitColliders = Physics.OverlapSphere(transform.position, viewDistance, objectLayerMask);
@@ -19,7 +21,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
                     float angle;
                     GameObject obj;
                     // Call the WithinSight function to determine if this specific object is within sight
-                    if ((obj = WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, hitColliders[i].gameObject, targetOffset, false, 0, out angle, ignoreLayerMask)) != null) {
+                    if ((obj = WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, hitColliders[i].gameObject, targetOffset, false, 0, out angle, ignoreLayerMask, useTargetBone, targetBone)) != null) {
                         // This object is within sight. Set it to the objectFound GameObject if the angle is less than any of the other objects
                         if (angle < minAngle) {
                             minAngle = angle;
@@ -43,7 +45,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
                     float angle;
                     GameObject obj;
                     // Call the 2D WithinSight function to determine if this specific object is within sight
-                    if ((obj = WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, hitColliders[i].gameObject, targetOffset, true, angleOffset2D, out angle, ignoreLayerMask)) != null) {
+                    if ((obj = WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, hitColliders[i].gameObject, targetOffset, true, angleOffset2D, out angle, ignoreLayerMask, false, HumanBodyBones.Hips)) != null) {
                         // This object is within sight. Set it to the objectFound GameObject if the angle is less than any of the other objects
                         if (angle < minAngle) {
                             minAngle = angle;
@@ -57,23 +59,36 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
 
         // Public helper function that will automatically create an angle variable that is not used. This function is useful if the calling object doesn't
         // care about the angle between transform and targetObject
-        public static GameObject WithinSight(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, GameObject targetObject, Vector3 targetOffset, LayerMask ignoreLayerMask)
+        public static GameObject WithinSight(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, GameObject targetObject, Vector3 targetOffset, LayerMask ignoreLayerMask, bool useTargetBone, HumanBodyBones targetBone)
         {
             float angle;
-            return WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, targetObject, targetOffset, false, 0, out angle, ignoreLayerMask);
-        }
+            return WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, targetObject, targetOffset, false, 0, out angle, ignoreLayerMask, useTargetBone, targetBone);
+    }
 
         // Public helper function that will automatically create an angle variable that is not used. This function is useful if the calling object doesn't
         // care about the angle between transform and targetObject
-        public static GameObject WithinSight2D(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, GameObject targetObject, Vector3 targetOffset, float angleOffset2D, LayerMask ignoreLayerMask)
+        public static GameObject WithinSight2D(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, GameObject targetObject, Vector3 targetOffset, float angleOffset2D, LayerMask ignoreLayerMask, bool useTargetBone, HumanBodyBones targetBone)
         {
             float angle;
-            return WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, targetObject, targetOffset, true, angleOffset2D, out angle, ignoreLayerMask);
+            return WithinSight(transform, positionOffset, fieldOfViewAngle, viewDistance, targetObject, targetOffset, true, angleOffset2D, out angle, ignoreLayerMask, useTargetBone, targetBone);
         }
 
         // Determines if the targetObject is within sight of the transform. It will set the angle regardless of whether or not the object is within sight
-        private static GameObject WithinSight(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, GameObject targetObject, Vector3 targetOffset, bool usePhysics2D, float angleOffset2D, out float angle, int ignoreLayerMask)
+        public static GameObject WithinSight(Transform transform, Vector3 positionOffset, float fieldOfViewAngle, float viewDistance, GameObject targetObject, Vector3 targetOffset, bool usePhysics2D, float angleOffset2D, out float angle, int ignoreLayerMask, bool useTargetBone, HumanBodyBones targetBone)
         {
+            if (targetObject == null) {
+                angle = 0;
+                return null;
+            }
+            if (useTargetBone) {
+                Animator animator;
+                if ((animator = GetComponentForType<Animator>(targetObject)) != null) {
+                    var bone = animator.GetBoneTransform(targetBone);
+                    if (bone != null) {
+                        targetObject = bone.gameObject;
+                    }
+                }
+            }
             // The target object needs to be within the field of view of the current object
             var direction = targetObject.transform.position - transform.TransformPoint(positionOffset);
             if (usePhysics2D) {
@@ -89,7 +104,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
                 // The hit agent needs to be within view of the current agent
                 if (LineOfSight(transform, positionOffset, targetObject, targetOffset, usePhysics2D, ignoreLayerMask) != null) {
                     return targetObject; // return the target object meaning it is within sight
-                } else if (targetObject.GetComponent<Collider>() == null && targetObject.GetComponent<Collider2D>() == null) {
+                } else if (GetComponentForType<Collider>(targetObject) == null && GetComponentForType<Collider2D>(targetObject) == null) {
                     // If the linecast doesn't hit anything then that the target object doesn't have a collider and there is nothing in the way
                     if (targetObject.gameObject.activeSelf)
                         return targetObject;
@@ -175,11 +190,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
             return WithinHearingRange(transform, positionOffset, audibilityThreshold, targetObject, ref audibility);
         }
 
-        private static GameObject WithinHearingRange(Transform transform, Vector3 positionOffset, float audibilityThreshold, GameObject targetObject, ref float audibility)
+        public static GameObject WithinHearingRange(Transform transform, Vector3 positionOffset, float audibilityThreshold, GameObject targetObject, ref float audibility)
         {
             AudioSource[] colliderAudioSource;
             // Check to see if the hit agent has an audio source and that audio source is playing
-            if ((colliderAudioSource = GetAudioSources(targetObject)) != null) {
+            if ((colliderAudioSource = GetComponentsForType<AudioSource>(targetObject)) != null) {
                 for (int i = 0; i < colliderAudioSource.Length; ++i) {
                     if (colliderAudioSource[i].isPlaying) {
                         var distance = Vector3.Distance(transform.position, targetObject.transform.position);
@@ -214,21 +229,53 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
 #endif
         }
 
-        // Caches the AudioSource GetComponents for quick lookup
-        private static AudioSource[] GetAudioSources(GameObject target)
+        public static T GetComponentForType<T>(GameObject target) where T : Component
         {
-            if (transformAudioSourceMap == null) {
-                transformAudioSourceMap = new Dictionary<GameObject, AudioSource[]>();
+            Dictionary<Type, Component> typeComponentMap;
+            Component targetComponent;
+            // Return the cached component if it exists.
+            if (gameObjectComponentMap.TryGetValue(target, out typeComponentMap)) {
+                if (typeComponentMap.TryGetValue(typeof(T), out targetComponent)) {
+                    return targetComponent as T;
+                }
+            } else {
+                // The cached component doesn't exist for the specified type.
+                typeComponentMap = new Dictionary<Type, Component>();
+                gameObjectComponentMap.Add(target, typeComponentMap);
             }
 
-            AudioSource[] audioSources;
-            if (transformAudioSourceMap.TryGetValue(target, out audioSources)) {
-                return audioSources;
+            // Find the component reference and cache the results.
+            targetComponent = target.GetComponent<T>();
+            typeComponentMap.Add(typeof(T), targetComponent);
+            return targetComponent as T;
+        }
+
+        public static T[] GetComponentsForType<T>(GameObject target) where T : Component
+        {
+            Dictionary<Type, Component[]> typeComponentsMap;
+            Component[] targetComponents;
+            // Return the cached component if it exists.
+            if (gameObjectComponentsMap.TryGetValue(target, out typeComponentsMap)) {
+                if (typeComponentsMap.TryGetValue(typeof(T), out targetComponents)) {
+                    return targetComponents as T[];
+                }
+            } else {
+                // The cached components doesn't exist for the specified type.
+                typeComponentsMap = new Dictionary<Type, Component[]>();
+                gameObjectComponentsMap.Add(target, typeComponentsMap);
             }
 
-            audioSources = target.GetComponentsInChildren<AudioSource>();
-            transformAudioSourceMap.Add(target, audioSources);
-            return audioSources;
+            // Find the component reference and cache the results.
+            targetComponents = target.GetComponents<T>();
+            typeComponentsMap.Add(typeof(T), targetComponents);
+            return targetComponents as T[];
+        }
+
+        // Clears the static references.
+        public static void ClearCache()
+        {
+            gameObjectComponentMap.Clear();
+            gameObjectComponentsMap.Clear();
         }
     }
 }

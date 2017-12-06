@@ -50,7 +50,6 @@ public class AIPath : AIBase {
 	 * It can be a point on the ground where the player has clicked in an RTS for example, or it can be the player object in a zombie game.
 	 */
 	public Transform target;
-	public Vector3? targetPos;
 
 	/** Enables or disables searching for paths.
 	 * Setting this to false does not stop any active path requests from being calculated or stop it from continuing to follow the current path.
@@ -62,11 +61,6 @@ public class AIPath : AIBase {
 	 * \see #canSearch
 	 */
 	public bool canMove = true;
-
-	/** Enables or disables bodyTurn.
-	 * \see #canTurn
-	 */
-	public bool canTurn = true;
 
 	/** Maximum velocity.
 	 * This is the maximum speed in world units per second.
@@ -132,8 +126,7 @@ public class AIPath : AIBase {
 	 * If you override this function you should in most cases call base.Start () at the start of it.
 	 * \see #Init
 	 */
-	protected virtual void Start()
-	{
+	protected virtual void Start () {
 		startHasRun = true;
 		Init();
 	}
@@ -177,7 +170,7 @@ public class AIPath : AIBase {
 	 * \returns The time to wait until calling this function again (based on #repathRate)
 	 */
 	public float TrySearchPath () {
-		if (Time.time - lastRepath >= repathRate && canSearchAgain && canSearch && (target != null || targetPos.HasValue)) {
+		if (Time.time - lastRepath >= repathRate && canSearchAgain && canSearch && target != null) {
 			SearchPath();
 			return repathRate;
 		} else {
@@ -188,12 +181,11 @@ public class AIPath : AIBase {
 
 	/** Requests a path to the target */
 	public virtual void SearchPath () {
-		if (!targetPos.HasValue && target == null) throw new System.InvalidOperationException("Target is null");
+		if (target == null) throw new System.InvalidOperationException("Target is null");
 
 		lastRepath = Time.time;
 		// This is where we should search to
-		Vector3 pos;
-		pos = target == null ? targetPos.Value : target.position;
+		Vector3 targetPosition = target.position;
 
 		canSearchAgain = false;
 
@@ -202,7 +194,7 @@ public class AIPath : AIBase {
 		//seeker.StartPath(p);
 
 		// We should search from the current position
-		seeker.StartPath(GetFeetPosition(), pos);
+		seeker.StartPath(GetFeetPosition(), targetPosition);
 	}
 
 	public virtual void OnTargetReached () {
@@ -291,13 +283,8 @@ public class AIPath : AIBase {
 
 			// a = v/t, should probably expose as a variable
 			float acceleration = speed / 0.4f;
-			if (canTurn) {
-				velocity2D += MovementUtilities.CalculateAccelerationToReachPoint(dir, dir.normalized * speed, velocity2D, acceleration, speed) * deltaTime;
-				velocity2D = MovementUtilities.ClampVelocity(velocity2D, speed, slowdown, true, movementPlane.ToPlane(rotationIn2D ? tr.up : tr.forward));
-			}
-			else {
-				velocity2D = dir.normalized * speed;
-			}
+			velocity2D += MovementUtilities.CalculateAccelerationToReachPoint(dir, dir.normalized*speed, velocity2D, acceleration, speed) * deltaTime;
+			velocity2D = MovementUtilities.ClampVelocity(velocity2D, speed, slowdown, true, movementPlane.ToPlane(rotationIn2D ? tr.up : tr.forward));
 
 			ApplyGravity(deltaTime);
 
@@ -307,10 +294,8 @@ public class AIPath : AIBase {
 			}
 
 			// Rotate towards the direction we are moving in
-			if (canTurn) {
-				var currentRotationSpeed = rotationSpeed * Mathf.Clamp01((Mathf.Sqrt(slowdown) - 0.3f) / 0.7f);
-				RotateTowards(velocity2D, currentRotationSpeed * deltaTime);
-			}
+			var currentRotationSpeed = rotationSpeed * Mathf.Clamp01((Mathf.Sqrt(slowdown) - 0.3f) / 0.7f);
+			RotateTowards(velocity2D, currentRotationSpeed * deltaTime);
 
 			if (rvoController != null && rvoController.enabled) {
 				// Send a message to the RVOController that we want to move

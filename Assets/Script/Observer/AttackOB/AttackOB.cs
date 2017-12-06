@@ -34,14 +34,16 @@ public class AttackOB : Observer
 
 	protected static void HurtDeal(Transform attacker, List<Transform> suffers)
 	{
-		int atkWeapon = gamerInfos[attacker.name].curWeaponName;
-		float damage = baseDamage[atkWeapon];
+		int atkWeapon = GameData.GetCurWeaponName(attacker.name);
+		float damage = GameData.GetBaseDamage(atkWeapon);
+		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
 			bool isDead = GamerHurt(suffer.name, damage);
 			if (isDead) {
 				if (DeadNotifyEvent != null) {
 					DeadNotifyEvent(attacker, suffer);
 				}
+				GameData.GamerDead(suffer.name);
 			}
 			// 武器能量改变
 			WeaponEnergyChangeDeal(attacker, suffers);
@@ -56,8 +58,10 @@ public class AttackOB : Observer
 		// 分别通知各个suffer
 		foreach (Transform suffer in suffers) {
 			if (HurtNotifyEvent != null) {
-				float health = gamerInfos[suffer.name].health;
-				HurtNotifyEvent(attacker, suffer, health);
+				float health = GameData.GetHealth(suffer.name);
+				if (health >= 0) {
+					HurtNotifyEvent(attacker, suffer, health);
+				}
 			}
 		}
 
@@ -85,13 +89,12 @@ public class AttackOB : Observer
 
 	protected static void ChangeEnergy(Transform target, float delta)
 	{
-		GamerInfo gamerInfo = gamerInfos[target.name];
-		float preEnergy = gamerInfo.GetTotalEnergy();
-		gamerInfo.ChangeEnergy(delta);
-		float curEnergy = gamerInfo.GetTotalEnergy();
+		float preEnergy = GameData.GetTotalEnergy(target.name);
+		GameData.ChangeEnergy(target.name, delta);
+		float curEnergy = GameData.GetTotalEnergy(target.name);
 		if (preEnergy != curEnergy) {
-			int level = gamerInfo.GetWeaponLevel();
-			float leftEnergy = gamerInfo.GetEnergy();
+			int level = GameData.GetWeaponLevel(target.name);
+			float leftEnergy = GameData.GetWeaponEnergy(target.name);
 			if (WeaponEnergyChangeNotifyEvent != null && leftEnergy >= 0) {
 				WeaponEnergyChangeNotifyEvent(target, level, leftEnergy);
 			}

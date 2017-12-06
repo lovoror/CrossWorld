@@ -26,7 +26,7 @@ public class Manager : MonoBehaviour {
 	{
 		self = Utils.GetOwner(transform, ownerTags);
 		body = self.Find("Body");
-		foreach (Transform child in body) {
+		foreach (Transform child in self) {
 			if (child.tag == "MeleeWeapon" || child.tag == "RangeWeapon") {
 				weapon = child;
 				break;

@@ -51,9 +51,9 @@ public class EnemyController : Controller {
 			// 设置状态机
 			ShowWalkAnim(true);
 			// 改变Leg的朝向
-			leg.eulerAngles = new Vector3(90, 0, Utils.GetAngle(Vector3.right, velocity));
+			leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, velocity), -90);
 			// 人物转向
-			body.eulerAngles = new Vector3(90, 0, Utils.GetAngle(Vector3.right, velocity));
+			//transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, velocity), 0);
 		}
 		else {
 			// 设置状态机

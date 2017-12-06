@@ -359,6 +359,37 @@
     <Compile Include="Assets\AstarPathfindingProject\Utilities\ProfileHelper.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Utilities\RetainedGizmos.cs" />
     <Compile Include="Assets\AstarPathfindingProject\Utilities\UnityReferenceHelper.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\AIPathAgent.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\AIPathGroupMovement.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\AIPathMovement.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Cover.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Evade.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Flee.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Flock.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Follow.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\LeaderFollow.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Patrol.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Pursue.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Queue.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Search.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Seek.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AIPath\Tasks\Wander.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\AstarBehaviorSelection.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\RichAIAgent.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Cover.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Evade.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Flee.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Flock.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Follow.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\LeaderFollow.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Patrol.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Pursue.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Queue.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\RichAIGroupMovement.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\RichAIMovement.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Search.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Seek.cs" />
+    <Compile Include="Assets\Behavior Designer Movement\Integrations\Astar Pathfinding Project\RichAI\Tasks\Wander.cs" />
     <Compile Include="Assets\Behavior Designer Movement\Scripts\BehaviorSelection.cs" />
     <Compile Include="Assets\Behavior Designer Movement\Scripts\GroupMovement.cs" />
     <Compile Include="Assets\Behavior Designer Movement\Scripts\Movement.cs" />
@@ -901,7 +932,6 @@
     <Compile Include="Assets\Script\Common\Constant.cs" />
     <Compile Include="Assets\Script\Common\Utils.cs" />
     <Compile Include="Assets\Script\Effect\BulletController.cs" />
-    <Compile Include="Assets\Script\FollowPlayer.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Controller.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\DataManager.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Manager.cs" />
@@ -929,9 +959,10 @@
     <Compile Include="Assets\Script\Observer\AttackOB\AttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\DistantAttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\MeleeAttackOB.cs" />
+    <Compile Include="Assets\Script\Observer\GameData.cs" />
     <Compile Include="Assets\Script\Observer\init.cs" />
     <Compile Include="Assets\Script\Observer\Observer.cs" />
-    <Compile Include="Assets\Script\UI.cs" />
+    <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\AstarPathfindingProject\Editor\EditorAssets\Materials\Navmesh.cginc" />

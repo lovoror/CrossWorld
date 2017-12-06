@@ -27,6 +27,10 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement
         // Follow the target. The task will never return success as the agent should continue to follow the target even after arriving at the destination.
         public override TaskStatus OnUpdate()
         {
+            if (target.Value == null) {
+                return TaskStatus.Failure;
+            }
+
             // Move if the target has moved more than the moveDistance since the last time the agent moved.
             var targetPosition = target.Value.transform.position;
             if ((targetPosition - lastTargetPosition).magnitude >= moveDistance.Value) {

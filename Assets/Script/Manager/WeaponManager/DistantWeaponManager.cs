@@ -18,10 +18,10 @@ public class DistantWeaponManager : WeaponManager {
 			body = self.Find("Body");
 			if (body) {
 				I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
-				foreach (Transform child in body) {
-					if (child.tag == "RangeWeapon") {  // RangeWeapon的所在位置即为射击点
-						muzzle = child;
-					}
+			}
+			foreach (Transform child in self) {
+				if (child.tag == "RangeWeapon") {  // RangeWeapon的所在位置即为射击点
+					muzzle = child;
 				}
 			}
 		}

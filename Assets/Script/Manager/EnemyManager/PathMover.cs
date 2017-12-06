@@ -50,7 +50,7 @@ public class PathMover : AIPath {
 	CallbackHandler TargetReachedCallback;
 	public void MoveTo(Vector3 pos, CallbackHandler CallbackFunc)
 	{
-		targetPos = pos;
+		//targetPos = pos;
 		TargetReachedCallback = CallbackFunc;
 		SearchPath();
 	}

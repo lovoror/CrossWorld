@@ -41,12 +41,12 @@ public class PlayerController : Controller {
 			ShowWalkAnim(moveDir.magnitude > 0);
 			ShowAttackAnim(Input.GetButton("Fire1"));
 			// 改变Leg的朝向
-			leg.eulerAngles = new Vector3(90, 0, Utils.GetAngle(Vector3.right, moveDir));
+			leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, moveDir), -90);
 			// 人物转向
 			Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 			mouseV.y = 0;
 			//body.rotation = Quaternion.Euler(new Vector3(90, 0, GetAngle(Vector3.right, mouseV)));
-			body.eulerAngles = new Vector3(90, 0, Utils.GetAngle(Vector3.right, mouseV));
+			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, mouseV), 0);
 		}
 	}
 
