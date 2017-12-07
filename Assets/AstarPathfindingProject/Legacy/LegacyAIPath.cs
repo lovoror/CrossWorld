@@ -217,7 +217,10 @@ namespace Pathfinding.Legacy {
 			this.targetPoint = targetPosition;
 
 			if (currentWaypointIndex == vPath.Count-1 && targetDist <= endReachedDistance) {
-				if (!TargetReached) { TargetReached = true; OnTargetReached(); }
+				if (!TargetReached) { 
+					TargetReached = true; 
+					OnTargetReached(); 
+				}
 
 				//Send a move request, this ensures gravity is applied
 				return Vector3.zero;

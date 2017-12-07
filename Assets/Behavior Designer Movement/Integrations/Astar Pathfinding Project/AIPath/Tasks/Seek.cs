@@ -16,18 +16,17 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement.AstarPathfindingProject.AIPath
 
         public override void OnStart()
         {
-            base.OnStart();
-
             SetDestination(Target());
+            base.OnStart();
         }
 
         // Seek the destination. Return success once the agent has reached the destination.
         // Return running if the agent hasn't reached the destination yet
         public override TaskStatus OnUpdate()
         {
-            if (HasArrived()) {
-                return TaskStatus.Success;
-            }
+			if (HasArrived()) {
+				return TaskStatus.Success;
+			}
 
             SetDestination(Target());
 

@@ -944,7 +944,9 @@
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyMessenger.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyStateDisplay.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\PathMover.cs" />
-    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\TaskA.cs" />
+    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\AnimController.cs" />
+    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\BoolEqualTo.cs" />
+    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\SetNoisePos.cs" />
     <Compile Include="Assets\Script\Manager\FollowTarget.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerController.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerDataManager.cs" />
