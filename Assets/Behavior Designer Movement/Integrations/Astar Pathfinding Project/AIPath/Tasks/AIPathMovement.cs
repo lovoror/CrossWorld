@@ -41,8 +41,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement.AstarPathfindingProject.AIPath
         {
             if (aiPathAgent.target.position != target) {
                 aiPathAgent.target.position = target;
-                aiPathAgent.canMove = true;
             }
+			aiPathAgent.canMove = true;  // zpf modify
             return true;
         }
 

@@ -10,13 +10,6 @@ namespace BehaviorDesigner.Runtime.Tasks
 		public bool Walk = false;
 		public bool Dead = false;
 
-		SharedFloat baseSpeed;
-		[RequiredField]
-		public SharedFloat curSpeed;
-
-		Manager I_Manager;
-		Rigidbody rb;
-		Transform self;
 		Transform body;
 		Transform leg;
 		Animator legAnim;
@@ -27,8 +20,6 @@ namespace BehaviorDesigner.Runtime.Tasks
 		public override void OnAwake()
 		{
 			base.OnAwake();
-			I_Manager = transform.GetComponent<Manager>();
-			self = transform;
 			body = transform.Find("Body");
 			leg = transform.Find("Leg");
 			legAnim = leg.GetComponent<Animator>();
@@ -39,18 +30,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 		public override void OnStart()
 		{
 			base.OnStart();
-			baseSpeed = (float)Owner.GetVariable("RunSpeed").GetValue();
-			bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
-			if (bodyAnimInfo.IsName("Attack")) {
-				bodyAnim.speed = I_Manager.I_DataManager.attackSpeedRate;
-			}
-			else if (bodyAnimInfo.IsName("Walk")) {
-				bodyAnim.speed = curSpeed.Value / baseSpeed.Value;
-			}
-			else {
-				bodyAnim.speed = 1;
-			}
-			legAnim.speed = curSpeed.Value / baseSpeed.Value;
+			// 设置状态机
 			legAnim.SetBool("Walk", Walk);
 			bodyAnim.SetBool("Walk", Walk);
 			bodyAnim.SetBool("Attack", Attack);

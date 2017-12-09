@@ -21,7 +21,8 @@ namespace Pathfinding
         // Returns the agent's current velocity
         public Vector3 Velocity()
         {
-            return CalculateVelocity(GetFeetPosition());
+			//return CalculateVelocity(GetFeetPosition());  // zpf modify
+			return velocity;
         }
 
         // Returns the target direction of the agent. Must be called after Velocity for it to be an updated value

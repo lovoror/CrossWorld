@@ -10,7 +10,7 @@ public class Controller : MonoBehaviour {
 	protected Transform self;
 	protected Transform body;
 	protected Transform leg;
-	protected GameObject bodyCollider;
+	protected SphereCollider bodyCollider;
 	protected Animator legAnim;
 	protected Animator bodyAnim;
 	protected Camera mainCamera;
@@ -29,7 +29,7 @@ public class Controller : MonoBehaviour {
 		rb = transform.GetComponent<Rigidbody>();
 		body = transform.Find("Body");
 		leg = transform.Find("Leg");
-		bodyCollider = Utils.FindChildRecursively(transform, "BodyCollider").gameObject;
+		bodyCollider = transform.GetComponent<SphereCollider>();
 		legAnim = leg.GetComponent<Animator>();
 		bodyAnim = body.GetComponent<Animator>();
 		bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
@@ -73,7 +73,7 @@ public class Controller : MonoBehaviour {
 			if (rb) {
 				rb.useGravity = false;
 			}
-			bodyCollider.SetActive(false);
+			bodyCollider.enabled = false;
 			I_Manager.SetPlayerDead(true);
 		}
 	}

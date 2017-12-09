@@ -10,9 +10,9 @@ public class init : MonoBehaviour {
 
 	void Start ()
 	{
-		int enemyColliderLayer = LayerMask.NameToLayer("EnemyCollider");
-		int playerColliderLayer = LayerMask.NameToLayer("PlayerCollider");
-		Physics.IgnoreLayerCollision(enemyColliderLayer, enemyColliderLayer);
-		Physics.IgnoreLayerCollision(playerColliderLayer, enemyColliderLayer);
+		int enemyCollider = LayerMask.NameToLayer("Enemy");
+		int playerCollider = LayerMask.NameToLayer("Player");
+		Physics.IgnoreLayerCollision(enemyCollider, enemyCollider);
+		Physics.IgnoreLayerCollision(playerCollider, enemyCollider);
 	}
 }
