@@ -8,7 +8,8 @@ namespace Pathfinding
     public class RichAIAgent : RichAI
     {
         private bool targetReached = false;
-        public bool TargetReached { get { return targetReached; } }
+		//public bool TargetReached { get { return targetReached; } }  // zpf modify
+		public new bool TargetReached { get { return targetReached; } }
 
         // Has the path been created and is valid?
         public bool PathCalculated()

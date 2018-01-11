@@ -7,7 +7,6 @@ public class WeaponManager : MonoBehaviour {
 	public Transform self;   // 此近战武器的拥有者
 	[HideInInspector]
 	public int weaponName;
-	public float attackNoiseRadius = 0;
 
 	protected Manager I_Manager;  // attacker的Manager管理类
 	protected BodyAnimEvents I_BodyAnimEvents;
@@ -30,14 +29,14 @@ public class WeaponManager : MonoBehaviour {
 
 	protected void OnEnable()
 	{
-		I_BodyAnimEvents.PlayAttackSoundEvent += new BodyAnimEvents.PlayAttackSoundEventHandler(PlayAttackShoundEventFunc);
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
+		I_BodyAnimEvents.AttackEvent += new BodyAnimEvents.AttackEventHandler(AttackEventFunc);
 	}
 
 	protected void OnDisable()
 	{
-		I_BodyAnimEvents.PlayAttackSoundEvent -= PlayAttackShoundEventFunc;
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
+		I_BodyAnimEvents.AttackEvent -= AttackEventFunc;
 	}
 
 	protected virtual void OnTriggerEnter(Collider other)
@@ -62,6 +61,16 @@ public class WeaponManager : MonoBehaviour {
 				EnemyInATKRangeEvent(suffer, false);
 			}
 		}
+	}
+
+	protected virtual void AttackEventFunc()
+	{
+		PlayAttackShound();
+	}
+
+	protected virtual void PlayAttackShound()
+	{
+		attackAudioSource.Play();
 	}
 
 	/*----------------- EnemyInATKRangeEvent ------------------*/
@@ -91,28 +100,10 @@ public class WeaponManager : MonoBehaviour {
 	}
 	/*--------------------- HurtEvent ---------------------*/
 
-	/*--------------- PlayAttackSoundEvent ----------------*/
-		/*--------- BodyAnimEvents -> Weapon ----------*/
-	protected virtual void PlayAttackShoundEventFunc()
-	{
-		attackAudioSource.Play();
-		WeaponNoiseDeclaration();
-	}
-	/*--------------- PlayAttackSoundEvent ----------------*/
-
 	/*---------------- KillerNotifyEvent ------------------*/
 	public virtual void DeadNotifyEventFunc(Transform killer, Transform dead)
 	{
 
 	}
 	/*---------------- KillerNotifyEvent ------------------*/
-
-	/*----------------- WeaponNoiseEvent ------------------*/
-	void WeaponNoiseDeclaration()
-	{
-		if (attackNoiseRadius > 0) {
-			I_Manager.WeaponNoiseDeclaration(self, attackNoiseRadius);
-		}
-	}
-	/*----------------- WeaponNoiseEvent ------------------*/
 }

@@ -31,8 +31,6 @@ public class Messenger : MonoBehaviour {
 		AttackOB.DeadNotifyEvent += new AttackOB.DeadNotifyEventHandler(DeadNotifyEventFunc);
 		// WeaponEnergyChangeEvent
 		AttackOB.WeaponEnergyChangeNotifyEvent += new DistantAttackOB.WeaponEnergyChangeNotifyEventHandler(WeaponEnergyChangeNotifyEventFunc);
-		// WeaponNoiseEvent
-		AttackOB.WeaponNoiseNotifyEvent += new AttackOB.WeaponNoiseNotifyEventHandler(WeaponNoiseNotifyEventFunc);
 	}
 
 	protected void OnDisable()
@@ -40,8 +38,6 @@ public class Messenger : MonoBehaviour {
 		AttackOB.HurtNotifyEvent -= HurtNotifyEventFunc;
 		AttackOB.DeadNotifyEvent -= DeadNotifyEventFunc;
 		AttackOB.WeaponEnergyChangeNotifyEvent -= WeaponEnergyChangeNotifyEventFunc;
-		AttackOB.WeaponNoiseNotifyEvent -= WeaponNoiseNotifyEventFunc;
-
 	}
 
 
@@ -75,11 +71,15 @@ public class Messenger : MonoBehaviour {
 	/*--------------------- DeadEvent ---------------------*/
 	public delegate void DeadNotifyEventHandler(Transform dead, Transform killer);
 	public DeadNotifyEventHandler DeadNotifyEvent;
-	void DeadNotifyEventFunc(Transform killer, Transform dead)
+	void DeadNotifyEventFunc(Transform killer, Transform dead, int weaponName)
 	{
 		if (self == dead || self == killer) {
 			if (DeadNotifyEvent != null) {
 				DeadNotifyEvent(killer, dead);
+			}
+			if (self == dead) {
+				I_Manager.SetKilledWeapon(weaponName);
+				I_Manager.SetPlayerDead(true);
 			}
 		}
 	}
@@ -98,26 +98,4 @@ public class Messenger : MonoBehaviour {
 		}
 	}
 	/*------------- WeaponEnergyChangeEvent ---------------*/
-
-	/*----------------- WeaponNoiseEvent ------------------*/
-	public delegate void WeaponNoiseDeclarationEventHandler(Transform source, float radius);
-	public static event WeaponNoiseDeclarationEventHandler WeaponNoiseDeclarationEvent;
-	public void WeaponNoiseDeclaration(Transform source, float radius)
-	{
-		if (WeaponNoiseDeclarationEvent != null) {
-			WeaponNoiseDeclarationEvent(source, radius);
-		}
-	}
-
-	public delegate void WeaponNoiseNotifyEventHandler(Transform source, float radius);
-	public event WeaponNoiseDeclarationEventHandler WeaponNoiseNotifyEvent;
-	void WeaponNoiseNotifyEventFunc(Transform source, float radius)
-	{
-		if (source == self) return;
-		if (WeaponNoiseNotifyEvent != null) {
-			WeaponNoiseNotifyEvent(source, radius);
-		}
-	}
-
-	/*----------------- WeaponNoiseEvent ------------------*/
 }

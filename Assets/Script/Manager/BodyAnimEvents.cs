@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class BodyAnimEvents : MonoBehaviour {
 
-	// 伤害有效期事件：BodyAnimEvents -> MeleeWeaponManager
-	public delegate void MeleeDamageEventHandler(bool canDamage);  // 通知MeleeWeaponManager是否是可造成伤害状态
-	public event MeleeDamageEventHandler MeleeHurtEvent;
-	// 发射子弹事件
-	public delegate void BulletShootEventHandler(Transform shooter, string weaponName);
-	public event BulletShootEventHandler BulletShootEvent;
-	// 播放攻击声音事件
-	public delegate void PlayAttackSoundEventHandler();
-	public event PlayAttackSoundEventHandler PlayAttackSoundEvent;
+	// 攻击事件：BodyAnimEvents -> WeaponManager
+	public delegate void AttackEventHandler();  // 通知WeaponManager武器攻击
+	public event AttackEventHandler AttackEvent;
 
 	private Transform self;
 
@@ -38,33 +32,11 @@ public class BodyAnimEvents : MonoBehaviour {
 	}
 
 	/*--------------- 帧动画响应函数 ---------------*/
-	// 检测近战武器是否攻击到目标
-	void OnMeleeAtkBegan()
+	// 近战武器攻击
+	void OnAttack()
 	{
-		if (MeleeHurtEvent != null) {
-			MeleeHurtEvent(true);
-		}
-	}
-	void OnMeleeAtkEnd()
-	{
-		if (MeleeHurtEvent != null) {
-			MeleeHurtEvent(false);
-		}
-	}
-
-	// 远程武器发射子弹
-	void OnBulletCreate(string weaponName)
-	{
-		if (self) {
-			BulletShootEvent(self, weaponName);
-		}
-	}
-
-	// 播放攻击音效
-	void PlayAttackSound(string weaponName)
-	{
-		if (PlayAttackSoundEvent != null) {
-			PlayAttackSoundEvent();
+		if (AttackEvent != null) {
+			AttackEvent();
 		}
 	}
 }

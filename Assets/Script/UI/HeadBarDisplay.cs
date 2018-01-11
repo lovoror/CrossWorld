@@ -58,10 +58,10 @@ public class HeadBarDisplay : MonoBehaviour {
 			healthBarOutline.enabled = show;
 		}
 
-		public void SetPosition(Vector3 pos)
+		public void SetPosition(Vector3? pos)
 		{
 			if (pos != null) {
-				bar.position = pos;
+				bar.position = pos.Value;
 			}
 		}
 	}
@@ -96,7 +96,8 @@ public class HeadBarDisplay : MonoBehaviour {
 	{
 		foreach (var info in GameData.GamerInfos) {
 			Vector3 basePos = info.Value.gamer.position;
-			Transform I_Bar = Instantiate(headBar, basePos + offset, Quaternion.EulerAngles(90, 0, 0));
+			//Transform I_Bar = Instantiate(headBar, basePos + offset, Quaternion.EulerAngles(90, 0, 0));  // zpf modify
+			Transform I_Bar = Instantiate(headBar, basePos + offset, Quaternion.Euler(90, 0, 0));
 			I_Bar.parent = transform;
 			Bar barInfo = new Bar(I_Bar);
 			barPool.Add(info.Value.gamer, barInfo);

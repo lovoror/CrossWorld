@@ -11,7 +11,7 @@ public class DistantWeaponManager : WeaponManager {
 
 	private Transform muzzle;
 
-	new protected void Awake()
+	protected new void Awake()
 	{
 		base.Awake();
 		if (self) {
@@ -26,30 +26,31 @@ public class DistantWeaponManager : WeaponManager {
 			}
 		}
 	}
-	new void Start ()
+	protected new void Start ()
 	{
 		base.Start();
 	}
 
-	new void OnEnable()
+	protected new void OnEnable()
 	{
 		base.OnEnable();
-		I_BodyAnimEvents.BulletShootEvent += new BodyAnimEvents.BulletShootEventHandler(BulletShootEventFunc);
 	}
-	new void OnDisable()
+	protected new void OnDisable()
 	{
 		base.OnEnable();
-		I_BodyAnimEvents.BulletShootEvent -= BulletShootEventFunc;
 	}
 
+	protected override void AttackEventFunc()
+	{
+		base.AttackEventFunc();
+		CreateBullet(self, I_Manager.GetWeaponName());
+	}
 
-	/*------------------ BulletShootEvent ------------------*/
-	void BulletShootEventFunc(Transform shooter, string weaponName)
+	void CreateBullet(Transform shooter, int weaponName)
 	{
 		Vector3 firePos = muzzle.position;
 		Transform I_Bullet = Instantiate(bullet, firePos, body.rotation);
 		BulletController I_BulletController = I_Bullet.GetComponent<BulletController>();
 		I_BulletController.Init(shooter, damage, bulletSpeed, canPenetrate);
 	}
-	/*------------------ BulletShootEvent ------------------*/
 }

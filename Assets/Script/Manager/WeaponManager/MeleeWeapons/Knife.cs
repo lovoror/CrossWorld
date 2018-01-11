@@ -8,7 +8,7 @@ public class Knife : MeleeWeaponManager
 	private string unCutSound = "Sounds/sndKnife";
 	private int cutCount = 0;
 
-	new void Awake()
+	protected new void Awake()
 	{
 		base.Awake();
 	}
@@ -19,7 +19,7 @@ public class Knife : MeleeWeaponManager
 		weaponName = (int)Constant.WEAPON_NAME.Knife;
 	}
 
-	protected override void PlayAttackShoundEventFunc()
+	protected override void PlayAttackShound()
 	{
 		AudioClip clip;
 		if (HasEnemyInRange()) {

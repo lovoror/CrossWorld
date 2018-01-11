@@ -119,7 +119,7 @@ public class AIPath : AIBase {
 	/** Rotation speed.
 	 * \deprecated This field has been renamed to #rotationSpeed and is now in degrees per second instead of a damping factor.
 	 */
-	[System.Obsolete("This field has been renamed to #rotationSpeed and is now in degrees per second instead of a damping factor")]
+	//[System.Obsolete("This field has been renamed to #rotationSpeed and is now in degrees per second instead of a damping factor")]  // zpf modify
 	public float turningSpeed { get { return rotationSpeed/90; } set { rotationSpeed = value*90; } }
 
 	/** Starts searching for paths.
@@ -320,7 +320,7 @@ public class AIPath : AIBase {
 	/** Direction that the agent wants to move in (excluding physics and local avoidance).
 	 * \deprecated Only exists for compatibility reasons.
 	 */
-	[System.Obsolete("Only exists for compatibility reasons.")]
+	// [System.Obsolete("Only exists for compatibility reasons.")]  // zpf modify
 	public Vector3 targetDirection {
 		get {
 			return (targetPoint - tr.position).normalized;

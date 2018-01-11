@@ -61,7 +61,7 @@ public class PathMover : AIPath {
 
 	protected override void MovementUpdate(float deltaTime)
 	{
-		bool isDead = I_Manager.IsPlayerDead();
+		bool isDead = I_Manager.IsDead();
 		if (!TargetReached && !isDead) {
 			base.MovementUpdate(deltaTime);
 		}

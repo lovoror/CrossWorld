@@ -15,6 +15,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement.AstarPathfindingProject.AIPath
         public SharedFloat waypointPauseDuration = 0;
         [Tooltip("The waypoints to move to")]
         public SharedGameObjectList waypoints;
+		[Tooltip("The waypoints` parent node")]
+		public SharedGameObject wayparent;
 
         // The current index that we are heading towards within the waypoints array
         private int waypointIndex;
@@ -22,8 +24,12 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement.AstarPathfindingProject.AIPath
 
         public override void OnStart()
         {
-            base.OnStart();
-
+			base.OnStart();
+			if (waypoints.Value.Count == 0 && wayparent != null) {
+				foreach (Transform child in wayparent.Value.transform) {
+					waypoints.Value.Add(child.gameObject);
+				}
+			}
             // initially move towards the closest waypoint
             float distance = Mathf.Infinity;
             float localDistance;
@@ -95,7 +101,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement.AstarPathfindingProject.AIPath
             UnityEditor.Handles.color = Color.yellow;
             for (int i = 0; i < waypoints.Value.Count; ++i) {
                 if (waypoints.Value[i] != null) {
-                    UnityEditor.Handles.SphereCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1);
+					//UnityEditor.Handles.SphereCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1); // zpf modify
+					UnityEditor.Handles.SphereHandleCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1, EventType.Ignore);
                 }
             }
             UnityEditor.Handles.color = oldColor;

@@ -5,6 +5,7 @@ using BehaviorDesigner.Runtime;
 
 public class BehaviorTreeUpdate : MonoBehaviour {
 	public BehaviorTree behaviorTree;
+	public GameObject patrolPoints;
 
 	Pathfinding.AIPathAgent pathAgent;
 	Manager I_Manager;
@@ -12,17 +13,25 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	SharedFloat curSpeed;
 	Transform body;
 	Transform leg;
+	GameObject player;
 	Animator legAnim;
 	Animator bodyAnim;
 	AnimatorStateInfo bodyAnimInfo;
+	SpriteRenderer bodyRender;
+	bool isAttacking = false;
+	bool isDead = false;
 
 	void Awake()
 	{
 		pathAgent = transform.GetComponent<Pathfinding.AIPathAgent>();
+		player = GameObject.FindGameObjectWithTag("Player");
+		behaviorTree.SetVariable("Player", (SharedGameObject)player);
+		behaviorTree.SetVariable("PatrolPoints", (SharedGameObject)patrolPoints);
 		body = transform.Find("Body");
 		leg = transform.Find("Leg");
 		legAnim = leg.GetComponent<Animator>();
 		bodyAnim = body.GetComponent<Animator>();
+		bodyRender = body.GetComponent<SpriteRenderer>();
 		I_Manager = transform.GetComponent<Manager>();
 	}
 
@@ -33,34 +42,45 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 
 	float curTime = 0;
 	const float deltaTime = 0.3f;
-	Vector3 prePos;
+	Vector3? prePos;
 	void Update ()
 	{
+		isDead = (bool)behaviorTree.GetVariable("IsDead").GetValue();
+		if (isDead) {
+			legAnim.SetBool("Dead", true);
+			//bodyAnim.SetInteger("DeadState", I_Manager.GetKilledWeapon());
+			bodyAnim.SetBool("Dead", true);
+			this.enabled = false;
+			Collider playerCollider = player.transform.GetComponent<Collider>(); ;
+			Collider selfCollider = transform.GetComponent<Collider>();
+			Physics.IgnoreCollision(playerCollider, selfCollider);
+			bodyRender.sortingLayerName = "Default";
+			return;
+		}
+		// 设置状态机
+		isAttacking = (bool)behaviorTree.GetVariable("Attack").GetValue();
+		bodyAnim.SetBool("Attack", isAttacking);
+
+		// 状态动画速度变更
 		curTime += Time.deltaTime;
 		if (curTime >= deltaTime) {
 			curTime -= deltaTime;
-			// 状态机速度变更
+			bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
 			if (prePos == null) {
 				prePos = transform.position;
 				curSpeed = pathAgent.Velocity().magnitude;
 			}
 			else {
-				Vector3 V = transform.position - prePos;
+				Vector3 V = transform.position - prePos.Value;
 				curSpeed = V.magnitude / deltaTime;
 				prePos = transform.position;
 			}
 			
-			bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
 			if (bodyAnimInfo.IsName("Attack")) {
-				bodyAnim.speed = I_Manager.I_DataManager.attackSpeedRate;
+				bodyAnim.SetFloat("AttackSpeed", I_Manager.I_DataManager.attackSpeedRate);
 			}
-			else if (bodyAnimInfo.IsName("Walk")) {
-				bodyAnim.speed = curSpeed.Value / baseSpeed.Value;
-			}
-			else {
-				bodyAnim.speed = 1;
-			}
-			legAnim.speed = curSpeed.Value / baseSpeed.Value;
+			bodyAnim.SetFloat("Speed", curSpeed.Value / baseSpeed.Value);
+			legAnim.SetFloat("Speed", curSpeed.Value / baseSpeed.Value);
 		}
 	}
 

@@ -8,6 +8,7 @@ public class DataManager : MonoBehaviour {
 	protected Transform self;
 
 	public bool isDead = false;
+	public int killedWeaponName = -1;
 	public float health = 100;
 	public float maxHealth = 100;
 	public int curWeaponName;
@@ -47,9 +48,6 @@ public class DataManager : MonoBehaviour {
 		health += delta;
 		health = health < 0 ? 0 : health;
 		health = health > maxHealth ? maxHealth : health;
-		//if (health == 0 && DeadEvent != null) {
-		//	DeadEvent(transform);
-		//}
 	}
 
 	public void SetHealth(float curHealth)

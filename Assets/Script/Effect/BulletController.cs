@@ -38,7 +38,8 @@ public class BulletController : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.isTrigger) return;
+		Manager I_Manager = other.transform.GetComponent<Manager>();
+		if (other.isTrigger || (I_Manager != null && I_Manager.IsDead())) return;
 		Transform suffer = Utils.GetOwner(other.transform, Constant.TAGS.Attackable);
 		if (other.tag == "Wall") {
 			Destroy(gameObject);

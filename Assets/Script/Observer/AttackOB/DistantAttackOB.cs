@@ -29,35 +29,4 @@ public class DistantAttackOB : AttackOB {
 		HurtNotify(shooter, suffers);
 	}
 	/*----------------- BulletHitEvent -----------------*/
-
-
-	///*------------ WeaponEnergyChangeEvent -------------*/
-	//public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target, int level, float energy);
-	//public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
-	//private float increase = 10;
-	//private float decrease = -8;
-	//void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers)
-	//{
-	//	ChangeEnergy(shooter, increase);
-
-	//	foreach (Transform suffer in suffers) {
-	//		ChangeEnergy(suffer, decrease);
-	//	}
-	//}
-
-	//void ChangeEnergy(Transform target, float delta)
-	//{
-	//	GamerInfo gamerInfo = gamerInfos[target.name];
-	//	float preEnergy = gamerInfo.GetTotalEnergy();
-	//	gamerInfo.ChangeEnergy(delta);
-	//	float curEnergy = gamerInfo.GetTotalEnergy();
-	//	if (preEnergy != curEnergy) {
-	//		int level = gamerInfo.GetWeaponLevel();
-	//		float leftEnergy = gamerInfo.GetEnergy();
-	//		if (WeaponEnergyChangeNotifyEvent != null) {
-	//			WeaponEnergyChangeNotifyEvent(target, level, leftEnergy);
-	//		}
-	//	}
-	//}
-	///*------------ WeaponEnergyChangeEvent -------------*/
 }

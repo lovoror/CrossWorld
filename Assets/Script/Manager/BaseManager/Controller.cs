@@ -14,18 +14,12 @@ public class Controller : MonoBehaviour {
 	protected Animator legAnim;
 	protected Animator bodyAnim;
 	protected Camera mainCamera;
-	protected bool canControl;
-
-	private AnimatorStateInfo bodyAnimInfo;
+	protected AnimatorStateInfo bodyAnimInfo;
 
 	protected void Awake()
 	{
 		I_Manager = transform.GetComponent<Manager>();
 		self = transform;
-	}
-
-	protected void Start ()
-	{
 		rb = transform.GetComponent<Rigidbody>();
 		body = transform.Find("Body");
 		leg = transform.Find("Leg");
@@ -36,28 +30,24 @@ public class Controller : MonoBehaviour {
 		mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
 	}
 
+	protected void Start ()
+	{
+
+	}
+
 	protected void OnEnable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
-		// WeaponNoiseEvent
-		I_Manager.I_Messenger.WeaponNoiseNotifyEvent += new Messenger.WeaponNoiseDeclarationEventHandler(WeaponNoiseNotifyEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
-		I_Manager.I_Messenger.WeaponNoiseNotifyEvent -= WeaponNoiseNotifyEventFunc;
 	}
 
 	protected void Update()
 	{
-		bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
-		if (bodyAnimInfo.IsName("Attack")) {
-			bodyAnim.speed = I_Manager.I_DataManager.attackSpeedRate;
-		}
-		else {
-			bodyAnim.speed = 1;
-		}
+
 	}
 
 	/*-------------------- DeadEvent ---------------------*/
@@ -69,28 +59,15 @@ public class Controller : MonoBehaviour {
 		else if (transform == dead) {
 			// 设置死亡状态
 			ShowDeadAnim(true);
-			canControl = false;
-			if (rb) {
-				rb.useGravity = false;
-			}
-			bodyCollider.enabled = false;
-			I_Manager.SetPlayerDead(true);
 		}
 	}
 	/*-------------------- DeadEvent ---------------------*/
 
-	/*----------------- WeaponNoiseEvent ------------------*/
-	protected virtual void WeaponNoiseNotifyEventFunc(Transform source, float radius)
-	{
-		
-	}
-	/*----------------- WeaponNoiseEvent ------------------*/
-
 	/*------------------ 状态机 ------------------*/
-	protected void ShowWalkAnim(bool show)
+	protected void ShowWalkAnim(float speedRate)
 	{
-		legAnim.SetBool("Walk", show);
-		bodyAnim.SetBool("Walk", show);
+		legAnim.SetFloat("Speed", speedRate);
+		bodyAnim.SetBool("Walk", speedRate > 0.1);
 	}
 
 	protected void ShowAttackAnim(bool show)

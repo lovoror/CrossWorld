@@ -5,19 +5,16 @@ using UnityEngine;
 public class AttackOB : Observer
 {
 	private static bool isRegisted = false;
-	protected new void OnEnable()
+	protected void OnEnable()
 	{
 		if (isRegisted) return;
 		isRegisted = true;
 		Messenger.HurtDeclarationEvent += new Messenger.HurtDeclarationEventHandler(HurtDeclarationEventFunc);
-		Messenger.WeaponNoiseDeclarationEvent += new Messenger.WeaponNoiseDeclarationEventHandler(WeaponNoiseDeclarationEventFunc);
-
 	}
 
-	protected new void OnDisable()
+	protected void OnDisable()
 	{
 		Messenger.HurtDeclarationEvent -= HurtDeclarationEventFunc;
-		Messenger.WeaponNoiseDeclarationEvent -= WeaponNoiseDeclarationEventFunc;
 	}
 
 	protected new void Start(){
@@ -41,7 +38,7 @@ public class AttackOB : Observer
 			bool isDead = GamerHurt(suffer.name, damage);
 			if (isDead) {
 				if (DeadNotifyEvent != null) {
-					DeadNotifyEvent(attacker, suffer);
+					DeadNotifyEvent(attacker, suffer, attacker.GetComponent<Manager>().GetWeaponName());
 				}
 				GameData.GamerDead(suffer.name);
 			}
@@ -69,7 +66,7 @@ public class AttackOB : Observer
 	/*--------------------- HurtEvent ---------------------*/
 
 	/*--------------------- DeadEvent ---------------------*/
-	public delegate void DeadNotifyEventHandler(Transform killer, Transform dead);
+	public delegate void DeadNotifyEventHandler(Transform killer, Transform dead, int weapon);
 	public static event DeadNotifyEventHandler DeadNotifyEvent;   // 通知死亡目标
 	/*--------------------- DeadEvent ---------------------*/
 
@@ -101,17 +98,4 @@ public class AttackOB : Observer
 		}
 	}
 	/*------------ WeaponEnergyChangeEvent -------------*/
-
-	/*----------------- WeaponNoiseEvent ------------------*/
-	public delegate void WeaponNoiseNotifyEventHandler(Transform source, float radius);
-	public static event WeaponNoiseNotifyEventHandler WeaponNoiseNotifyEvent;
-	public static void WeaponNoiseDeclarationEventFunc(Transform source, float radius)
-	{
-		if (radius > 0 && WeaponNoiseNotifyEvent != null) {
-			WeaponNoiseNotifyEvent(source, radius);
-		}
-	}
-	/*----------------- WeaponNoiseEvent ------------------*/
-
-
 }

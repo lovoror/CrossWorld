@@ -94,7 +94,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Movement.AstarPathfindingProject.RichAI
             UnityEditor.Handles.color = Color.yellow;
             for (int i = 0; i < waypoints.Value.Count; ++i) {
                 if (waypoints.Value[i] != null) {
-                    UnityEditor.Handles.SphereCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1);
+					//UnityEditor.Handles.SphereCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1);  // zpf modify
+					UnityEditor.Handles.SphereHandleCap(0, waypoints.Value[i].transform.position, waypoints.Value[i].transform.rotation, 1, EventType.Ignore);
                 }
             }
             UnityEditor.Handles.color = oldColor;

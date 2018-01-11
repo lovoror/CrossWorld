@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class M16 : DistantWeaponManager {
 
-	new void Awake()
+	protected new void Awake()
 	{
 		base.Awake();
 	}
 
-	new void Start()
+	protected new void Start()
 	{
 		base.Start();
 		weaponName = (int) Constant.WEAPON_NAME.M16;

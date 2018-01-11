@@ -48,12 +48,30 @@ public class Utils {
 		}
 		return angle;
 	}
+	public static float GetAnglePY2D(Vector2 from, Vector2 to)
+	{
+		float angle = Vector2.Angle(from, to);
+		Vector2 normal = Vector3.Cross(from, to);
+		if (normal.y < 0) {
+			angle = 360 - angle;
+		}
+		return angle;
+	}
+
 	// 以Z轴正方向为参考，获得一个0-360度的夹角
 	public static float GetAnglePZ(Vector3 from, Vector3 to)
 	{
 		float angle = Vector3.Angle(from, to);
 		Vector3 normal = Vector3.Cross(from, to);
-		MonoBehaviour.print("normal:" + normal);
+		if (normal.z < 0) {
+			angle = 360 - angle;
+		}
+		return angle;
+	}
+	public static float GetAnglePZ2D(Vector2 from, Vector2 to)
+	{
+		float angle = Vector2.Angle(from, to);
+		Vector3 normal = Vector3.Cross(from, to);
 		if (normal.z < 0) {
 			angle = 360 - angle;
 		}

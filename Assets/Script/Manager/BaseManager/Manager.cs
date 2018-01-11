@@ -69,14 +69,29 @@ public class Manager : MonoBehaviour {
 	}
 
 	/*----------------------- Utils -----------------------*/
-	public bool IsPlayerDead()
+	public bool IsDead()
 	{
 		return I_DataManager.isDead;
+	}
+
+	public int GetKilledWeapon()
+	{
+		return I_DataManager.killedWeaponName;
+	}
+
+	public void SetKilledWeapon(int weaponName)
+	{
+		I_DataManager.killedWeaponName = weaponName;
 	}
 
 	public void SetPlayerDead(bool isDead)
 	{
 		I_DataManager.isDead = isDead;
+	}
+
+	public int GetWeaponName()
+	{
+		return I_WeaponManager.weaponName;
 	}
 	
 	/*----------------------- Utils -----------------------*/
@@ -102,12 +117,4 @@ public class Manager : MonoBehaviour {
 		}
 	}
 	/*--------------------- HurtEvent ---------------------*/
-
-	/*----------------- WeaponNoiseEvent ------------------*/
-	public void WeaponNoiseDeclaration(Transform source, float radius)
-	{
-		I_Messenger.WeaponNoiseDeclaration(source, radius);
-	}
-	/*----------------- WeaponNoiseEvent ------------------*/
-
 }
