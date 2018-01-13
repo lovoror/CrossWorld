@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -122,4 +123,9 @@ public class MoboController : MonoBehaviour
 	}
 	/*==================== UIAttackUpEvent ====================*/
 
+	public void Restart()
+	{
+		print("Restart");
+		// SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+	}
 }
