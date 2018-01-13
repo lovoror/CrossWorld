@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum WeaponType
+{
+	melee, singleLoader, autoDistant
+}
+
 public class Manager : MonoBehaviour {
 	[HideInInspector]
 	public Transform self;
@@ -93,6 +98,12 @@ public class Manager : MonoBehaviour {
 	{
 		return I_WeaponManager.weaponName;
 	}
+
+	public int GetWeaponType()
+	{
+		return I_WeaponManager.weaponType;
+	}
+	
 	
 	/*----------------------- Utils -----------------------*/
 

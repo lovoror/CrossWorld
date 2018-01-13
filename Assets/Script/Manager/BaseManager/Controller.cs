@@ -15,6 +15,7 @@ public class Controller : MonoBehaviour {
 	protected Animator bodyAnim;
 	protected Camera mainCamera;
 	protected AnimatorStateInfo bodyAnimInfo;
+	protected float attackSpeedRate = 1.0f;
 
 	protected void Awake()
 	{
@@ -38,11 +39,13 @@ public class Controller : MonoBehaviour {
 	protected void OnEnable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
+		I_Manager.I_DataManager.AttackSpeedChangeEvent += new DataManager.AttackSpeedChangeEventHandler(AttackSpeedChangeEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
+		I_Manager.I_DataManager.AttackSpeedChangeEvent -= AttackSpeedChangeEventFunc;
 	}
 
 	protected void Update()
@@ -63,16 +66,28 @@ public class Controller : MonoBehaviour {
 	}
 	/*-------------------- DeadEvent ---------------------*/
 
+	/*-------------------- AttackSpeedChangeEvent ---------------------*/
+	protected virtual void AttackSpeedChangeEventFunc(float rate)
+	{
+		attackSpeedRate = rate;
+	}
+	/*-------------------- AttackSpeedChangeEvent ---------------------*/
+
 	/*------------------ 状态机 ------------------*/
 	protected void ShowWalkAnim(float speedRate)
 	{
 		legAnim.SetFloat("Speed", speedRate);
-		bodyAnim.SetBool("Walk", speedRate > 0.1);
+		bodyAnim.SetFloat("Speed", speedRate);
 	}
 
 	protected void ShowAttackAnim(bool show)
 	{
 		bodyAnim.SetBool("Attack", show);
+	}
+
+	protected void AttackOnce()
+	{
+		bodyAnim.SetBool("OnceAttack", true);
 	}
 
 	protected void ShowDeadAnim(bool show)

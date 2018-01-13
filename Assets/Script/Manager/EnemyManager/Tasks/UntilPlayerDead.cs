@@ -18,6 +18,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 				return TaskStatus.Success;
 			}
 			else {
+				transform.LookAt(player.transform);
 				return TaskStatus.Running;
 			}
 		}

@@ -10,9 +10,11 @@ public class PlayerController : Controller {
 
 	Vector3 moveDir; // 当前移动的方向
 	LStick C_L = new LStick(); // 左摇杆
+	Vector2 faceDirection; // 当前面朝的方向
+	bool isAttackBtnTouched = false;  // AttackButton是否按下
+	bool isAttacking = false;  // 是否正在攻击
+	float attackBoundary = 1f;  // 远程武器 开枪/转向 的边界距离
 	SpriteRenderer bodyRender;
-
-	[HideInInspector]
 	PlayerManager I_PlayerManager;
 
 	new void Awake()
@@ -20,12 +22,13 @@ public class PlayerController : Controller {
 		base.Awake();
 		I_PlayerManager = transform.GetComponent<PlayerManager>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
+		isAttackBtnTouched = false;
+		isAttacking = false;
 	}
 
 	new void Start ()
 	{
 		base.Start();
-		//speedTmp = speed;
 		canControl = true;
 	}
 
@@ -34,24 +37,27 @@ public class PlayerController : Controller {
 		base.OnEnable();
 		// PlayerMoveEvent
 		MoboController.PlayerMoveEvent += new MoboController.PlayerMoveEventHandler(PlayerMoveEventFunc);
+		// PlayerFaceEvent
+		MoboController.PlayerFaceEvent += new MoboController.PlayerFaceEventHandler(PlayerFaceEventFunc);
+		// AttackDownEvent
+		MoboController.AttackDownEvent += new MoboController.AttackDownEventHandler(AttackDownEventFunc);
+		// AttackUpEvent
+		MoboController.AttackUpEvent += new MoboController.AttackUpEventHandler(AttackUpEventFunc);
 	}
 
 	protected new void OnDisable()
 	{
 		base.OnDisable();
 		MoboController.PlayerMoveEvent -= PlayerMoveEventFunc;
+		MoboController.PlayerFaceEvent -= PlayerFaceEventFunc;
+		MoboController.AttackDownEvent -= AttackDownEventFunc;
+		MoboController.AttackUpEvent   -= AttackUpEventFunc;
+
 	}
 
 	new void Update()
 	{
 		base.Update();
-		bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
-		if (bodyAnimInfo.IsName("Attack")) {
-			bodyAnim.speed = I_Manager.I_DataManager.attackSpeedRate;
-		}
-		else {
-			bodyAnim.speed = 1;
-		}
 #if UNITY_EDITOR
 		if (C_L.moveType == (int)MoveType.stop) {
 			moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
@@ -66,17 +72,31 @@ public class PlayerController : Controller {
 			rb.velocity = Vector3.Lerp(rb.velocity, moveDir * speed, Time.fixedDeltaTime * moveSmooth);
 			// 设置状态机
 			ShowWalkAnim(rb.velocity.magnitude / speed);
-			ShowAttackAnim(Input.GetButton("Fire1"));
 			// 改变Leg的朝向
 			leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, moveDir), -90);
-			// 人物转向
 #if UNITY_EDITOR
+			// 人物转向
 			Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 			mouseV.y = 0;
 			//body.rotation = Quaternion.Euler(new Vector3(90, 0, GetAngle(Vector3.right, mouseV)));
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, mouseV), 0);
+			// 攻击状态
+			ShowAttackAnim(Input.GetButton("Fire1"));
+			isAttacking = true;
 #elif UNITY_ANDROID
+			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
+			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
+			int weaponType = I_Manager.GetWeaponType();
+			if (weaponType == (int)WeaponType.melee) {
 
+			}
+			else if (weaponType == (int)WeaponType.autoDistant) {
+				if (isAttackBtnTouched && faceDirection.sqrMagnitude > attackBoundary * attackBoundary) {
+					// 攻击
+					ShowAttackAnim(true);
+					isAttacking = true;
+				}
+			}
 #endif
 		}
 	}
@@ -88,6 +108,38 @@ public class PlayerController : Controller {
 		moveDir = new Vector3(L.direction.x, 0, L.direction.y);
 	}
 	/*--------------------- PlayerMoveEvent ---------------------*/
+
+	/*--------------------- PlayerFaceEvent ---------------------*/
+	void PlayerFaceEventFunc(Vector2 direction)
+	{
+		faceDirection = direction;
+	}
+	/*--------------------- PlayerFaceEvent ---------------------*/
+
+	/*--------------------- AttackDownEvent ---------------------*/
+	void AttackDownEventFunc(Vector2 position)
+	{
+		isAttackBtnTouched = true;
+	}
+	/*--------------------- AttackDownEvent ---------------------*/
+
+	/*--------------------- AttackUpEvent ---------------------*/
+	void AttackUpEventFunc(float deltaTime)
+	{
+		isAttackBtnTouched = false;
+		ShowAttackAnim(false);
+		int weaponType = I_Manager.GetWeaponType();
+		if (weaponType == (int)WeaponType.singleLoader ||
+			(weaponType == (int)WeaponType.autoDistant && !isAttacking && deltaTime < 0.1)) {
+			// 抬手后单次射击
+			AttackOnce();
+		}
+		isAttacking = false;
+		// 防止下次按下攻击后直接射击
+		faceDirection = faceDirection.normalized * (attackBoundary / 2);
+	}
+	/*--------------------- AttackDownEvent ---------------------*/
+
 
 	/*--------------------- DeadNotifyEvent ---------------------*/
 	protected override void DeadNotifyEventFunc(Transform killer, Transform dead)
@@ -109,4 +161,12 @@ public class PlayerController : Controller {
 		}
 	}
 	/*--------------------- DeadNotifyEvent ---------------------*/
+
+	/*-------------------- AttackSpeedChangeEvent ---------------------*/
+	protected override void AttackSpeedChangeEventFunc(float rate)
+	{
+		base.AttackSpeedChangeEventFunc(rate);
+		bodyAnim.SetFloat("AttackSpeed", rate);
+	}
+	/*-------------------- AttackSpeedChangeEvent ---------------------*/
 }

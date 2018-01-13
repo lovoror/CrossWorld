@@ -14,6 +14,11 @@ public enum DirectionType
 	up, upRight, right, downRight, down, downLeft, left, upLeft
 }
 
+public enum ControlType
+{
+	modern, ancient
+}
+
 public class LStick
 {
 	public int moveType;
@@ -22,14 +27,29 @@ public class LStick
 
 public class MoboController : MonoBehaviour
 {
+	[HideInInspector]
+	int controlType;
+
+	AttackButton ButtonA;
+	
 	public delegate void PlayerMoveEventHandler(LStick L);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
+
+	public delegate void PlayerFaceEventHandler(Vector2 direction);
+	public static event PlayerFaceEventHandler PlayerFaceEvent;
+
+	public delegate void AttackDownEventHandler(Vector2 position);
+	public static event AttackDownEventHandler AttackDownEvent;
+
+	public delegate void AttackUpEventHandler(float deltaTime);
+	public static event AttackUpEventHandler AttackUpEvent;
 
 	LStick L = new LStick();
 
 	void Awake()
 	{
-		
+		ButtonA = GetComponentInChildren<AttackButton>();
+		controlType = (int)ControlType.modern;
 	}
 
 	void OnEnable()
@@ -38,6 +58,8 @@ public class MoboController : MonoBehaviour
 		LPanel.UILStickMoveEvent += new LPanel.UILStickMoveEventHandler(UILStickMoveFunc);
 		// UIAttackUpEvent
 		AttackButton.UIAttackUpEvent += new AttackButton.UIAttackUpEventHandler(UIAttackUpEventFunc);
+		// UIAttackDownEvent
+		AttackButton.UIAttackDownEvent += new AttackButton.UIAttackDownEventHandler(UIAttackDownEventFunc);
 	}
 
 	void OnDisable()
@@ -46,9 +68,18 @@ public class MoboController : MonoBehaviour
 		AttackButton.UIAttackUpEvent -= UIAttackUpEventFunc;
 	}
 
+	Vector2 last_bodyDirection = Vector2.zero;
 	void Update()
 	{
-
+		// 人物朝向
+		Vector2 bodyDirection = ButtonA.direction;
+		if (bodyDirection != Vector2.zero && bodyDirection != last_bodyDirection) {
+			last_bodyDirection = bodyDirection;
+			// 改变人物朝向
+			if (PlayerFaceEvent != null) {
+				PlayerFaceEvent(bodyDirection);
+			}
+		}
 	}
 
 	/*==================== UILStickMoveEvent ====================*/
@@ -76,7 +107,18 @@ public class MoboController : MonoBehaviour
 	/*==================== UIAttackUpEvent ====================*/
 	void UIAttackUpEventFunc(float deltaTime)
 	{
+		if (AttackUpEvent != null) {
+			AttackUpEvent(deltaTime);
+		}
+	}
+	/*==================== UIAttackUpEvent ====================*/
 
+	/*==================== UIAttackUpEvent ====================*/
+	void UIAttackDownEventFunc(Vector2 position)
+	{
+		if (AttackDownEvent != null) {
+			AttackDownEvent(position);
+		}
 	}
 	/*==================== UIAttackUpEvent ====================*/
 

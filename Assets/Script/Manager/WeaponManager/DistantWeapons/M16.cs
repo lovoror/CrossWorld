@@ -7,6 +7,7 @@ public class M16 : DistantWeaponManager {
 	protected new void Awake()
 	{
 		base.Awake();
+		weaponType = (int)WeaponType.autoDistant;
 	}
 
 	protected new void Start()

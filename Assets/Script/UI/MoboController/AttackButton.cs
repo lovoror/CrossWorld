@@ -6,13 +6,26 @@ using UnityEngine.EventSystems;
 
 public enum AttackType
 {
-	unknown, click, hold, clickPointer, holdPointer
+	untouched, unknown, click, hold, clickPointer, holdPointer
 }
 
 public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
-	//public delegate void UIAttackDownEventHandler(Vector2 position);
-	//public static event UIAttackDownEventHandler UIAttackDownEvent;
+	[HideInInspector]
+	public int attackType = (int)AttackType.untouched;
+	[HideInInspector]
+	public Vector2 direction = new Vector2(0, 0);
+	[HideInInspector]
+	public int touchId = -1;
+
+
+	[SerializeField]
+	float dragThreshold = 0.2f;
+	[SerializeField]
+	float minHoldTime = 0.1f;
+
+	public delegate void UIAttackDownEventHandler(Vector2 position);
+	public static event UIAttackDownEventHandler UIAttackDownEvent;
 
 	public delegate void UIAttackUpEventHandler(float deltaTime);
 	public static event UIAttackUpEventHandler UIAttackUpEvent;
@@ -22,17 +35,6 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	//public delegate void UIAttackCancelDragEventHandler();
 	//public static event UIAttackCancelDragEventHandler UIAttackCancelDragEvent;
-	[SerializeField]
-	float dragThreshold = 0.4f;
-	[SerializeField]
-	float minHoldTime = 0.1f;
-
-	[HideInInspector]
-	public int attackType = (int)AttackType.unknown;
-	[HideInInspector]
-	public Vector2 direction = new Vector2(0, 0);
-	[HideInInspector]
-	public int touchId = -1;
 
 	float lastPressDownTime = 0;
 	bool isDraging = false;
@@ -50,7 +52,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	public void Reset()
 	{
-		attackType = (int)AttackType.unknown;
+		attackType = (int)AttackType.untouched;
 		direction = Vector2.zero;
 		touchId = -1;
 		lastPressDownTime = 0;
@@ -72,17 +74,17 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	public void OnPointerDown(PointerEventData data)
 	{
-		//if (UIAttackDownEvent != null) {
-		//	UIAttackDownEvent(data.pressPosition);
-		//}
 		if (touchId < 0) {
 			lastPressDownTime = Time.time;
 			touchId = data.pointerId;
+			attackType = (int)AttackType.unknown;
+			if (UIAttackDownEvent != null) {
+				UIAttackDownEvent(data.pressPosition);
+			}
 		}
 	}
 	public void OnPointerUp(PointerEventData eventData)
 	{
-		print("OnPointerUp");
 		// 检测是否是click
 		if (!isHolding) {
 			// Click Type

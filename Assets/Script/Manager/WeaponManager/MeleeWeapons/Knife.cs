@@ -11,6 +11,7 @@ public class Knife : MeleeWeaponManager
 	protected new void Awake()
 	{
 		base.Awake();
+		weaponType = (int)WeaponType.melee;
 	}
 
 	new void Start()

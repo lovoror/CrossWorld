@@ -17,6 +17,9 @@ public class DataManager : MonoBehaviour {
 	public int weaponLevel = 1;
 	public float weaponEnergy = 0;
 
+	public delegate void AttackSpeedChangeEventHandler(float speedRate);
+	public event AttackSpeedChangeEventHandler AttackSpeedChangeEvent;
+
 	protected void Awake()
 	{
 		I_Manager = transform.GetComponent<Manager>();
@@ -68,10 +71,15 @@ public class DataManager : MonoBehaviour {
 	/*------------- WeaponEnergyChangeEvent ---------------*/
 	void WeaponEnergyChangeNotifyEventFunc(Transform target, int level, float energy)
 	{
-		weaponLevel = level;
 		weaponEnergy = energy;
-		if (Constant.WEAPON_SPEED_RATE.ContainsKey(curWeaponName)) {
-			attackSpeedRate = Constant.WEAPON_SPEED_RATE[curWeaponName][weaponLevel - 1];
+		if (weaponLevel != level) {
+			weaponLevel = level;
+			if (Constant.WEAPON_SPEED_RATE.ContainsKey(curWeaponName)) {
+				attackSpeedRate = Constant.WEAPON_SPEED_RATE[curWeaponName][weaponLevel - 1];
+				if (AttackSpeedChangeEvent != null) {
+					AttackSpeedChangeEvent(attackSpeedRate);
+				}
+			}
 		}
 	}
 	public float GetMaxWeaponEnergy()

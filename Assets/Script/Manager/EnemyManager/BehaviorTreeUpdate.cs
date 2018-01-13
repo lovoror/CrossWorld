@@ -20,6 +20,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	SpriteRenderer bodyRender;
 	bool isAttacking = false;
 	bool isDead = false;
+	float attackSpeedRate = 1.0f;
 
 	void Awake()
 	{
@@ -33,6 +34,16 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		bodyAnim = body.GetComponent<Animator>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
 		I_Manager = transform.GetComponent<Manager>();
+	}
+
+	void OnEnable()
+	{
+		I_Manager.I_DataManager.AttackSpeedChangeEvent += new DataManager.AttackSpeedChangeEventHandler(AttackSpeedChangeEventFunc);
+	}
+
+	void OnDisable()
+	{
+		I_Manager.I_DataManager.AttackSpeedChangeEvent -= AttackSpeedChangeEventFunc;
 	}
 
 	void Start ()
@@ -75,22 +86,17 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 				curSpeed = V.magnitude / deltaTime;
 				prePos = transform.position;
 			}
-			
-			if (bodyAnimInfo.IsName("Attack")) {
-				bodyAnim.SetFloat("AttackSpeed", I_Manager.I_DataManager.attackSpeedRate);
-			}
+		
 			bodyAnim.SetFloat("Speed", curSpeed.Value / baseSpeed.Value);
 			legAnim.SetFloat("Speed", curSpeed.Value / baseSpeed.Value);
 		}
 	}
 
-	void OnEnable()
+	/*-------------------- AttackSpeedChangeEvent ---------------------*/
+	void AttackSpeedChangeEventFunc(float rate)
 	{
-		
+		attackSpeedRate = rate;
+		bodyAnim.SetFloat("AttackSpeed", rate);
 	}
-
-	void OnDisable()
-	{
-		
-	}
+	/*-------------------- AttackSpeedChangeEvent ---------------------*/
 }

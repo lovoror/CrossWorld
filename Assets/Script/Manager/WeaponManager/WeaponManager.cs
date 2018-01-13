@@ -7,6 +7,8 @@ public class WeaponManager : MonoBehaviour {
 	public Transform self;   // 此近战武器的拥有者
 	[HideInInspector]
 	public int weaponName;
+	[HideInInspector]
+	public int weaponType;
 
 	protected Manager I_Manager;  // attacker的Manager管理类
 	protected BodyAnimEvents I_BodyAnimEvents;
