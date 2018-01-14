@@ -96,7 +96,7 @@ public class PlayerController : Controller {
 			if (moveDir.sqrMagnitude < 0.01) {
 				trueMoveDir = moveDirPC;
 			}
-//#elif UNITY_ANDROID
+#elif UNITY_ANDROID
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
 			WeaponType weaponType = I_Manager.GetWeaponType();
