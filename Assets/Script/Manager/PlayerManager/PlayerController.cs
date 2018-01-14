@@ -10,9 +10,8 @@ public class PlayerController : Controller {
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
-	bool isAttackBtnTouched = false;  // AttackButton是否按下
-	bool isAttacking = false;  // 是否正在攻击
 	float attackBoundary = 1f;  // 远程武器 开枪/转向 的边界距离
+	float atkBoundaryRate = 1.5f;  // aming 状态下的attackBoundary增加系数
 	SpriteRenderer bodyRender;
 	PlayerManager I_PlayerManager;
 
@@ -28,8 +27,6 @@ public class PlayerController : Controller {
 		base.Awake();
 		I_PlayerManager = transform.GetComponent<PlayerManager>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
-		isAttackBtnTouched = false;
-		isAttacking = false;
 		attackType = AimAttackType.none;
 	}
 
@@ -96,7 +93,6 @@ public class PlayerController : Controller {
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, mouseV), 0);
 			// 攻击状态
 			ShowAttackAnim(Input.GetButton("Fire1"));
-			isAttacking = true;
 			if (moveDir.sqrMagnitude < 0.01) {
 				trueMoveDir = moveDirPC;
 			}
@@ -108,12 +104,16 @@ public class PlayerController : Controller {
 
 			}
 			else if (weaponType == WeaponType.autoDistant) {
-				//if
+				float trueAttackBoundary = attackBoundary;
+				if (attackType == AimAttackType.aming) {
+					trueAttackBoundary *= atkBoundaryRate;
+				}
 
-				if (isAttackBtnTouched && faceDirection.sqrMagnitude > attackBoundary * attackBoundary) {
+				if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) && 
+					faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
 					// 攻击
+					attackType = AimAttackType.attacking;
 					ShowAttackAnim(true);
-					isAttacking = true;
 				}
 			}
 #endif
@@ -143,7 +143,6 @@ public class PlayerController : Controller {
 	/*--------------------- AttackDownEvent ---------------------*/
 	void AttackDownEventFunc(Vector2 position)
 	{
-		isAttackBtnTouched = true;
 		attackType = AimAttackType.unknown;
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
@@ -151,16 +150,14 @@ public class PlayerController : Controller {
 	/*--------------------- AttackUpEvent ---------------------*/
 	void AttackUpEventFunc(float deltaTime)
 	{
-		isAttackBtnTouched = false;
 		attackType = AimAttackType.none;
 		ShowAttackAnim(false);
 		WeaponType weaponType = I_Manager.GetWeaponType();
 		if (weaponType == WeaponType.singleLoader ||
-			(weaponType == WeaponType.autoDistant && !isAttacking && deltaTime < 0.1)) {
+			(weaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown)) {
 			// 抬手后单次射击
 			AttackOnce();
 		}
-		isAttacking = false;
 		// 防止下次按下攻击后直接射击
 		faceDirection = faceDirection.normalized * (attackBoundary / 2);
 	}
