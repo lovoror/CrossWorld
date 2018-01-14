@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum WeaponType
-{
-	melee, singleLoader, autoDistant
-}
-
 public class Manager : MonoBehaviour {
 	[HideInInspector]
 	public Transform self;
@@ -79,12 +74,12 @@ public class Manager : MonoBehaviour {
 		return I_DataManager.isDead;
 	}
 
-	public int GetKilledWeapon()
+	public WeaponNameType GetKilledWeapon()
 	{
 		return I_DataManager.killedWeaponName;
 	}
 
-	public void SetKilledWeapon(int weaponName)
+	public void SetKilledWeapon(WeaponNameType weaponName)
 	{
 		I_DataManager.killedWeaponName = weaponName;
 	}
@@ -94,12 +89,12 @@ public class Manager : MonoBehaviour {
 		I_DataManager.isDead = isDead;
 	}
 
-	public int GetWeaponName()
+	public WeaponNameType GetWeaponName()
 	{
 		return I_WeaponManager.weaponName;
 	}
 
-	public int GetWeaponType()
+	public WeaponType GetWeaponType()
 	{
 		return I_WeaponManager.weaponType;
 	}

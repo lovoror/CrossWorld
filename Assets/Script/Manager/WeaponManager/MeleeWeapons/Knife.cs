@@ -11,13 +11,13 @@ public class Knife : MeleeWeaponManager
 	protected new void Awake()
 	{
 		base.Awake();
-		weaponType = (int)WeaponType.melee;
+		weaponType = WeaponType.melee;
+		weaponName = WeaponNameType.Knife;
 	}
 
 	new void Start()
 	{
 		base.Start();
-		weaponName = (int)Constant.WEAPON_NAME.Knife;
 	}
 
 	protected override void PlayAttackShound()

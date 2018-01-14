@@ -31,8 +31,8 @@ public class AttackOB : Observer
 
 	protected static void HurtDeal(Transform attacker, List<Transform> suffers)
 	{
-		int atkWeapon = GameData.GetCurWeaponName(attacker.name);
-		float damage = GameData.GetBaseDamage(atkWeapon);
+		WeaponNameType atkWeaponName = GameData.GetCurWeaponName(attacker.name);
+		float damage = GameData.GetBaseDamage(atkWeaponName);
 		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
 			bool isDead = GamerHurt(suffer.name, damage);
@@ -66,7 +66,7 @@ public class AttackOB : Observer
 	/*--------------------- HurtEvent ---------------------*/
 
 	/*--------------------- DeadEvent ---------------------*/
-	public delegate void DeadNotifyEventHandler(Transform killer, Transform dead, int weapon);
+	public delegate void DeadNotifyEventHandler(Transform killer, Transform dead, WeaponNameType weapon);
 	public static event DeadNotifyEventHandler DeadNotifyEvent;   // 通知死亡目标
 	/*--------------------- DeadEvent ---------------------*/
 

@@ -71,7 +71,7 @@ public class Messenger : MonoBehaviour {
 	/*--------------------- DeadEvent ---------------------*/
 	public delegate void DeadNotifyEventHandler(Transform dead, Transform killer);
 	public DeadNotifyEventHandler DeadNotifyEvent;
-	void DeadNotifyEventFunc(Transform killer, Transform dead, int weaponName)
+	void DeadNotifyEventFunc(Transform killer, Transform dead, WeaponNameType weaponName)
 	{
 		if (self == dead || self == killer) {
 			if (DeadNotifyEvent != null) {

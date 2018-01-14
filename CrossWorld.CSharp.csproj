@@ -930,8 +930,10 @@
     <Compile Include="Assets\Behavior Designer\Runtime\Variables\SharedVector3.cs" />
     <Compile Include="Assets\Behavior Designer\Runtime\Variables\SharedVector4.cs" />
     <Compile Include="Assets\Script\Common\Constant.cs" />
+    <Compile Include="Assets\Script\Common\Singleton.cs" />
     <Compile Include="Assets\Script\Common\Utils.cs" />
     <Compile Include="Assets\Script\Effect\BulletController.cs" />
+    <Compile Include="Assets\Script\GameMain.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Controller.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\DataManager.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Manager.cs" />
@@ -966,6 +968,11 @@
     <Compile Include="Assets\Script\Observer\GameData.cs" />
     <Compile Include="Assets\Script\Observer\init.cs" />
     <Compile Include="Assets\Script\Observer\Observer.cs" />
+    <Compile Include="Assets\Script\StageMachine\BattleStage.cs" />
+    <Compile Include="Assets\Script\StageMachine\CreateStage.cs" />
+    <Compile Include="Assets\Script\StageMachine\GameStageBase.cs" />
+    <Compile Include="Assets\Script\StageMachine\GameStageMachine.cs" />
+    <Compile Include="Assets\Script\StageMachine\LoginStage.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\LeftStick.cs" />

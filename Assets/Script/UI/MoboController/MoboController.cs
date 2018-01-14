@@ -5,6 +5,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+public enum AttackType
+{
+	untouched, unknown, click, hold, clickPointer, holdPointer
+}
+
 public enum DirectionType
 {
 	up, upRight, right, downRight, down, downLeft, left, upLeft
@@ -20,7 +25,7 @@ public class MoboController : MonoBehaviour
 
 	AttackButton ButtonA;
 	LeftStick StickL;
-	int controlType;
+	ControlType controlType;
 	
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
@@ -38,7 +43,7 @@ public class MoboController : MonoBehaviour
 	{
 		ButtonA = GetComponentInChildren<AttackButton>();
 		StickL = GetComponentInChildren<LeftStick>();
-		controlType = (int)ControlType.modern;
+		controlType = ControlType.modern;
 	}
 
 	void OnEnable()
@@ -74,12 +79,12 @@ public class MoboController : MonoBehaviour
 		if (moveDirection != last_moveDirection) {
 			last_moveDirection = moveDirection;
 			// 改变移动方向
-			if (controlType == (int)ControlType.modern) {
+			if (controlType == ControlType.modern) {
 				if (PlayerMoveEvent != null) {
 					PlayerMoveEvent(moveDirection);
 				}
 			}
-			else if (controlType == (int)ControlType.ancient) {
+			else if (controlType == ControlType.ancient) {
 
 			}
 		}
@@ -105,7 +110,6 @@ public class MoboController : MonoBehaviour
 
 	public void Restart()
 	{
-		print("Restart");
-		// SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		GameStageMachine.Instance.ChangeStage(GameStage.LOGIN);
 	}
 }

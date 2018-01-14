@@ -11,7 +11,7 @@ public enum MoveType
 
 public class LeftStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
 	[HideInInspector]
-	public int moveType;
+	public MoveType moveType;
 	[HideInInspector]
 	public Vector2 direction;
 
@@ -70,13 +70,13 @@ public class LeftStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 		direction = dir;
 		float sqrMagnitude = direction.sqrMagnitude;
 		if (sqrMagnitude < 0.15 * 0.15) {
-			moveType = (int)MoveType.stop;
+			moveType = MoveType.stop;
 		}
 		else if (sqrMagnitude < 0.9 * 0.9) {
-			moveType = (int)MoveType.walk;
+			moveType = MoveType.walk;
 		}
 		else {
-			moveType = (int)MoveType.run;
+			moveType = MoveType.run;
 		}
 	}
 }

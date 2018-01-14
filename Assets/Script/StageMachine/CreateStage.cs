@@ -6,7 +6,7 @@ public class CreateStage : Singleton<CreateStage>, IGameStageBase
     private AsyncOperation _sceneLoadOperation;
     private bool _secenIsLoadDone;
 
-	private readonly string loadSceneName = "fight001";
+	private readonly string loadSceneName = "001";
 
     public void Begin()
     {

@@ -4,15 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public enum AttackType
-{
-	untouched, unknown, click, hold, clickPointer, holdPointer
-}
-
 public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
 	[HideInInspector]
-	public int attackType = (int)AttackType.untouched;
+	public AttackType attackType = AttackType.untouched;
 	[HideInInspector]
 	public Vector2 direction = new Vector2(0, 0);
 	[HideInInspector]
@@ -52,7 +47,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	public void Reset()
 	{
-		attackType = (int)AttackType.untouched;
+		attackType = AttackType.untouched;
 		direction = Vector2.zero;
 		touchId = -1;
 		lastPressDownTime = 0;
@@ -68,7 +63,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 		if (!isHolding && Time.time - lastPressDownTime > minHoldTime) {
 			isHolding = true;
 			// Hold Type
-			attackType = isDraging ? (int)AttackType.holdPointer : (int)AttackType.hold;
+			attackType = isDraging ? AttackType.holdPointer : AttackType.hold;
 		}
 	}
 
@@ -77,7 +72,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 		if (touchId < 0) {
 			lastPressDownTime = Time.time;
 			touchId = data.pointerId;
-			attackType = (int)AttackType.unknown;
+			attackType = AttackType.unknown;
 			if (UIAttackDownEvent != null) {
 				UIAttackDownEvent(data.pressPosition);
 			}
@@ -88,7 +83,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 		// 检测是否是click
 		if (!isHolding) {
 			// Click Type
-			attackType = isDraging ? (int)AttackType.clickPointer : (int)AttackType.click;
+			attackType = isDraging ? AttackType.clickPointer : AttackType.click;
 		}
 
 		if (UIAttackUpEvent != null) {
@@ -115,7 +110,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 		// 确定AttackType
 		// 若 isHolding == false 证明AttackType还是unknown状态，故无需修改。
 		if (isHolding) {
-			attackType = isDraging ? (int)AttackType.holdPointer : (int)AttackType.hold;
+			attackType = isDraging ? AttackType.holdPointer : AttackType.hold;
 		}
 	}
 
@@ -127,52 +122,52 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 	{
 		return direction;
 	}
-	public int GetDirection4()
+	public DirectionType GetDirection4()
 	{
 		float angle = Utils.GetAnglePZ2D(new Vector2(1, 0), direction);
 		if (angle >= 45 && angle < 135) {
-			return (int)DirectionType.right;
+			return DirectionType.right;
 		}
 		else if (angle >= 135 && angle < 225) {
-			return (int)DirectionType.down;
+			return DirectionType.down;
 		}
 		else if (angle >= 225 && angle < 275) {
-			return (int)DirectionType.left;
+			return DirectionType.left;
 		}
 		else {
-			return (int)DirectionType.up;
+			return DirectionType.up;
 		}
 	}
 
-	public int GetDirection8()
+	public DirectionType GetDirection8()
 	{
 		float angle = Utils.GetAnglePZ2D(new Vector2(1, 0), direction);
 		if (angle >= 22.5 && angle < 67.5) {
-			return (int)DirectionType.upRight;
+			return DirectionType.upRight;
 		}
 		else if (angle >= 67.5 && angle < 112.5) {
-			return (int)DirectionType.right;
+			return DirectionType.right;
 		}
 		else if (angle >= 112.5 && angle < 157.5) {
-			return (int)DirectionType.downRight;
+			return DirectionType.downRight;
 		}
 		else if (angle >= 112.5 && angle < 157.5) {
-			return (int)DirectionType.downRight;
+			return DirectionType.downRight;
 		}
 		else if (angle >= 157.5 && angle < 202.5) {
-			return (int)DirectionType.down;
+			return DirectionType.down;
 		}
 		else if (angle >= 202.5 && angle < 247.5) {
-			return (int)DirectionType.downLeft;
+			return DirectionType.downLeft;
 		}
 		else if (angle >= 247.5 && angle < 292.5) {
-			return (int)DirectionType.left;
+			return DirectionType.left;
 		}
 		else if (angle >= 292.5 && angle < 337.5) {
-			return (int)DirectionType.upLeft;
+			return DirectionType.upLeft;
 		}
 		else {
-			return (int)DirectionType.up;
+			return DirectionType.up;
 		}
 	}
 }

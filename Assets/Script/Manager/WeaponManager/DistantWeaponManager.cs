@@ -46,7 +46,7 @@ public class DistantWeaponManager : WeaponManager {
 		CreateBullet(self, I_Manager.GetWeaponName());
 	}
 
-	void CreateBullet(Transform shooter, int weaponName)
+	void CreateBullet(Transform shooter, WeaponNameType weaponName)
 	{
 		Vector3 firePos = muzzle.position;
 		Transform I_Bullet = Instantiate(bullet, firePos, body.rotation);

@@ -8,10 +8,10 @@ public class DataManager : MonoBehaviour {
 	protected Transform self;
 
 	public bool isDead = false;
-	public int killedWeaponName = -1;
+	public WeaponNameType killedWeaponName = WeaponNameType.unknown;
 	public float health = 100;
 	public float maxHealth = 100;
-	public int curWeaponName;
+	public WeaponNameType curWeaponName;
 	public float attackSpeedRate = 1;
 
 	public int weaponLevel = 1;

@@ -7,7 +7,6 @@ public class PlayerController : Controller {
 	public float moveSmooth = 10;
 
 	protected bool canControl;
-
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
@@ -17,6 +16,13 @@ public class PlayerController : Controller {
 	SpriteRenderer bodyRender;
 	PlayerManager I_PlayerManager;
 
+	enum AimAttackType
+	{
+		none, unknown, aming, attacking  // 不瞄准不攻击（没有按住A键）,刚按下A键还没有确定是aim还是attack, 瞄准但不攻击, 攻击
+	}
+	AimAttackType attackType;
+	float aimAttackBoundaryTime = 0.1f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
+
 	new void Awake()
 	{
 		base.Awake();
@@ -24,6 +30,7 @@ public class PlayerController : Controller {
 		bodyRender = body.GetComponent<SpriteRenderer>();
 		isAttackBtnTouched = false;
 		isAttacking = false;
+		attackType = AimAttackType.none;
 	}
 
 	new void Start ()
@@ -54,9 +61,22 @@ public class PlayerController : Controller {
 		MoboController.AttackUpEvent   -= AttackUpEventFunc;
 	}
 
+	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	new void Update()
 	{
 		base.Update();
+		if (attackType == AimAttackType.unknown) {
+			btnATouchedTime += Time.deltaTime;
+			if (btnATouchedTime >= aimAttackBoundaryTime) {
+				attackType = AimAttackType.aming;
+			}
+			else if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+				attackType = AimAttackType.attacking;
+			}
+		}
+		else {
+			btnATouchedTime = 0;
+		}
 #if UNITY_EDITOR
 		float x = Input.GetAxisRaw("Horizontal");
 		float y = Input.GetAxisRaw("Vertical");
@@ -80,14 +100,16 @@ public class PlayerController : Controller {
 			if (moveDir.sqrMagnitude < 0.01) {
 				trueMoveDir = moveDirPC;
 			}
-#elif UNITY_ANDROID
+//#elif UNITY_ANDROID
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
-			int weaponType = I_Manager.GetWeaponType();
-			if (weaponType == (int)WeaponType.melee) {
+			WeaponType weaponType = I_Manager.GetWeaponType();
+			if (weaponType == WeaponType.melee) {
 
 			}
-			else if (weaponType == (int)WeaponType.autoDistant) {
+			else if (weaponType == WeaponType.autoDistant) {
+				//if
+
 				if (isAttackBtnTouched && faceDirection.sqrMagnitude > attackBoundary * attackBoundary) {
 					// 攻击
 					ShowAttackAnim(true);
@@ -122,6 +144,7 @@ public class PlayerController : Controller {
 	void AttackDownEventFunc(Vector2 position)
 	{
 		isAttackBtnTouched = true;
+		attackType = AimAttackType.unknown;
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
 
@@ -129,10 +152,11 @@ public class PlayerController : Controller {
 	void AttackUpEventFunc(float deltaTime)
 	{
 		isAttackBtnTouched = false;
+		attackType = AimAttackType.none;
 		ShowAttackAnim(false);
-		int weaponType = I_Manager.GetWeaponType();
-		if (weaponType == (int)WeaponType.singleLoader ||
-			(weaponType == (int)WeaponType.autoDistant && !isAttacking && deltaTime < 0.1)) {
+		WeaponType weaponType = I_Manager.GetWeaponType();
+		if (weaponType == WeaponType.singleLoader ||
+			(weaponType == WeaponType.autoDistant && !isAttacking && deltaTime < 0.1)) {
 			// 抬手后单次射击
 			AttackOnce();
 		}

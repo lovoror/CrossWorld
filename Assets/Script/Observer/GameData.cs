@@ -5,20 +5,20 @@ using UnityEngine;
 public class GameData {
 	public class GamerInfo  // Player & Enemy Info
 	{
-		public GamerInfo(Transform gamer, int weapon, bool isPlayer, float health = 0, float maxHealth = 0, bool isDead = false)
+		public GamerInfo(Transform gamer, WeaponNameType weaponName, bool isPlayer, float health = 0, float maxHealth = 0, bool isDead = false)
 		{
 			this.gamer = gamer;
 			this.isPlayer = isPlayer;
 			this.isDead = isDead;
 			this.health = health;
 			this.maxHealth = maxHealth;
-			this.curWeaponName = weapon;
+			this.curWeaponName = weaponName;
 		}
 
 		public Transform gamer;
 		public float health;
 		public float maxHealth;
-		public int curWeaponName;
+		public WeaponNameType curWeaponName;
 		public bool isPlayer;
 		public bool isDead;
 
@@ -26,9 +26,9 @@ public class GameData {
 		/* 需要增加拥有能量槽可升级的武器，还需要改变以下变量：
 		 * Constant.MAX_WEAPON_ENERGY / Constant.WEAPON_SPEED_RATE /  
 		 */
-		private Dictionary<int, float> weaponEnergyInfos = new Dictionary<int, float>() {
-			{(int)Constant.WEAPON_NAME.M16, 0},
-			{(int)Constant.WEAPON_NAME.Knife, 0},
+		private Dictionary<WeaponNameType, float> weaponEnergyInfos = new Dictionary<WeaponNameType, float>() {
+			{WeaponNameType.M16, 0},
+			{WeaponNameType.Knife, 0},
 		};
 
 		public void SetDead(bool isDead)
@@ -36,7 +36,7 @@ public class GameData {
 			this.isDead = isDead;
 		}
 
-		public void ChangeCurWeapon(int weaponName)
+		public void ChangeCurWeapon(WeaponNameType weaponName)
 		{
 			curWeaponName = weaponName;
 		}
@@ -60,17 +60,20 @@ public class GameData {
 		}
 		public float GetWeaponEnergy()
 		{
-			float leftEnergy = weaponEnergyInfos[curWeaponName];
-			List<float> energyList = Constant.MAX_WEAPON_ENERGY[curWeaponName];
-			if (energyList != null) {
-				for (int i = 0; i <= energyList.Count; ++i) {
-					if (i == energyList.Count) {
-						leftEnergy = energyList[i - 1] - energyList[i - 2];
-						break;
-					}
-					if (leftEnergy < energyList[i]) {
-						leftEnergy -= energyList[i - 1];
-						break;
+			float leftEnergy = 0;
+			if (weaponEnergyInfos.ContainsKey(curWeaponName) && Constant.MAX_WEAPON_ENERGY.ContainsKey(curWeaponName)) {
+				leftEnergy = weaponEnergyInfos[curWeaponName];
+				List<float> energyList = Constant.MAX_WEAPON_ENERGY[curWeaponName];
+				if (energyList != null) {
+					for (int i = 0; i <= energyList.Count; ++i) {
+						if (i == energyList.Count) {
+							leftEnergy = energyList[i - 1] - energyList[i - 2];
+							break;
+						}
+						if (leftEnergy < energyList[i]) {
+							leftEnergy -= energyList[i - 1];
+							break;
+						}
 					}
 				}
 			}
@@ -90,17 +93,19 @@ public class GameData {
 		public int GetWeaponLevel()
 		{
 			int level = 1;
-			float leftEnergy = weaponEnergyInfos[curWeaponName];
-			List<float> energyList = Constant.MAX_WEAPON_ENERGY[curWeaponName];
-			if (energyList != null) {
-				for (int i = 0; i < energyList.Count; ++i) {
-					if (i == energyList.Count - 1) {
-						level = i;
-						break;
-					}
-					if (leftEnergy < energyList[i]) {
-						level = i;
-						break;
+			if (weaponEnergyInfos.ContainsKey(curWeaponName) && Constant.MAX_WEAPON_ENERGY.ContainsKey(curWeaponName)) {
+				float leftEnergy = weaponEnergyInfos[curWeaponName];
+				List<float> energyList = Constant.MAX_WEAPON_ENERGY[curWeaponName];
+				if (energyList != null) {
+					for (int i = 0; i < energyList.Count; ++i) {
+						if (i == energyList.Count - 1) {
+							level = i;
+							break;
+						}
+						if (leftEnergy < energyList[i]) {
+							level = i;
+							break;
+						}
 					}
 				}
 			}
@@ -110,14 +115,14 @@ public class GameData {
 
 	/*------------- 武器能量信息 -------------*/
 	public static Dictionary<string, GamerInfo> GamerInfos = new Dictionary<string, GamerInfo>();
-	public static Dictionary<int, float> BaseDamage = new Dictionary<int, float>() {
-		{ (int)Constant.WEAPON_NAME.Knife, 40 },
-		{ (int)Constant.WEAPON_NAME.M16, 30 },
+	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
+		{ WeaponNameType.Knife, 40 },
+		{ WeaponNameType.M16, 30 },
 	};
 
-	public static void AddGamerInfo(Transform obj, int weapon, bool isPlayer = false, float health = 100, float maxHealth = 100, bool isDead = false)
+	public static void AddGamerInfo(Transform obj, WeaponNameType weaponName, bool isPlayer = false, float health = 100, float maxHealth = 100, bool isDead = false)
 	{
-		GamerInfo gamerInfo = new GamerInfo(obj, weapon, isPlayer, health, maxHealth, isDead);
+		GamerInfo gamerInfo = new GamerInfo(obj, weaponName, isPlayer, health, maxHealth, isDead);
 		GamerInfos.Add(obj.name, gamerInfo);
 	}
 
@@ -184,10 +189,10 @@ public class GameData {
 		if (info == null) return -1;
 		return info.maxHealth;
 	}
-	public static int GetCurWeaponName(string name)
+	public static WeaponNameType GetCurWeaponName(string name)
 	{
 		GamerInfo info = GamerInfos[name];
-		if (info == null) return -1;
+		if (info == null) return WeaponNameType.unknown;
 		return info.curWeaponName;
 	}
 	public static Transform GetGamerByName(string name)
@@ -206,7 +211,7 @@ public class GameData {
 
 
 	/*------------------- 获取武器信息 -------------------*/
-	public static float GetBaseDamage(int weaponName)
+	public static float GetBaseDamage(WeaponNameType weaponName)
 	{
 		if (BaseDamage.ContainsKey(weaponName)) {
 			return BaseDamage[weaponName];

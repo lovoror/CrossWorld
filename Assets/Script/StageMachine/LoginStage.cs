@@ -1,10 +1,11 @@
-﻿
+﻿using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class LoginStage : Singleton<LoginStage>, IGameStageBase
 {
     private AsyncOperation _sceneLoadOperation;
     private bool _secenIsLoadDone;
+	private readonly string loadSceneName = "AnimationTest";
     private GameObject scene;
 
     public void Begin()
@@ -29,13 +30,14 @@ public class LoginStage : Singleton<LoginStage>, IGameStageBase
 	{
 	}
 
-
     public void End()
     {
+		Observer.StageEnd();
     }
 
     private void loadScene()
     {
         Debug.Log("加载场景 >>>>  ");
-    }
+		_sceneLoadOperation = SceneManager.LoadSceneAsync(loadSceneName, LoadSceneMode.Single);
+	}
 }
