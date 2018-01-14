@@ -968,7 +968,7 @@
     <Compile Include="Assets\Script\Observer\Observer.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
-    <Compile Include="Assets\Script\UI\MoboController\LPanel.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\LeftStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoboController.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
   </ItemGroup>

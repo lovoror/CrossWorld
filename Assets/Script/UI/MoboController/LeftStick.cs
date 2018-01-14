@@ -4,13 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class LPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
+public enum MoveType
+{
+	stop, walk, run, rush
+}
 
-	public RectTransform LStickBg;
-	public RectTransform LStick;
+public class LeftStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler {
+	[HideInInspector]
+	public int moveType;
+	[HideInInspector]
+	public Vector2 direction;
 
-	public delegate void UILStickMoveEventHandler(Vector2 direction);
-	public static event UILStickMoveEventHandler UILStickMoveEvent;
+	[SerializeField]
+	RectTransform LStickBg;
+	[SerializeField]
+	RectTransform LStick;
 
 	Vector2 bgSize;
 	Image bgImage;
@@ -39,10 +47,7 @@ public class LPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDr
 		bgImage.color = new Color(c.r, c.g, c.b, 0.5f);
 		LStickBg.position = orgPosition;
 		LStick.position = orgPosition + LStickBg.sizeDelta / 2;
-		// UILStickMoveEvent
-		if (UILStickMoveEvent != null) {
-			UILStickMoveEvent(new Vector2(0, 0));
-		}
+		ChangeDirection(Vector2.zero);
 	}
 
 	public void OnDrag(PointerEventData data)
@@ -54,11 +59,24 @@ public class LPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDr
 		else {
 			LStick.position = data.pressPosition + localPointerPosition.normalized * radious;
 		}
-		// UILStickMoveEvent
-		if (UILStickMoveEvent != null) {
-			Vector2 lStickPosition2D = new Vector2(LStick.position.x, LStick.position.y);
-			Vector2 direction = (lStickPosition2D - data.pressPosition) / radious;
-			UILStickMoveEvent(direction);
+
+		Vector2 lStickPosition2D = new Vector2(LStick.position.x, LStick.position.y);
+		Vector2 dir = (lStickPosition2D - data.pressPosition) / radious;
+		ChangeDirection(dir);
+	}
+
+	void ChangeDirection(Vector2 dir)
+	{
+		direction = dir;
+		float sqrMagnitude = direction.sqrMagnitude;
+		if (sqrMagnitude < 0.15 * 0.15) {
+			moveType = (int)MoveType.stop;
+		}
+		else if (sqrMagnitude < 0.9 * 0.9) {
+			moveType = (int)MoveType.walk;
+		}
+		else {
+			moveType = (int)MoveType.run;
 		}
 	}
 }

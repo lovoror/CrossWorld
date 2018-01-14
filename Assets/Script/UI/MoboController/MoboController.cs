@@ -5,11 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public enum MoveType
-{
-	stop, walk, run, rush
-}
-
 public enum DirectionType
 {
 	up, upRight, right, downRight, down, downLeft, left, upLeft
@@ -20,20 +15,14 @@ public enum ControlType
 	modern, ancient
 }
 
-public class LStick
-{
-	public int moveType;
-	public Vector2 direction;
-}
-
 public class MoboController : MonoBehaviour
 {
-	[HideInInspector]
-	int controlType;
 
 	AttackButton ButtonA;
+	LeftStick StickL;
+	int controlType;
 	
-	public delegate void PlayerMoveEventHandler(LStick L);
+	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
 
 	public delegate void PlayerFaceEventHandler(Vector2 direction);
@@ -45,18 +34,15 @@ public class MoboController : MonoBehaviour
 	public delegate void AttackUpEventHandler(float deltaTime);
 	public static event AttackUpEventHandler AttackUpEvent;
 
-	LStick L = new LStick();
-
 	void Awake()
 	{
 		ButtonA = GetComponentInChildren<AttackButton>();
+		StickL = GetComponentInChildren<LeftStick>();
 		controlType = (int)ControlType.modern;
 	}
 
 	void OnEnable()
 	{
-		// UILStickMoveEvent
-		LPanel.UILStickMoveEvent += new LPanel.UILStickMoveEventHandler(UILStickMoveFunc);
 		// UIAttackUpEvent
 		AttackButton.UIAttackUpEvent += new AttackButton.UIAttackUpEventHandler(UIAttackUpEventFunc);
 		// UIAttackDownEvent
@@ -65,11 +51,12 @@ public class MoboController : MonoBehaviour
 
 	void OnDisable()
 	{
-		LPanel.UILStickMoveEvent -= UILStickMoveFunc;
 		AttackButton.UIAttackUpEvent -= UIAttackUpEventFunc;
+		AttackButton.UIAttackDownEvent -= UIAttackDownEventFunc;
 	}
 
 	Vector2 last_bodyDirection = Vector2.zero;
+	Vector2 last_moveDirection = Vector2.zero;
 	void Update()
 	{
 		// 人物朝向
@@ -81,29 +68,22 @@ public class MoboController : MonoBehaviour
 				PlayerFaceEvent(bodyDirection);
 			}
 		}
-	}
 
-	/*==================== UILStickMoveEvent ====================*/
-	void UILStickMoveFunc(Vector2 direction)
-	{
-		L.direction = direction;
-		float magnitude = direction.magnitude;
-		if (magnitude < 0.15) {
-			L.moveType = (int)MoveType.stop;
-		}
-		else if (magnitude < 0.9) {
-			L.moveType = (int)MoveType.walk;
-		}
-		else {
-			L.moveType = (int)MoveType.run;
-		}
-		// zpf test 需要添加控制中间层
-		if (PlayerMoveEvent != null) {
-			PlayerMoveEvent(L);
+		// 移动方向
+		Vector2 moveDirection = StickL.direction;
+		if (moveDirection != last_moveDirection) {
+			last_moveDirection = moveDirection;
+			// 改变移动方向
+			if (controlType == (int)ControlType.modern) {
+				if (PlayerMoveEvent != null) {
+					PlayerMoveEvent(moveDirection);
+				}
+			}
+			else if (controlType == (int)ControlType.ancient) {
+
+			}
 		}
 	}
-	/*==================== UILStickMoveEvent ====================*/
-
 
 	/*==================== UIAttackUpEvent ====================*/
 	void UIAttackUpEventFunc(float deltaTime)

@@ -9,7 +9,7 @@ public class PlayerController : Controller {
 	protected bool canControl;
 
 	Vector3 moveDir; // 当前移动的方向
-	LStick C_L = new LStick(); // 左摇杆
+	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
 	bool isAttackBtnTouched = false;  // AttackButton是否按下
 	bool isAttacking = false;  // 是否正在攻击
@@ -52,28 +52,22 @@ public class PlayerController : Controller {
 		MoboController.PlayerFaceEvent -= PlayerFaceEventFunc;
 		MoboController.AttackDownEvent -= AttackDownEventFunc;
 		MoboController.AttackUpEvent   -= AttackUpEventFunc;
-
 	}
 
 	new void Update()
 	{
 		base.Update();
 #if UNITY_EDITOR
-		if (C_L.moveType == (int)MoveType.stop) {
-			moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-		}
+		float x = Input.GetAxisRaw("Horizontal");
+		float y = Input.GetAxisRaw("Vertical");
+		moveDirPC = new Vector3(x, 0, y).normalized;
 #endif
 	}
 
 	void LateUpdate()
 	{
 		if (canControl) {
-			// Move the player
-			rb.velocity = Vector3.Lerp(rb.velocity, moveDir * speed, Time.fixedDeltaTime * moveSmooth);
-			// 设置状态机
-			ShowWalkAnim(rb.velocity.magnitude / speed);
-			// 改变Leg的朝向
-			leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, moveDir), -90);
+			Vector3 trueMoveDir = moveDir;
 #if UNITY_EDITOR
 			// 人物转向
 			Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
@@ -83,6 +77,9 @@ public class PlayerController : Controller {
 			// 攻击状态
 			ShowAttackAnim(Input.GetButton("Fire1"));
 			isAttacking = true;
+			if (moveDir.sqrMagnitude < 0.01) {
+				trueMoveDir = moveDirPC;
+			}
 #elif UNITY_ANDROID
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
@@ -98,14 +95,19 @@ public class PlayerController : Controller {
 				}
 			}
 #endif
+			// Move the player
+			rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir * speed, Time.fixedDeltaTime * moveSmooth);
+			// 设置状态机
+			ShowWalkAnim(rb.velocity.magnitude / speed);
+			// 改变Leg的朝向
+			leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, trueMoveDir), -90);
 		}
 	}
 
 	/*--------------------- PlayerMoveEvent ---------------------*/
-	void PlayerMoveEventFunc(LStick L)
+	void PlayerMoveEventFunc(Vector2 dir)
 	{
-		C_L = L;
-		moveDir = new Vector3(L.direction.x, 0, L.direction.y);
+		moveDir = new Vector3(dir.x, 0, dir.y);
 	}
 	/*--------------------- PlayerMoveEvent ---------------------*/
 
