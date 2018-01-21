@@ -10,8 +10,8 @@ public class PlayerController : Controller {
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
-	float attackBoundary = 1f;  // 远程武器 开枪/转向 的边界距离
-	float atkBoundaryRate = 1.5f;  // aming 状态下的attackBoundary增加系数
+	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
+	float atkBoundaryRate = 2f;  // aming 状态下的attackBoundary增加系数
 	SpriteRenderer bodyRender;
 	PlayerManager I_PlayerManager;
 
@@ -20,7 +20,7 @@ public class PlayerController : Controller {
 		none, unknown, aming, attacking  // 不瞄准不攻击（没有按住A键）,刚按下A键还没有确定是aim还是attack, 瞄准但不攻击, 攻击
 	}
 	AimAttackType attackType;
-	float aimAttackBoundaryTime = 0.1f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
+	float aimAttackBoundaryTime = 0.2f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
 
 	new void Awake()
 	{
@@ -69,6 +69,7 @@ public class PlayerController : Controller {
 			}
 			else if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
 				attackType = AimAttackType.attacking;
+				ShowAttackAnim(true);
 			}
 		}
 		else {

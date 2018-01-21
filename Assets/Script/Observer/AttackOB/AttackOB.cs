@@ -61,7 +61,6 @@ public class AttackOB : Observer
 				}
 			}
 		}
-
 	}
 	/*--------------------- HurtEvent ---------------------*/
 
@@ -98,4 +97,10 @@ public class AttackOB : Observer
 		}
 	}
 	/*------------ WeaponEnergyChangeEvent -------------*/
+
+	public static void StageEnd()
+	{
+		Observer.StageEnd();
+		isRegisted = false;
+	}
 }

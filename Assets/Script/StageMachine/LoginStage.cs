@@ -32,7 +32,9 @@ public class LoginStage : Singleton<LoginStage>, IGameStageBase
 
     public void End()
     {
-		Observer.StageEnd();
+		AttackOB.StageEnd();
+		HeadBarDisplay.StageEnd();
+		GameData.StageEnd();
     }
 
     private void loadScene()

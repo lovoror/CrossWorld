@@ -31,7 +31,7 @@ public class Observer : MonoBehaviour
 		return GameData.GamerHurt(name, damage);
 	}
 
-	public static void StageEnd()
+	protected static void StageEnd()
 	{
 		isInited = false;
 	}

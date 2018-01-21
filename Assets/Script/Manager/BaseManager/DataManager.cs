@@ -42,7 +42,6 @@ public class DataManager : MonoBehaviour {
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.WeaponEnergyChangeNotifyEvent -= WeaponEnergyChangeNotifyEventFunc;
-
 	}
 
 

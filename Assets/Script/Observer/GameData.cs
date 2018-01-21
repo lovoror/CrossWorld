@@ -220,5 +220,8 @@ public class GameData {
 	}
 	/*------------------- 获取武器信息 -------------------*/
 
-
+	public static void StageEnd()
+	{
+		GamerInfos.Clear();
+	}
 }

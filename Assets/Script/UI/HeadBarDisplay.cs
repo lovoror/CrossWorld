@@ -103,4 +103,10 @@ public class HeadBarDisplay : MonoBehaviour {
 			barPool.Add(info.Value.gamer, barInfo);
 		}
 	}
+
+	public static void StageEnd()
+	{
+		barPool.Clear();
+		instance = null;
+	}
 }
