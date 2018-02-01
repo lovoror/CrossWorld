@@ -77,4 +77,29 @@ public class Utils {
 		}
 		return angle;
 	}
+
+	public static WeaponType GetWeaponTypeByName(WeaponNameType weaponName)
+	{
+		if (weaponName == WeaponNameType.M16 || weaponName == WeaponNameType.Machinegun) {
+			return WeaponType.autoDistant;
+		}
+		else if (weaponName == WeaponNameType.Knife) {
+			return WeaponType.melee;
+		}
+		else {
+			return WeaponType.unknow;
+		}
+	}
+
+	public static BaseData GetBaseData(Transform gamer)
+	{
+		BaseData baseData = null;
+		if (gamer == PlayerData.Instance.target) {
+			baseData = PlayerData.Instance;
+		}
+		else {
+			baseData = EnemysData.Instance.GetEnemyDataByTransform(gamer);
+		}
+		return baseData;
+	}
 }

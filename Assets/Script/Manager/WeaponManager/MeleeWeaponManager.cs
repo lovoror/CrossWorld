@@ -38,6 +38,7 @@ public class MeleeWeaponManager : WeaponManager {
 		/*------------ Self -> Manager ------------*/
 	protected override void AttackEventFunc()
 	{
+		if (I_Manager.IsDead()) return;
 		base.AttackEventFunc();
 		var targetsFound = GetEnemyInRange();
 		BasicHurt(self, targetsFound);
@@ -67,10 +68,10 @@ public class MeleeWeaponManager : WeaponManager {
 				float angle = Vector3.Angle(s2h, self.transform.forward);
 				if (angle - 5 <= AtkAngle / 2) {
 					//RaycastHit hit;
-					if (!Physics.Linecast(self.position, collider.transform.position, ignoreLayerMask)) {
-						targetsFound.Add(collider.transform);
+					bool isDead = collider.transform.GetComponent<Manager>().IsDead();
+					if (!isDead && !Physics.Linecast(self.position, collider.transform.position, ignoreLayerMask)) {
+						if(!isDead) targetsFound.Add(collider.transform);
 					}
-
 				}
 			}
 		}
@@ -94,10 +95,10 @@ public class MeleeWeaponManager : WeaponManager {
 				float angle = Vector3.Angle(s2h, self.transform.forward);
 				if (angle - 5 <= AtkAngle / 2) {
 					//RaycastHit hit;
-					if (!Physics.Linecast(self.position, collider.transform.position, ignoreLayerMask)) {
+					bool isDead = collider.transform.GetComponent<Manager>().IsDead();
+					if (!isDead && !Physics.Linecast(self.position, collider.transform.position, ignoreLayerMask)) {
 						return true;
 					}
-
 				}
 			}
 		}

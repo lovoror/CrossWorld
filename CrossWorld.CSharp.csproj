@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>2017.2.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -932,8 +934,14 @@
     <Compile Include="Assets\Script\Common\Constant.cs" />
     <Compile Include="Assets\Script\Common\Singleton.cs" />
     <Compile Include="Assets\Script\Common\Utils.cs" />
+    <Compile Include="Assets\Script\DataBase\BaseData.cs" />
+    <Compile Include="Assets\Script\DataBase\EnemyData.cs" />
+    <Compile Include="Assets\Script\DataBase\EnemysData.cs" />
+    <Compile Include="Assets\Script\DataBase\InitData.cs" />
+    <Compile Include="Assets\Script\DataBase\PlayerData.cs" />
     <Compile Include="Assets\Script\Effect\BulletController.cs" />
     <Compile Include="Assets\Script\GameMain.cs" />
+    <Compile Include="Assets\Script\Manager\BaseManager\AnimEventsManager.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Controller.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\DataManager.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Manager.cs" />
@@ -941,7 +949,6 @@
     <Compile Include="Assets\Script\Manager\BaseManager\StateDisplay.cs" />
     <Compile Include="Assets\Script\Manager\BodyAnimEvents.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\BehaviorTreeUpdate.cs" />
-    <Compile Include="Assets\Script\Manager\EnemyManager\EnemyController.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyDataManager.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyManager.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyMessenger.cs" />
@@ -950,6 +957,7 @@
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\IsPlayerDead.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\IsSelfDead.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\SetNoisePos.cs" />
+    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\TurnTo.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\UntilPlayerDead.cs" />
     <Compile Include="Assets\Script\Manager\FollowTarget.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerController.cs" />
@@ -959,22 +967,25 @@
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerStateDisplay.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\M16.cs" />
+    <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\Machinegun.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeapons\Knife.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\WeaponManager.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\AttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\DistantAttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\MeleeAttackOB.cs" />
-    <Compile Include="Assets\Script\Observer\GameData.cs" />
     <Compile Include="Assets\Script\Observer\init.cs" />
     <Compile Include="Assets\Script\Observer\Observer.cs" />
+    <Compile Include="Assets\Script\Skill\SkillArea.cs" />
+    <Compile Include="Assets\Script\Skill\SkillJoystick.cs" />
     <Compile Include="Assets\Script\StageMachine\BattleStage.cs" />
     <Compile Include="Assets\Script\StageMachine\CreateStage.cs" />
     <Compile Include="Assets\Script\StageMachine\GameStageBase.cs" />
     <Compile Include="Assets\Script\StageMachine\GameStageMachine.cs" />
-    <Compile Include="Assets\Script\StageMachine\LoginStage.cs" />
+    <Compile Include="Assets\Script\StageMachine\LevelTestStage.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\FuncRButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\LeftStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoboController.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
@@ -992,6 +1003,7 @@
     <None Include="Assets\AstarPathfindingProject\link.xml" />
     <None Include="Assets\Atlases\Fonts\LuckiestGuy\LICENSE.txt" />
     <None Include="Assets\Behavior Designer\Editor\GridShader.shader" />
+    <None Include="Assets\Resources\Effect\Shader\Particle Alpha Blend1.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>

@@ -5,26 +5,14 @@ using UnityEngine;
 public class DistantWeaponManager : WeaponManager {
 
 	public Transform bullet;
-	public float damage = 10;
+	float damage = 10;
 	public float bulletSpeed = 100;
 	public bool canPenetrate = false;
-
-	private Transform muzzle;
+	public Transform muzzle;
 
 	protected new void Awake()
 	{
 		base.Awake();
-		if (self) {
-			body = self.Find("Body");
-			if (body) {
-				I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
-			}
-			foreach (Transform child in self) {
-				if (child.tag == "RangeWeapon") {  // RangeWeapon的所在位置即为射击点
-					muzzle = child;
-				}
-			}
-		}
 	}
 	protected new void Start ()
 	{
@@ -37,13 +25,13 @@ public class DistantWeaponManager : WeaponManager {
 	}
 	protected new void OnDisable()
 	{
-		base.OnEnable();
+		base.OnDisable();
 	}
 
 	protected override void AttackEventFunc()
 	{
 		base.AttackEventFunc();
-		CreateBullet(self, I_Manager.GetWeaponName());
+		CreateBullet(self, I_Manager.GetCurWeaponName());
 	}
 
 	void CreateBullet(Transform shooter, WeaponNameType weaponName)

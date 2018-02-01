@@ -11,9 +11,25 @@ public class PlayerController : Controller {
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
-	float atkBoundaryRate = 2f;  // aming 状态下的attackBoundary增加系数
-	SpriteRenderer bodyRender;
+	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
+	Rigidbody rb;
+	SpriteRenderer bodyRender { get; set; }
 	PlayerManager I_PlayerManager;
+	WeaponNameType curWeaponName
+	{
+		get
+		{
+			return PlayerData.Instance.curWeaponName;
+		}
+	}
+	protected float attackSpeedRate
+	{
+		get
+		{
+			float speed = I_Manager.I_DataManager.attackSpeedRate;
+			return speed >= 0 ? speed : 1;
+		}
+	}
 
 	enum AimAttackType
 	{
@@ -28,6 +44,7 @@ public class PlayerController : Controller {
 		I_PlayerManager = transform.GetComponent<PlayerManager>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
 		attackType = AimAttackType.none;
+		rb = self.GetComponent<Rigidbody>();
 	}
 
 	new void Start ()
@@ -39,6 +56,7 @@ public class PlayerController : Controller {
 	protected new void OnEnable()
 	{
 		base.OnEnable();
+		Reset();
 		// PlayerMoveEvent
 		MoboController.PlayerMoveEvent += new MoboController.PlayerMoveEventHandler(PlayerMoveEventFunc);
 		// PlayerFaceEvent
@@ -56,6 +74,13 @@ public class PlayerController : Controller {
 		MoboController.PlayerFaceEvent -= PlayerFaceEventFunc;
 		MoboController.AttackDownEvent -= AttackDownEventFunc;
 		MoboController.AttackUpEvent   -= AttackUpEventFunc;
+	}
+
+	void Reset()
+	{
+		attackType = AimAttackType.none;
+		moveDir = Vector3.zero;
+		faceDirection = transform.forward;
 	}
 
 	float btnATouchedTime = 0;  // ButtonA按下的时间。
@@ -101,27 +126,27 @@ public class PlayerController : Controller {
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
 			WeaponType weaponType = I_Manager.GetWeaponType();
+
+			float trueAttackBoundary = attackBoundary;
 			if (weaponType == WeaponType.melee) {
 
 			}
-			else if (weaponType == WeaponType.autoDistant) {
-				float trueAttackBoundary = attackBoundary;
-				if (attackType == AimAttackType.aming) {
-					trueAttackBoundary *= atkBoundaryRate;
-				}
+			else if (weaponType == WeaponType.autoDistant && attackType == AimAttackType.aming) {
+				trueAttackBoundary *= atkBoundaryRate;
+			}
 
-				if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) && 
-					faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
-					// 攻击
-					attackType = AimAttackType.attacking;
-					ShowAttackAnim(true);
-				}
+			if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) && 
+				faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
+				// 攻击
+				attackType = AimAttackType.attacking;
+				ShowAttackAnim(true);
 			}
 #endif
 			// Move the player
 			rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir * speed, Time.fixedDeltaTime * moveSmooth);
 			// 设置状态机
 			ShowWalkAnim(rb.velocity.magnitude / speed);
+			ChangeAttackSpeed();
 			// 改变Leg的朝向
 			leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, trueMoveDir), -90);
 		}
@@ -151,14 +176,14 @@ public class PlayerController : Controller {
 	/*--------------------- AttackUpEvent ---------------------*/
 	void AttackUpEventFunc(float deltaTime)
 	{
-		attackType = AimAttackType.none;
 		ShowAttackAnim(false);
 		WeaponType weaponType = I_Manager.GetWeaponType();
-		if (weaponType == WeaponType.singleLoader ||
+		if (weaponType == WeaponType.melee || weaponType == WeaponType.singleLoader ||
 			(weaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown)) {
 			// 抬手后单次射击
 			AttackOnce();
 		}
+		attackType = AimAttackType.none;
 		// 防止下次按下攻击后直接射击
 		faceDirection = faceDirection.normalized * (attackBoundary / 2);
 	}
@@ -187,10 +212,23 @@ public class PlayerController : Controller {
 	/*--------------------- DeadNotifyEvent ---------------------*/
 
 	/*-------------------- AttackSpeedChangeEvent ---------------------*/
-	protected override void AttackSpeedChangeEventFunc(float rate)
+	public void ChangeAttackSpeed()
 	{
-		base.AttackSpeedChangeEventFunc(rate);
-		bodyAnim.SetFloat("AttackSpeed", rate);
+		bodyAnim.SetFloat("AttackSpeed", attackSpeedRate);
 	}
 	/*-------------------- AttackSpeedChangeEvent ---------------------*/
+
+	/*------------ PlayerChangeWeaponEvent --------------*/
+	public void ChangeWeapon()
+	{
+		var d_bodys = PlayerData.Instance.d_Bodys;
+		var d_weapons = PlayerData.Instance.d_Weapons;
+		foreach (var body in d_bodys) {
+			body.Value.gameObject.SetActive(body.Key == curWeaponName);
+		}
+		foreach (var weapon in d_weapons) {
+			weapon.Value.gameObject.SetActive(weapon.Key == curWeaponName);
+		}
+	}
+	/*------------ PlayerChangeWeaponEvent --------------*/
 }

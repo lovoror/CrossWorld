@@ -6,28 +6,45 @@ public class Controller : MonoBehaviour {
 	[HideInInspector]
 	public Manager I_Manager;
 
-	protected Rigidbody rb;
 	protected Transform self;
-	protected Transform body;
-	protected Transform leg;
+	protected Transform body
+	{
+		get
+		{
+			return PlayerData.Instance.curBodyTransform;
+		}
+	}
+	protected Transform leg
+	{
+		get
+		{
+			return PlayerData.Instance.legTransform;
+		}
+	}
 	protected SphereCollider bodyCollider;
 	protected Animator legAnim;
-	protected Animator bodyAnim;
+	protected Animator bodyAnim
+	{
+		get
+		{
+			return body.GetComponent<Animator>();
+		}
+	}
 	protected Camera mainCamera;
-	protected AnimatorStateInfo bodyAnimInfo;
-	protected float attackSpeedRate = 1.0f;
+	protected AnimatorStateInfo bodyAnimInfo
+	{
+		get
+		{
+			return bodyAnim.GetCurrentAnimatorStateInfo(0);
+		}
+	}
 
 	protected void Awake()
 	{
 		I_Manager = transform.GetComponent<Manager>();
 		self = transform;
-		rb = transform.GetComponent<Rigidbody>();
-		body = transform.Find("Body");
-		leg = transform.Find("Leg");
 		bodyCollider = transform.GetComponent<SphereCollider>();
 		legAnim = leg.GetComponent<Animator>();
-		bodyAnim = body.GetComponent<Animator>();
-		bodyAnimInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
 		mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
 	}
 
@@ -39,13 +56,11 @@ public class Controller : MonoBehaviour {
 	protected void OnEnable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
-		I_Manager.I_DataManager.AttackSpeedChangeEvent += new DataManager.AttackSpeedChangeEventHandler(AttackSpeedChangeEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
-		I_Manager.I_DataManager.AttackSpeedChangeEvent -= AttackSpeedChangeEventFunc;
 	}
 
 	protected void Update()
@@ -65,13 +80,6 @@ public class Controller : MonoBehaviour {
 		}
 	}
 	/*-------------------- DeadEvent ---------------------*/
-
-	/*-------------------- AttackSpeedChangeEvent ---------------------*/
-	protected virtual void AttackSpeedChangeEventFunc(float rate)
-	{
-		attackSpeedRate = rate;
-	}
-	/*-------------------- AttackSpeedChangeEvent ---------------------*/
 
 	/*------------------ 状态机 ------------------*/
 	protected void ShowWalkAnim(float speedRate)

@@ -2,32 +2,79 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataManager : MonoBehaviour {
+public class DataManager : MonoBehaviour
+{
 
-	protected Manager I_Manager;
-	protected Transform self;
-
-	public bool isDead = false;
+	protected Manager I_Manager { get; set; }
+	protected BaseData selfData { get; set; }
+	public bool isDead
+	{
+		get
+		{
+			return selfData.isDead;
+		}
+	}
 	public WeaponNameType killedWeaponName = WeaponNameType.unknown;
-	public float health = 100;
-	public float maxHealth = 100;
-	public WeaponNameType curWeaponName;
-	public float attackSpeedRate = 1;
+	public float health
+	{
+		get
+		{
+			return selfData.curHealth;
+		}
+	}
+	public float maxHealth { get; set; }
+	public Transform curBodyTransform
+	{
+		get
+		{
+			return selfData.curBodyTransform;
+		}
+	}
+	public Transform curWeaponTransform
+	{
+		get
+		{
+			return selfData.curWeaponTransform;
+		}
+	}
+	public WeaponNameType curWeaponName
+	{
+		get
+		{
+			return selfData.curWeaponName;
+		}
+	}
+	public float attackSpeedRate
+	{
+		get
+		{
+			return selfData.curWeaponSpeed;
+		}
+	}
 
-	public int weaponLevel = 1;
-	public float weaponEnergy = 0;
-
-	public delegate void AttackSpeedChangeEventHandler(float speedRate);
-	public event AttackSpeedChangeEventHandler AttackSpeedChangeEvent;
-
+	public int weaponLevel
+	{
+		get
+		{
+			return selfData.curWeaponLevel;
+		}
+	}
+	public float weaponEnergy
+	{
+		get
+		{
+			return selfData.curWeaponEnergy;
+		}
+	}
 	protected void Awake()
 	{
+		selfData = Utils.GetBaseData(transform);
+		maxHealth = selfData.maxHealth;
 		I_Manager = transform.GetComponent<Manager>();
 	}
 
 	protected void Start () {
-		curWeaponName = I_Manager.I_WeaponManager.weaponName;
-		self = transform;
+
 	}
 	
 	void Update () {
@@ -36,25 +83,10 @@ public class DataManager : MonoBehaviour {
 
 	protected void OnEnable()
 	{
-		I_Manager.I_Messenger.WeaponEnergyChangeNotifyEvent += new Messenger.WeaponEnergyChangeNotifyEventHandler(WeaponEnergyChangeNotifyEventFunc);
 	}
 
 	protected void OnDisable()
 	{
-		I_Manager.I_Messenger.WeaponEnergyChangeNotifyEvent -= WeaponEnergyChangeNotifyEventFunc;
-	}
-
-
-	public void ChangeHealth(float delta)
-	{
-		health += delta;
-		health = health < 0 ? 0 : health;
-		health = health > maxHealth ? maxHealth : health;
-	}
-
-	public void SetHealth(float curHealth)
-	{
-		health = curHealth;
 	}
 
 	public float GetHealth()
@@ -67,20 +99,6 @@ public class DataManager : MonoBehaviour {
 		return maxHealth;
 	}
 
-	/*------------- WeaponEnergyChangeEvent ---------------*/
-	void WeaponEnergyChangeNotifyEventFunc(Transform target, int level, float energy)
-	{
-		weaponEnergy = energy;
-		if (weaponLevel != level) {
-			weaponLevel = level;
-			if (Constant.WEAPON_SPEED_RATE.ContainsKey(curWeaponName)) {
-				attackSpeedRate = Constant.WEAPON_SPEED_RATE[curWeaponName][weaponLevel - 1];
-				if (AttackSpeedChangeEvent != null) {
-					AttackSpeedChangeEvent(attackSpeedRate);
-				}
-			}
-		}
-	}
 	public float GetMaxWeaponEnergy()
 	{
 		if (Constant.MAX_WEAPON_ENERGY.ContainsKey(curWeaponName) &&
@@ -98,5 +116,4 @@ public class DataManager : MonoBehaviour {
 	{
 		return weaponEnergy;
 	}
-	/*------------- WeaponEnergyChangeEvent ---------------*/
 }

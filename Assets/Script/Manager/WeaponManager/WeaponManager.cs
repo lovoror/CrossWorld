@@ -6,23 +6,30 @@ public class WeaponManager : MonoBehaviour {
 	[HideInInspector]
 	public Transform self;   // 此近战武器的拥有者
 	[HideInInspector]
-	public WeaponNameType weaponName;
+	public WeaponNameType weaponName { get; set; }
 	[HideInInspector]
 	public WeaponType weaponType;
 
 	protected Manager I_Manager;  // attacker的Manager管理类
-	protected BodyAnimEvents I_BodyAnimEvents;
+	protected AnimEventsManager I_AnimEventsManager { get; set; }
 	protected AudioSource attackAudioSource;  // 攻击音效
-	protected Transform body;
+	protected BaseData selfData { get; set; }
+	protected Transform body
+	{
+		get
+		{
+			return selfData.curBodyTransform;
+		}
+	}
 
 	protected void Awake()
 	{
 		self = Utils.GetOwner(transform, Constant.TAGS.Attacker);
-		body = self.Find("Body");
 		if (self) {
 			I_Manager = self.GetComponent<Manager>();
 		}
-		I_BodyAnimEvents = I_Manager.I_BodyAnimEvents;
+		selfData = I_Manager.selfData;
+		I_AnimEventsManager = I_Manager.I_AnimEventsManager;
 	}
 
 	protected void Start () {
@@ -32,13 +39,13 @@ public class WeaponManager : MonoBehaviour {
 	protected void OnEnable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
-		I_BodyAnimEvents.AttackEvent += new BodyAnimEvents.AttackEventHandler(AttackEventFunc);
+		I_AnimEventsManager.AttackEvent += new AnimEventsManager.AttackEventHandler(AttackEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
-		I_BodyAnimEvents.AttackEvent -= AttackEventFunc;
+		I_AnimEventsManager.AttackEvent -= AttackEventFunc;
 	}
 
 	protected virtual void OnTriggerEnter(Collider other)
@@ -82,17 +89,11 @@ public class WeaponManager : MonoBehaviour {
 	/*----------------- EnemyInATKRangeEvent ------------------*/
 
 	/*--------------------- HurtEvent ---------------------*/
-		/*--------- Weapon -> PlayerManager ---------*/
-	// 受伤事件:WeaponManager通知attacker的Manager
-	public delegate void HurtDeclarationEventHandler(Transform attacker, List<Transform> suffers);
-	public event HurtDeclarationEventHandler HurtDeclarationEvent;
-	
+		/*--------- Weapon -> Manager ---------*/
 	// 通知PlayerManager伤害了某（些）人
 	protected void BasicHurt(Transform attacker, List<Transform> suffers)
 	{
-		if (HurtDeclarationEvent != null) {
-			HurtDeclarationEvent(attacker, suffers);
-		}
+		I_Manager.HurtDeclaration(attacker, suffers);
 	}
 
 	protected void BasicHurt(Transform attacker, Transform suffer)
@@ -105,7 +106,7 @@ public class WeaponManager : MonoBehaviour {
 	/*---------------- KillerNotifyEvent ------------------*/
 	public virtual void DeadNotifyEventFunc(Transform killer, Transform dead)
 	{
-
+		
 	}
 	/*---------------- KillerNotifyEvent ------------------*/
 }

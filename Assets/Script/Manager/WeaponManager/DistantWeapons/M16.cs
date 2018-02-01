@@ -8,11 +8,11 @@ public class M16 : DistantWeaponManager {
 	{
 		base.Awake();
 		weaponType = WeaponType.autoDistant;
+		weaponName = WeaponNameType.M16;
 	}
 
 	protected new void Start()
 	{
 		base.Start();
-		weaponName = WeaponNameType.M16;
 	}
 }

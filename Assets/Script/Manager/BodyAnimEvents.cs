@@ -3,16 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BodyAnimEvents : MonoBehaviour {
-
-	// 攻击事件：BodyAnimEvents -> WeaponManager
-	public delegate void AttackEventHandler();  // 通知WeaponManager武器攻击
-	public event AttackEventHandler AttackEvent;
-
-	private Transform self;
-
+	AnimEventsManager I_AnimEventsManager;
 	void Awake()
 	{
-		self = Utils.GetOwner(transform, Constant.TAGS.Attacker);
+		I_AnimEventsManager = GetComponentInParent<AnimEventsManager>();
 	}
 
 	void Start()
@@ -27,16 +21,13 @@ public class BodyAnimEvents : MonoBehaviour {
 	// 近战武器左右攻击动画切换
 	void ChangeAtkDir()
 	{
-		float yScale = transform.localScale.y;
-		transform.localScale = new Vector3(1, -yScale, 1);
+		I_AnimEventsManager.ChangeAtkDir();
 	}
 
 	/*--------------- 帧动画响应函数 ---------------*/
-	// 近战武器攻击
+	// 武器攻击
 	void OnAttack()
 	{
-		if (AttackEvent != null) {
-			AttackEvent();
-		}
+		I_AnimEventsManager.OnAttack();
 	}
 }

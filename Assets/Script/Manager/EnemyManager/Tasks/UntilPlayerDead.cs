@@ -4,17 +4,17 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 	public class UntilPlayerDead : Action
 	{
 		GameObject player;
-		Manager I_Manager;
+		Manager Player_Manager;
 		public override void OnStart()
 		{
 			base.OnStart();
 			player = (GameObject)Owner.GetVariable("Player").GetValue();
-			I_Manager = player.GetComponent<Manager>();
+			Player_Manager = player.GetComponent<Manager>();
 		}
 
 		public override TaskStatus OnUpdate()
 		{
-			if (I_Manager.IsDead()) {
+			if (Player_Manager.IsDead()) {
 				return TaskStatus.Success;
 			}
 			else {
@@ -22,6 +22,5 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 				return TaskStatus.Running;
 			}
 		}
-
 	}
 }

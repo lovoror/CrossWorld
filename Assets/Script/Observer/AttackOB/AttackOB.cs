@@ -4,17 +4,24 @@ using UnityEngine;
 
 public class AttackOB : Observer
 {
+	public delegate void PlayerChangeWeaponNotifyEventHandler(Transform player);
+	public static event PlayerChangeWeaponNotifyEventHandler PlayerChangeWeaponNotifyEvent;
+
 	private static bool isRegisted = false;
-	protected void OnEnable()
+	protected new void OnEnable()
 	{
+		base.OnEnable();
 		if (isRegisted) return;
-		isRegisted = true;
 		Messenger.HurtDeclarationEvent += new Messenger.HurtDeclarationEventHandler(HurtDeclarationEventFunc);
+		FuncRButton.PlayerChangeWeaponEvent += new FuncRButton.PlayerChangeWeaponEventHandler(PlayerChangeWeaponEventFunc);
+		isRegisted = true;
 	}
 
 	protected void OnDisable()
 	{
+		base.OnDisable();
 		Messenger.HurtDeclarationEvent -= HurtDeclarationEventFunc;
+		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
 	}
 
 	protected new void Start(){
@@ -31,34 +38,36 @@ public class AttackOB : Observer
 
 	protected static void HurtDeal(Transform attacker, List<Transform> suffers)
 	{
-		WeaponNameType atkWeaponName = GameData.GetCurWeaponName(attacker.name);
-		float damage = GameData.GetBaseDamage(atkWeaponName);
+		var attackerData = Utils.GetBaseData(attacker);
+		WeaponNameType atkWeaponName = WeaponNameType.unknown;
+		if (attackerData != null) {
+			atkWeaponName = attackerData.curWeaponName;
+		}
+		float damage = Constant.GetBaseDamage(atkWeaponName);
 		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
-			bool isDead = GamerHurt(suffer.name, damage);
+			bool isDead = GamerHurt(suffer, damage);
+			var sufferData = Utils.GetBaseData(suffer);
 			if (isDead) {
 				if (DeadNotifyEvent != null) {
-					DeadNotifyEvent(attacker, suffer, attacker.GetComponent<Manager>().GetWeaponName());
+					DeadNotifyEvent(attacker, suffer, attacker.GetComponent<Manager>().GetCurWeaponName());
 				}
-				GameData.GamerDead(suffer.name);
+				sufferData.isDead = true;
 			}
 			// 武器能量改变
-			WeaponEnergyChangeDeal(attacker, suffers);
+			WeaponEnergyChangeDeal(attacker, suffers, damage);
 		}
 	}
 
 		/*----------- Observer -> Messenger -----------*/
-	public delegate void HurtNotifyEventHandler(Transform attacker, Transform suffer, float damage);
+	public delegate void HurtNotifyEventHandler(Transform attacker, Transform suffer);
 	public static event HurtNotifyEventHandler HurtNotifyEvent;
 	protected static void HurtNotify(Transform attacker, List<Transform> suffers)
 	{
 		// 分别通知各个suffer
 		foreach (Transform suffer in suffers) {
 			if (HurtNotifyEvent != null) {
-				float health = GameData.GetHealth(suffer.name);
-				if (health >= 0) {
-					HurtNotifyEvent(attacker, suffer, health);
-				}
+				HurtNotifyEvent(attacker, suffer);
 			}
 		}
 	}
@@ -70,35 +79,42 @@ public class AttackOB : Observer
 	/*--------------------- DeadEvent ---------------------*/
 
 	/*------------ WeaponEnergyChangeEvent -------------*/
-	public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target, int level, float energy);
-	public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
-	private static float increase = 10;
-	private static float decrease = -8;
-	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers)
+	//public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target);
+	//public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
+	private static float increaseRate = 0.6f;
+	private static float decreaseRate = -0.6f;
+	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers, float damage)
 	{
-		ChangeEnergy(shooter, increase);
+		ChangeEnergy(shooter, increaseRate * damage);
 
 		foreach (Transform suffer in suffers) {
-			ChangeEnergy(suffer, decrease);
+			ChangeEnergy(suffer, decreaseRate * damage);
 		}
 	}
 
 	protected static void ChangeEnergy(Transform target, float delta)
 	{
-		float preEnergy = GameData.GetTotalEnergy(target.name);
-		GameData.ChangeEnergy(target.name, delta);
-		float curEnergy = GameData.GetTotalEnergy(target.name);
-		if (preEnergy != curEnergy) {
-			int level = GameData.GetWeaponLevel(target.name);
-			float leftEnergy = GameData.GetWeaponEnergy(target.name);
-			if (WeaponEnergyChangeNotifyEvent != null && leftEnergy >= 0) {
-				WeaponEnergyChangeNotifyEvent(target, level, leftEnergy);
-			}
+		var targetData = Utils.GetBaseData(target);
+		if (targetData != null) {
+			targetData.curWeaponEnergy += delta;
 		}
+		//if (WeaponEnergyChangeNotifyEvent != null) {
+		//	WeaponEnergyChangeNotifyEvent(target);
+		//}
 	}
 	/*------------ WeaponEnergyChangeEvent -------------*/
 
-	public static void StageEnd()
+	/*------------ PlayerChangeWeaponEvent --------------*/
+	void PlayerChangeWeaponEventFunc(Transform player, WeaponNameType weaponName)
+	{
+		PlayerData.Instance.curWeaponName = weaponName;
+		if (PlayerChangeWeaponNotifyEvent != null) {
+			PlayerChangeWeaponNotifyEvent(player);
+		}
+	}
+	/*------------ PlayerChangeWeaponEvent --------------*/
+
+	public static new void StageEnd()
 	{
 		Observer.StageEnd();
 		isRegisted = false;

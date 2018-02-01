@@ -4,12 +4,12 @@ using UnityEngine;
 
 public enum WeaponType
 {
-	melee, singleLoader, autoDistant
+	unknow, melee, singleLoader, autoDistant
 }
 
 public enum WeaponNameType
 {
-	unknown, M16, Knife,
+	unknown, M16, Knife, Machinegun
 }
 
 public class Constant
@@ -37,11 +37,27 @@ public class Constant
 
 	public readonly static Dictionary<WeaponNameType, List<float>> MAX_WEAPON_ENERGY = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
-		{WeaponNameType.Knife, new List<float>(){0, 100, 200, 300, 350}},
+		{WeaponNameType.Machinegun, new List<float>(){0, 100, 200, 300, 350}},
+		{WeaponNameType.Knife, new List<float>(){0, 150, 300, 450, 500}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
+		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 	};
+
+	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
+		{ WeaponNameType.Knife, 50 },
+		{ WeaponNameType.M16, 15 },
+		{ WeaponNameType.Machinegun, 20 },
+	};
+
+	public static float GetBaseDamage(WeaponNameType weaponName)
+	{
+		if (BaseDamage.ContainsKey(weaponName)) {
+			return BaseDamage[weaponName];
+		}
+		return -1;
+	}
 }

@@ -25,7 +25,7 @@ public class GameStageMachine:Singleton<GameStageMachine>
         switch (type)
         {
             case GameStage.LOGIN:
-                currentStage = LoginStage.Instance;
+                currentStage = LevelTestStage.Instance;
                 break;
 			case GameStage.CREATE:
 				currentStage = CreateStage.Instance;

@@ -12,6 +12,20 @@ public class PlayerMessenger : Messenger {
 
 	protected PlayerManager I_PlayerManager;
 
+	protected new void OnEnable()
+	{
+		base.OnEnable();
+		FuncRButton.PlayerReloadEvent += new FuncRButton.PlayerReloadEventHandler(PlayerReloadEventFunc);
+		AttackOB.PlayerChangeWeaponNotifyEvent += new AttackOB.PlayerChangeWeaponNotifyEventHandler(PlayerChangeWeaponNotifyEventFunc);
+	}
+
+	protected new void OnDisable()
+	{
+		base.OnDisable();
+		FuncRButton.PlayerReloadEvent -= PlayerReloadEventFunc;
+		//FuncLButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
+	}
+
 	new void Awake()
 	{
 		base.Awake();
@@ -20,13 +34,21 @@ public class PlayerMessenger : Messenger {
 		}
 	}
 
-	new void Start()
+	/*------------ PlayerReloadEvent --------------*/
+	void PlayerReloadEventFunc(Transform player)
 	{
-		base.Start();
+		if (player == self) {
 
+		}
 	}
-	
-	void Update () {
-		
+	/*------------ PlayerReloadEvent --------------*/
+
+	/*------------ PlayerChangeWeaponEvent --------------*/
+	void PlayerChangeWeaponNotifyEventFunc(Transform player)
+	{
+		if (player == self) {
+			I_PlayerManager.ChangeWeapon();
+		}
 	}
+	/*------------ PlayerChangeWeaponEvent --------------*/
 }

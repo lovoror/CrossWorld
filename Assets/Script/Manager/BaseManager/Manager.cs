@@ -2,45 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Manager : MonoBehaviour {
+public class Manager : MonoBehaviour
+{
 	[HideInInspector]
-	public Transform self;
+	public Transform self { get; set; }
 	[HideInInspector]
-	public Transform body;
-	[HideInInspector]
-	public Transform weapon;
-	[HideInInspector]
-	public WeaponManager I_WeaponManager;
+	public WeaponManager I_WeaponManager
+	{
+		get
+		{
+			return I_DataManager.curWeaponTransform.GetComponent<WeaponManager>();
+		}
+	}
 	[HideInInspector]
 	public Messenger I_Messenger;
 	[HideInInspector]
 	public DataManager I_DataManager;
 	[HideInInspector]
-	public Controller I_Controller;
+	public AnimEventsManager I_AnimEventsManager { get; set; }
 	[HideInInspector]
-	public BodyAnimEvents I_BodyAnimEvents;
+	public Animator I_Animator { get; set; }
+	[HideInInspector]
+	public bool isPlayer;
+	[HideInInspector]
+	public BaseData selfData;
 
 	private List<string> ownerTags = new List<string> { "Player", "Enemy" };
 
 	protected void Awake()
 	{
 		self = Utils.GetOwner(transform, ownerTags);
-		body = self.Find("Body");
-		foreach (Transform child in self) {
-			if (child.tag == "MeleeWeapon" || child.tag == "RangeWeapon") {
-				weapon = child;
-				break;
-			}
-		}
-		if (weapon) {
-			I_WeaponManager = weapon.GetComponent<WeaponManager>();
-		}
-		if (body) {
-			I_BodyAnimEvents = body.GetComponent<BodyAnimEvents>();
-		}
+		selfData = Utils.GetBaseData(self);
+		I_AnimEventsManager = transform.GetComponentInChildren<AnimEventsManager>();
 		I_Messenger = self.GetComponent<Messenger>();
 		I_DataManager = self.GetComponent<DataManager>();
-		I_Controller = self.GetComponent<Controller>();
+		I_Animator = self.GetComponentInChildren<Animator>();
 	}
 
 	protected void Start()
@@ -55,18 +51,29 @@ public class Manager : MonoBehaviour {
 
 	void OnEnable()
 	{
-		// 受伤事件:WeaponManager通知Self
-		if (I_WeaponManager != null) {
-			I_WeaponManager.HurtDeclarationEvent += new WeaponManager.HurtDeclarationEventHandler(HurtDeclarationEventFunc);
-		}
+
 	}
 
 	void OnDisable()
 	{
-		if (I_WeaponManager != null) {
-			I_WeaponManager.HurtDeclarationEvent -= HurtDeclarationEventFunc;
+
+	}
+
+	/*--------------------- HurtEvent ---------------------*/
+	public void HurtDeclaration(Transform attacker, List<Transform> suffers)
+	{
+		// 通知Observe受伤事件
+		if (I_Messenger != null) {
+			I_Messenger.HurtDeclaration(attacker, suffers);
 		}
 	}
+
+	public virtual void HurtNotifyEventDeal(Transform attacker, Transform suffer)
+	{
+
+	}
+	/*--------------------- HurtEvent ---------------------*/
+
 
 	/*----------------------- Utils -----------------------*/
 	public bool IsDead()
@@ -84,43 +91,14 @@ public class Manager : MonoBehaviour {
 		I_DataManager.killedWeaponName = weaponName;
 	}
 
-	public void SetPlayerDead(bool isDead)
+	public WeaponNameType GetCurWeaponName()
 	{
-		I_DataManager.isDead = isDead;
-	}
-
-	public WeaponNameType GetWeaponName()
-	{
-		return I_WeaponManager.weaponName;
+		return I_DataManager.curWeaponName;
 	}
 
 	public WeaponType GetWeaponType()
 	{
 		return I_WeaponManager.weaponType;
 	}
-	
-	
 	/*----------------------- Utils -----------------------*/
-
-	/*--------------------- HurtEvent ---------------------*/
-		/*------------ Manager -> Observer ------------*/
-	void HurtDeclarationEventFunc(Transform attacker, List<Transform> suffers)
-	{
-		// 通知Observe受伤事件
-		if (I_Messenger != null) {
-			I_Messenger.HurtDeclaration(attacker, suffers);
-		}
-	}
-
-		/*------------ Observer -> Manager ------------*/
-	public void HurtNotifyEventDeal(Transform attacker, Transform suffer, float health)
-	{
-		// 受伤相关处理
-		if (self == suffer) {
-			if (I_DataManager) {
-				I_DataManager.SetHealth(health);
-			}
-		}
-	}
-	/*--------------------- HurtEvent ---------------------*/
 }

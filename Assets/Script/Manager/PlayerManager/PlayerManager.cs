@@ -12,14 +12,18 @@ public class PlayerManager : Manager {
 	[HideInInspector]
 	public PlayerMessenger I_PlayerMessenger;
 	[HideInInspector]
+	public PlayerController I_PlayerController;
+	[HideInInspector]
 	public PlayerDataManager I_PlayerDataManager;
 
 	new void Awake()
 	{
 		base.Awake();
+		isPlayer = true;
 		if (self) {
 			I_PlayerMessenger = self.GetComponent<PlayerMessenger>();
 			I_PlayerDataManager = self.GetComponent<PlayerDataManager>();
+			I_PlayerController = self.GetComponent<PlayerController>();
 		}
 	}
 
@@ -32,6 +36,10 @@ public class PlayerManager : Manager {
 		
 	}
 
-	/*--------------------- HurtEvent ---------------------*/
-		/*------------ Observer -> Manager ------------*/
+	/*------------ PlayerChangeWeaponEvent --------------*/
+	public void ChangeWeapon()
+	{
+		I_PlayerController.ChangeWeapon();
+	}
+	/*------------ PlayerChangeWeaponEvent --------------*/
 }

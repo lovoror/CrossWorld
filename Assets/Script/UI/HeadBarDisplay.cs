@@ -6,23 +6,51 @@ public class HeadBarDisplay : MonoBehaviour {
 
 	public Transform headBar;
 	public Vector3 offset = new Vector3(0, 0, 6);
-
 	[HideInInspector]
-	public static HeadBarDisplay instance;
+	protected static HeadBarDisplay m_instance = null;
 
 	public class Bar
 	{
-		public Transform bar;   // bar对象
-		public bool isVisible = true;
-		SpriteRenderer healthBar;
-		Vector3 healthScale;
-		SpriteRenderer healthBarOutline;
-		SpriteRenderer weaponEnergyBar;   // 武器能量槽
-		Vector3 energyScale;
-
-		public Bar(Transform bar)
+		public Transform bar { get; set; }   // bar对象
+		public Transform target { get; set; }  // 跟随的对象
+		public bool isVisible { get; set; }
+		Vector3 offset;
+		SpriteRenderer healthBar { get; set; }
+		Vector3 healthScale { get; set; }
+		SpriteRenderer healthBarOutline { get; set; }
+		SpriteRenderer weaponEnergyBar { get; set; }   // 武器能量槽
+		Vector3 energyScale { get; set; }
+		BaseData tarData { get; set; }
+		float health
 		{
-			this.bar = bar;
+			get
+			{
+				return tarData.curHealth;
+			}
+		}
+		float maxHealth { get; set; }
+		int curWeaponLevel
+		{
+			get
+			{
+				return tarData.curWeaponLevel;
+			}
+		}
+		float energyPercent
+		{
+			get
+			{
+				return tarData.curWeaponLeftEnergyPercent;
+			}
+		}
+		public Bar(Transform target, Transform headBar, Vector3 offset)
+		{
+			this.bar = Instantiate(headBar, -1000 * Vector3.right, Quaternion.Euler(90, 0, 0));
+			this.target = target;
+			this.offset = offset;
+			tarData = Utils.GetBaseData(target);
+			maxHealth = tarData.maxHealth;
+			isVisible = true;
 			healthBar = bar.Find("HealthBar").GetComponent<SpriteRenderer>();
 			healthScale = healthBar.transform.localScale;
 			healthBarOutline = bar.Find("HealthOutline").GetComponent<SpriteRenderer>();
@@ -30,24 +58,33 @@ public class HeadBarDisplay : MonoBehaviour {
 			energyScale = weaponEnergyBar.transform.localScale;
 		}
 
-		public void ShowHealthBar(float health, float maxHealth)
+		public void Update()
+		{
+			if (!isVisible) return;
+			UpdatePosition();
+			UpdateHealthBar();
+			UpdateWeaponEnergyBar();
+		}
+
+		void UpdatePosition()
+		{
+			bar.position = target.position + offset;
+		}
+
+		void UpdateHealthBar()
 		{
 			if (health < 0 || maxHealth < 0) {
 				Debug.LogError("health or maxHealth less than 0");
 				return;
 			}
-			// Set the health bar's colour to proportion of the way between green and red based on the player's health.
 			healthBar.material.color = Color.Lerp(Color.green, Color.red, 1 - health / maxHealth);
-			// Set the scale of the health bar to be proportional to the player's health.
 			healthBar.transform.localScale = new Vector3(healthScale.x * health / maxHealth, healthScale.y, healthScale.z);
 		}
 
-		public void ShowWeaponEnergyBar(int weaponLevel, float weaponEnergy, float maxWeaponEnergy)
+		void UpdateWeaponEnergyBar()
 		{
-			weaponEnergyBar.material.color = Constant.WEAPON_COLORS[weaponLevel];
-			if (maxWeaponEnergy > 0) {
-				weaponEnergyBar.transform.localScale = new Vector3(energyScale.x * weaponEnergy / maxWeaponEnergy, energyScale.y, energyScale.z);
-			}
+			weaponEnergyBar.material.color = Constant.WEAPON_COLORS[curWeaponLevel];
+			weaponEnergyBar.transform.localScale = new Vector3(energyScale.x * energyPercent / 100, energyScale.y, energyScale.z);
 		}
 
 		public void SetBarVisible(bool show)
@@ -57,56 +94,57 @@ public class HeadBarDisplay : MonoBehaviour {
 			weaponEnergyBar.enabled = show;
 			healthBarOutline.enabled = show;
 		}
-
-		public void SetPosition(Vector3? pos)
-		{
-			if (pos != null) {
-				bar.position = pos.Value;
-			}
-		}
 	}
-	public static Dictionary<Transform, Bar> barPool = new Dictionary<Transform, Bar>();
+	
+	public static Dictionary<Transform, Bar> d_BarPool = new Dictionary<Transform, Bar>();
 
 	void Awake()
 	{
-		if (instance == null) {
-			instance = this;
+
+	}
+
+	void OnEnable()
+	{
+
+	}
+
+	void OnDisable()
+	{
+
+	}
+
+	void Start()
+	{
+		Transform player = PlayerData.Instance.target;
+		Bar playerBar = new Bar(player, headBar, offset);
+		AddToBarPool(player, playerBar);
+
+		foreach (Transform enemy in EnemysData.Instance.enemyTransforms) {
+			Bar enemyBar = new Bar(enemy, headBar, offset);
+			AddToBarPool(enemy, enemyBar);
+		}
+	}
+
+	void AddToBarPool(Transform key, Bar bar)
+	{
+		if (d_BarPool.ContainsKey(key)) {
+			d_BarPool[key] = bar;
+		}
+		else {
+			d_BarPool.Add(key, bar);
 		}
 	}
 
 	void Update()
 	{
-		foreach (var bar in barPool) {
-			if (bar.Value.isVisible == false) continue;
-			string gamerName = bar.Key.name;
-			if (GameData.IsGamerDead(gamerName)) {
-				bar.Value.SetBarVisible(false);
-				continue;
-			}
-			// Bar跟踪Gamer
-			bar.Value.SetPosition(bar.Key.position + offset);
-			// HealthBar Display
-			bar.Value.ShowHealthBar(GameData.GetHealth(gamerName), GameData.GetMaxHealth(gamerName));
-			// EnergyBar Display
-			bar.Value.ShowWeaponEnergyBar(GameData.GetWeaponLevel(gamerName), GameData.GetWeaponEnergy(gamerName), GameData.GetMaxWeaponEnergy(gamerName));
-		}
-	}
-
-	public void InitHeadBars()
-	{
-		foreach (var info in GameData.GamerInfos) {
-			Vector3 basePos = info.Value.gamer.position;
-			//Transform I_Bar = Instantiate(headBar, basePos + offset, Quaternion.EulerAngles(90, 0, 0));  // zpf modify
-			Transform I_Bar = Instantiate(headBar, basePos + offset, Quaternion.Euler(90, 0, 0));
-			I_Bar.parent = transform;
-			Bar barInfo = new Bar(I_Bar);
-			barPool.Add(info.Value.gamer, barInfo);
+		foreach (Bar bar in d_BarPool.Values) {
+			bar.Update();
 		}
 	}
 
 	public static void StageEnd()
 	{
-		barPool.Clear();
-		instance = null;
+		d_BarPool.Clear();
+		m_instance = null;
 	}
 }

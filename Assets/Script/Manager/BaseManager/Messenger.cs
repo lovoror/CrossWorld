@@ -13,9 +13,7 @@ public class Messenger : MonoBehaviour {
 	protected void Awake()
 	{
 		self = transform;
-		if (self) {
-			I_Manager = self.GetComponent<Manager>();
-		}
+		I_Manager = self.GetComponent<Manager>();
 	}
 
 	protected void Start()
@@ -29,15 +27,12 @@ public class Messenger : MonoBehaviour {
 		AttackOB.HurtNotifyEvent += new AttackOB.HurtNotifyEventHandler(HurtNotifyEventFunc);
 		// DeadEvent
 		AttackOB.DeadNotifyEvent += new AttackOB.DeadNotifyEventHandler(DeadNotifyEventFunc);
-		// WeaponEnergyChangeEvent
-		AttackOB.WeaponEnergyChangeNotifyEvent += new DistantAttackOB.WeaponEnergyChangeNotifyEventHandler(WeaponEnergyChangeNotifyEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		AttackOB.HurtNotifyEvent -= HurtNotifyEventFunc;
 		AttackOB.DeadNotifyEvent -= DeadNotifyEventFunc;
-		AttackOB.WeaponEnergyChangeNotifyEvent -= WeaponEnergyChangeNotifyEventFunc;
 	}
 
 
@@ -53,17 +48,17 @@ public class Messenger : MonoBehaviour {
 	}
 
 		/*----------- Observer -> Messenger -----------*/	
-	void HurtNotifyEventFunc(Transform attacker, Transform suffer, float health)
+	protected virtual void HurtNotifyEventFunc(Transform attacker, Transform suffer)
 	{
 		if (self != attacker && suffer == self) {
-			HurtNotifyEventDeal(attacker, self, health);
+			HurtNotifyEventDeal(attacker, self);
 		}
 	}
 
-	protected void HurtNotifyEventDeal(Transform attacker, Transform suffer, float health)
+	protected void HurtNotifyEventDeal(Transform attacker, Transform suffer)
 	{
 		if (I_Manager != null) {
-			I_Manager.HurtNotifyEventDeal(attacker, suffer, health);
+			I_Manager.HurtNotifyEventDeal(attacker, suffer);
 		}
 	}
 	/*--------------------- HurtEvent ---------------------*/
@@ -79,23 +74,8 @@ public class Messenger : MonoBehaviour {
 			}
 			if (self == dead) {
 				I_Manager.SetKilledWeapon(weaponName);
-				I_Manager.SetPlayerDead(true);
 			}
 		}
 	}
 	/*--------------------- DeadEvent ---------------------*/
-
-
-	/*------------- WeaponEnergyChangeEvent ---------------*/
-	public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target, int level, float energy);
-	public event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
-	void WeaponEnergyChangeNotifyEventFunc(Transform target, int level, float energy)
-	{
-		if (target == self) {
-			if (WeaponEnergyChangeNotifyEvent != null) {
-				WeaponEnergyChangeNotifyEvent(target, level, energy);
-			}
-		}
-	}
-	/*------------- WeaponEnergyChangeEvent ---------------*/
 }

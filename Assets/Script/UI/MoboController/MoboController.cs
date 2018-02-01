@@ -25,7 +25,8 @@ public class MoboController : MonoBehaviour
 
 	AttackButton ButtonA;
 	LeftStick StickL;
-	ControlType controlType;
+	FuncRButton[] FuncRButtons = new FuncRButton[2];
+	//ControlType controlType;
 	
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
@@ -43,7 +44,9 @@ public class MoboController : MonoBehaviour
 	{
 		ButtonA = GetComponentInChildren<AttackButton>();
 		StickL = GetComponentInChildren<LeftStick>();
-		controlType = ControlType.modern;
+		//controlType = ControlType.modern;
+		FuncRButtons[0] = new FuncRButton(WeaponNameType.Machinegun);
+		FuncRButtons[1] = new FuncRButton(WeaponNameType.Knife);
 	}
 
 	void OnEnable()
@@ -79,14 +82,14 @@ public class MoboController : MonoBehaviour
 		if (moveDirection != last_moveDirection) {
 			last_moveDirection = moveDirection;
 			// 改变移动方向
-			if (controlType == ControlType.modern) {
+			//if (controlType == ControlType.modern) {
 				if (PlayerMoveEvent != null) {
 					PlayerMoveEvent(moveDirection);
 				}
-			}
-			else if (controlType == ControlType.ancient) {
+			//}
+			//else if (controlType == ControlType.ancient) {
 
-			}
+			//}
 		}
 	}
 
@@ -107,6 +110,18 @@ public class MoboController : MonoBehaviour
 		}
 	}
 	/*==================== UIAttackUpEvent ====================*/
+
+	public void OnClick_Func_R1()
+	{
+		if (Observer.IsPlayerDead()) return;
+		FuncRButtons[0].OnClick();
+	}
+
+	public void OnClick_Func_R2()
+	{
+		if (Observer.IsPlayerDead()) return;
+		FuncRButtons[1].OnClick();
+	}
 
 	public void Restart()
 	{
