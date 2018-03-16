@@ -87,7 +87,7 @@ public class MeleeWeaponManager : WeaponManager {
 		else if(self.tag == "Enemy"){
 			hitColliders = Physics.OverlapSphere(self.position, AtkRange, playerLayerMask);
 		}
-		// 检测是否被墙格挡
+		// 检测是否被墙格挡 是否在攻击范围内
 		if (hitColliders != null) {
 			foreach (Collider collider in hitColliders) {
 				Vector3 s2h = collider.transform.position - self.position;

@@ -61,6 +61,10 @@ public class HeadBarDisplay : MonoBehaviour {
 		public void Update()
 		{
 			if (!isVisible) return;
+			if (health == 0) {
+				SetBarVisible(false);
+				return;
+			}
 			UpdatePosition();
 			UpdateHealthBar();
 			UpdateWeaponEnergyBar();

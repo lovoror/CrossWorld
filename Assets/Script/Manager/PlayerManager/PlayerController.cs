@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿//#define KEYBOARD_CONTROL
+
+using UnityEngine;
 using System.Collections;
 
 public class PlayerController : Controller {
+
 	public float speed = 3;
 	[Header("移动平滑度，越大越不平滑")]
 	public float moveSmooth = 10;
@@ -10,11 +13,14 @@ public class PlayerController : Controller {
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
+	Vector2 stickLDirection { get; set; }
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
 	Rigidbody rb;
 	SpriteRenderer bodyRender { get; set; }
 	PlayerManager I_PlayerManager;
+	AimController I_AimController;
+	FollowTarget I_FollowTarget;
 	WeaponNameType curWeaponName
 	{
 		get
@@ -42,6 +48,8 @@ public class PlayerController : Controller {
 	{
 		base.Awake();
 		I_PlayerManager = transform.GetComponent<PlayerManager>();
+		I_AimController = transform.GetComponentInChildren<AimController>();
+		I_FollowTarget = GameObject.FindWithTag("MainCamera").transform.GetComponent<FollowTarget>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
 		attackType = AimAttackType.none;
 		rb = self.GetComponent<Rigidbody>();
@@ -51,6 +59,11 @@ public class PlayerController : Controller {
 	{
 		base.Start();
 		canControl = true;
+
+		// test
+		// 设置瞄准三角是否可见
+		//I_AimController.SetVisible(true);
+		// test
 	}
 
 	protected new void OnEnable()
@@ -111,7 +124,7 @@ public class PlayerController : Controller {
 	{
 		if (canControl) {
 			Vector3 trueMoveDir = moveDir;
-#if UNITY_EDITOR
+#if KEYBOARD_CONTROL
 			// 人物转向
 			Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 			mouseV.y = 0;
@@ -122,7 +135,7 @@ public class PlayerController : Controller {
 			if (moveDir.sqrMagnitude < 0.01) {
 				trueMoveDir = moveDirPC;
 			}
-#elif UNITY_ANDROID
+#else
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
 			WeaponType weaponType = I_Manager.GetWeaponType();
@@ -134,13 +147,15 @@ public class PlayerController : Controller {
 			else if (weaponType == WeaponType.autoDistant && attackType == AimAttackType.aming) {
 				trueAttackBoundary *= atkBoundaryRate;
 			}
-
+			
 			if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) && 
 				faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
 				// 攻击
 				attackType = AimAttackType.attacking;
 				ShowAttackAnim(true);
 			}
+
+			SetAimTriangleAndCamera();
 #endif
 			// Move the player
 			rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir * speed, Time.fixedDeltaTime * moveSmooth);
@@ -162,7 +177,7 @@ public class PlayerController : Controller {
 	/*--------------------- PlayerFaceEvent ---------------------*/
 	void PlayerFaceEventFunc(Vector2 direction)
 	{
-		faceDirection = direction;
+		stickLDirection = direction;
 	}
 	/*--------------------- PlayerFaceEvent ---------------------*/
 
@@ -185,7 +200,8 @@ public class PlayerController : Controller {
 		}
 		attackType = AimAttackType.none;
 		// 防止下次按下攻击后直接射击
-		faceDirection = faceDirection.normalized * (attackBoundary / 2);
+		faceDirection = faceDirection.normalized * 0.1f;
+		stickLDirection = stickLDirection.normalized * 0.1f;
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
 
@@ -231,4 +247,92 @@ public class PlayerController : Controller {
 		}
 	}
 	/*------------ PlayerChangeWeaponEvent --------------*/
+
+
+	bool HasEnemyInRange(ref Transform target)
+	{
+		float aimDegree = 20;
+		float maxDist = 45;
+		Transform player = transform;
+		LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
+		LayerMask ignoreLayerMask = LayerMask.GetMask("Wall");
+		Collider[] hitColliders = null;
+		hitColliders = Physics.OverlapSphere(player.position, maxDist, enemyLayerMask);
+		// 检测是否被墙格挡 是否在瞄准范围内
+		if (hitColliders != null) {
+			foreach (Collider collider in hitColliders) {
+				Vector3 p2e = collider.transform.position - player.position;
+				p2e.y = 0;
+				Vector3 sLD3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
+				float angle = Vector3.Angle(p2e, sLD3D);
+				if (angle <= aimDegree / 2) {
+					//RaycastHit hit;
+					bool isDead = collider.transform.GetComponent<Manager>().IsDead();
+					if (!isDead && !Physics.Linecast(player.position, collider.transform.position, ignoreLayerMask)) {
+						target = collider.transform;
+						return true;
+					}
+				}
+			}
+		}
+		target = null;
+		return false;
+	}
+
+	// 设置瞄准三角
+	void SetAimTriangleAndCamera()
+	{
+		WeaponType weaponType = I_Manager.GetWeaponType();
+		// 设置瞄准三角是否可见
+		if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
+			(weaponType == WeaponType.autoDistant || weaponType == WeaponType.singleLoader)) {
+			I_AimController.SetVisible(true);
+			// 设置瞄准三角大小
+			Transform target = null;
+			HasEnemyInRange(ref target);
+			if (target != null) {
+				float distance = (transform.position - target.position).magnitude;
+				Vector3 p2e = target.position - transform.position;
+				Vector2 p2e2D = new Vector2(p2e.x, p2e.z);
+				Vector3 direction3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
+				float degree = Utils.GetAnglePY(p2e, direction3D);
+				degree = degree > 180 ? degree - 360 : degree;
+				I_AimController.UpdateAim(distance / 10, degree);
+				faceDirection = p2e2D.normalized * stickLDirection.magnitude;
+				// 设置Camera的Offset
+				I_FollowTarget.SetOffset(p2e2D / 2);
+				// 设置Camera的sizeScale
+				float dZ = Mathf.Abs(target.position.z - transform.position.z);
+				if (dZ >= 30) {
+					I_FollowTarget.SetSizeScale(dZ / 30);
+				}
+			}
+			else {
+				faceDirection = stickLDirection;
+				I_AimController.UpdateAim(4, 0);
+				// 设置Camera的Offset
+				float degree = Utils.GetAnglePY(new Vector3(faceDirection.x, 0, faceDirection.y), Vector3.right);
+				float rate = faceDirection.magnitude / 1.5f;
+				rate = rate < 1 ? rate : 1;
+				I_FollowTarget.SetOffset(GetOffsetByAngle(degree)*rate);
+			}
+		}
+		else {
+			faceDirection = stickLDirection;
+			I_AimController.SetVisible(false);
+			I_FollowTarget.Reset();
+		}
+	}
+
+	// 以Player为中心做一个椭圆，返回椭圆与Player面朝方向的焦点:
+	// deno = √(b^2(Cosθ)^2+a^2(Sinθ)^2) 焦点：(abCosθ/deno, abSinθ/deno)
+	Vector2 GetOffsetByAngle(float degree)
+	{
+		float a = 17.78f, b = 10;
+		float r = degree * Mathf.Deg2Rad;
+		float Cr = Mathf.Cos(r);
+		float Sr = Mathf.Sin(r);
+		float deno = Mathf.Sqrt(b * b * Cr * Cr + a * a * Sr * Sr);
+		return new Vector2(a * b * Cr / deno, a * b * Sr / deno);
+	}
 }
