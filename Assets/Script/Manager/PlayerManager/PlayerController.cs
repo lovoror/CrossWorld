@@ -380,7 +380,7 @@ public class PlayerController : Controller {
 			}
 			else if (curWeaponType == WeaponType.singleLoader) {
 				if (attackType != AimAttackType.none) {
-					// singleLoader可以通过BtnA的滑动距离改变Camera的offset。
+					// singleLoader可以通过BtnA的滑动距离改变Camera的offset
 					I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
 				}
 			}
