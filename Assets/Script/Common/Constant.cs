@@ -63,6 +63,13 @@ public class Constant
 		{ WeaponNameType.Sniper, 3 },
 	};
 
+	// 远程武器瞄准的最远距离
+	public static Dictionary<WeaponNameType, float> AimMaxDist = new Dictionary<WeaponNameType, float>() {
+		{ WeaponNameType.M16, 50 },
+		{ WeaponNameType.Machinegun, 50 },
+		{ WeaponNameType.Sniper, 90 },
+	};
+
 	public static float GetBaseDamage(WeaponNameType weaponName)
 	{
 		if (BaseDamage.ContainsKey(weaponName)) {

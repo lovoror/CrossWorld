@@ -14,6 +14,7 @@ public class PlayerController : Controller {
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
+	Transform curAimTarget = null;
 	Vector2 stickLDirection { get; set; }
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
@@ -217,11 +218,22 @@ public class PlayerController : Controller {
 			// 抬手后单次射击
 			AttackOnce();
 		}
+		// 狙击枪朝Enemy开枪后，镜头延迟归位
+		if (curWeaponType == WeaponType.singleLoader && curAimTarget != null) {
+			Invoke("DelayInitAimTarget", 0.5f);
+		}
+		else {
+			curAimTarget = null;
+		}
 		attackType = AimAttackType.none;
 		btnATouchedTime = 0;
 		// 防止下次按下攻击后直接射击
 		faceDirection = faceDirection.normalized * 0.1f;
 		stickLDirection = stickLDirection.normalized * 0.1f;
+	}
+	void DelayInitAimTarget()
+	{
+		curAimTarget = null;
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
 
@@ -272,7 +284,10 @@ public class PlayerController : Controller {
 
 	bool HasEnemyInRange(ref Transform target)
 	{
-		float maxDist = 45;
+		float maxDist = 30;
+		if (Constant.AimMaxDist.ContainsKey(curWeaponName)) {
+			maxDist = Constant.AimMaxDist[curWeaponName];
+		}
 		Transform player = transform;
 		LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
 		LayerMask ignoreLayerMask = LayerMask.GetMask("Wall");
@@ -305,8 +320,14 @@ public class PlayerController : Controller {
 		return false;
 	}
 
-	// 设置瞄准三角
 	void SetAimTriangleAndCamera()
+	{
+		SetAimTriangle();
+		SetCamera();
+	}
+
+	// 设置瞄准三角
+	void SetAimTriangle()
 	{
 		WeaponType curWeaponType = I_Manager.GetWeaponType();
 		// 设置瞄准三角是否可见
@@ -314,42 +335,55 @@ public class PlayerController : Controller {
 			(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
 			I_AimController.SetVisible(true);
 			// 设置瞄准三角大小
-			Transform target = null;
-			HasEnemyInRange(ref target);
-			if (target != null) {
-				float distance = (transform.position - target.position).magnitude;
-				Vector3 p2e = target.position - transform.position;
+			HasEnemyInRange(ref curAimTarget);
+			if (curAimTarget != null) {
+				float distance = (transform.position - curAimTarget.position).magnitude;
+				Vector3 p2e = curAimTarget.position - transform.position;
 				Vector2 p2e2D = new Vector2(p2e.x, p2e.z);
 				Vector3 direction3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
 				float degree = Utils.GetAnglePY(p2e, direction3D);
 				degree = degree > 180 ? degree - 360 : degree;
 				I_AimController.UpdateAim(distance / 10, degree);
 				faceDirection = p2e2D.normalized * stickLDirection.magnitude;
-				// 设置Camera的aimPos
-				Vector2 aimPos = new Vector2(target.position.x, target.position.z);
-				I_FollowTarget.SetAimPos(aimPos);
-
-
-				// 设置Camera的Offset
-				//I_FollowTarget.SetOffset(p2e2D / 2);
-				// 设置Camera的sizeScale
-				//float dZ = Mathf.Abs(target.position.z - transform.position.z);
-				//if (dZ >= 30) {
-				//	I_FollowTarget.SetSizeScale(dZ / 30);
-				//}
 			}
 			else {
 				faceDirection = stickLDirection;
-				I_AimController.UpdateAim(4, 0);
-				// 设置Camera的aimDirection
-				I_FollowTarget.Reset();
-				I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
+				float aimLangth = 3;
+				if (Constant.AimMaxDist.ContainsKey(curWeaponName)) {
+					aimLangth = Constant.AimMaxDist[curWeaponName] / 10;
+				}
+				I_AimController.UpdateAim(aimLangth, 0);
 			}
 		}
 		else {
 			faceDirection = stickLDirection;
 			I_AimController.SetVisible(false);
+		}
+	}
+
+	// 需要在SetAimTriangle之后
+	void SetCamera()
+	{
+		if (curAimTarget != null) {
+			// 设置Camera的aimPos
+			Vector2 aimPos = new Vector2(curAimTarget.position.x, curAimTarget.position.z);
+			I_FollowTarget.SetAimPos(aimPos);
+		}
+		else {
 			I_FollowTarget.Reset();
+			if (curWeaponType == WeaponType.autoDistant) {
+				if (attackType == AimAttackType.aming || attackType == AimAttackType.attacking) {
+					// autoDistant武器不允许根据BtnA的滑动距离改变Camera的offset
+					// 以免划出attackBoundary触发攻击，造成误操作
+					I_FollowTarget.SetAimDirection(faceDirection.normalized / 1.5f);
+				}
+			}
+			else if (curWeaponType == WeaponType.singleLoader) {
+				if (attackType != AimAttackType.none) {
+					// singleLoader可以通过BtnA的滑动距离改变Camera的offset
+					I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
+				}
+			}
 		}
 	}
 }

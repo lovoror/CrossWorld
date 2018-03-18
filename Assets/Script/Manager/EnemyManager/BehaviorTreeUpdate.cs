@@ -72,7 +72,10 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		if (isDead) {
 			if (firstDead) {
 				legAnim.SetBool("Dead", true);
-				//bodyAnim.SetInteger("DeadState", I_Manager.GetKilledWeapon());
+				Random rnd = new Random();
+				Random.InitState((int)System.DateTime.Now.Ticks);
+				int deadState = Mathf.FloorToInt(Random.value * 8);
+				bodyAnim.SetInteger("DeadState", deadState);
 				bodyAnim.SetBool("Dead", true);
 				this.enabled = false;
 				Collider selfCollider = transform.GetComponent<Collider>();

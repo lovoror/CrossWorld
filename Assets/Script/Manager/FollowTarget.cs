@@ -21,7 +21,6 @@ public class FollowTarget : MonoBehaviour {
 	float orgSize;
 	Vector2 aimPos = new Vector2(-1000, -1000);  // 瞄准位置
 	Vector2 aimDirection = Vector2.zero;         // 瞄准方向
-	Vector2 aimDirectionPos = Vector2.zero;      // 只有瞄准方向没有瞄准位置时的虚拟瞄准点
 
 	// Use this for initialization
 	void Start () {
@@ -64,17 +63,17 @@ public class FollowTarget : MonoBehaviour {
 
 	public void SetAimDirection(Vector2 direction)
 	{
-		aimDirection = direction;
 		if (aimPos == new Vector2(-1000, -1000)) {
 			float degree = Utils.GetAnglePY(new Vector3(direction.x, 0, direction.y), Vector3.right);
-			float rate = direction.magnitude;
-			rate = rate > 1 ? 1 : rate;
-			offset = GetOffsetByAngle(degree) * rate;
-			//Vector2 f2o = offset - followPos;
-			//float dX = Mathf.Abs(f2o.x);
-			//float dY = Mathf.Abs(f2o.y);
-			//sizeScale = Mathf.Max(dX / maxX, dY / maxY);
-			//sizeScale = sizeScale < 1 ? 1 : sizeScale;
+			float rate = Mathf.Clamp01(direction.magnitude);
+			WeaponNameType curWeaponName = PlayerData.Instance.curWeaponName;
+			float weaponAimRate = curWeaponName == WeaponNameType.Sniper ? 2.2f : 1;
+			offset = rate * weaponAimRate * GetOffsetByAngle(degree);
+			aimDirection = 2 * offset;
+			float dX = Mathf.Abs(aimDirection.x);
+			float dY = Mathf.Abs(aimDirection.y);
+			sizeScale = Mathf.Max(dX / maxX, dY / maxY);
+			sizeScale = sizeScale < 1 ? 1 : sizeScale;
 		}
 	}
 
@@ -85,7 +84,7 @@ public class FollowTarget : MonoBehaviour {
 		offset = Vector2.zero;
 	}
 
-	// 以Follow为中心做一个椭圆，返回椭圆与Follow面朝方向的焦点:
+	// 以Follow为中心做一个椭圆，Camera被限制在这个椭圆内移动，返回椭圆与Follow面朝方向的焦点:
 	// deno = √(b^2(Cosθ)^2+a^2(Sinθ)^2) 焦点：(abCosθ/deno, abSinθ/deno)
 	Vector2 GetOffsetByAngle(float degree)
 	{

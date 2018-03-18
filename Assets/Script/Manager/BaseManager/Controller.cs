@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿//using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -101,6 +102,10 @@ public class Controller : MonoBehaviour {
 	protected void ShowDeadAnim(bool show)
 	{
 		legAnim.SetBool("Dead", show);
+		Random rnd = new Random();
+		Random.InitState((int)System.DateTime.Now.Ticks);
+		int deadState = Mathf.FloorToInt(Random.value * 8);
+		bodyAnim.SetInteger("DeadState", deadState);
 		bodyAnim.SetBool("Dead", show);
 	}
 	/*------------------ 状态机 ------------------*/
