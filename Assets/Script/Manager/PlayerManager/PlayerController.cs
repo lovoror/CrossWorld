@@ -28,6 +28,13 @@ public class PlayerController : Controller {
 			return PlayerData.Instance.curWeaponName;
 		}
 	}
+	WeaponType curWeaponType
+	{
+		get
+		{
+			return PlayerData.Instance.curWeaponType;
+		}
+	}
 	protected float attackSpeedRate
 	{
 		get
@@ -102,7 +109,7 @@ public class PlayerController : Controller {
 		base.Update();
 		if (attackType == AimAttackType.unknown) {
 			btnATouchedTime += Time.deltaTime;
-			if (btnATouchedTime >= aimAttackBoundaryTime) {
+			if (btnATouchedTime >= aimAttackBoundaryTime || curWeaponType == WeaponType.singleLoader) {
 				attackType = AimAttackType.aming;
 			}
 			else if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
@@ -138,17 +145,17 @@ public class PlayerController : Controller {
 #else
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
-			WeaponType weaponType = I_Manager.GetWeaponType();
 
 			float trueAttackBoundary = attackBoundary;
-			if (weaponType == WeaponType.melee) {
+			if (curWeaponType == WeaponType.melee) {
 
 			}
-			else if (weaponType == WeaponType.autoDistant && attackType == AimAttackType.aming) {
+			else if (curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.aming) {
 				trueAttackBoundary *= atkBoundaryRate;
 			}
 			
-			if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) && 
+			if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) &&
+				curWeaponType != WeaponType.singleLoader &&
 				faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
 				// 攻击
 				attackType = AimAttackType.attacking;
@@ -192,9 +199,9 @@ public class PlayerController : Controller {
 	void AttackUpEventFunc(float deltaTime)
 	{
 		ShowAttackAnim(false);
-		WeaponType weaponType = I_Manager.GetWeaponType();
-		if (weaponType == WeaponType.melee || weaponType == WeaponType.singleLoader ||
-			(weaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown)) {
+		stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
+		if (curWeaponType == WeaponType.melee || curWeaponType == WeaponType.singleLoader ||
+			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown)) {
 			// 抬手后单次射击
 			AttackOnce();
 		}
@@ -251,7 +258,6 @@ public class PlayerController : Controller {
 
 	bool HasEnemyInRange(ref Transform target)
 	{
-		float aimDegree = 20;
 		float maxDist = 45;
 		Transform player = transform;
 		LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
@@ -264,8 +270,14 @@ public class PlayerController : Controller {
 				Vector3 p2e = collider.transform.position - player.position;
 				p2e.y = 0;
 				Vector3 sLD3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
+				float aimDist = 0.01f;
+				if(Constant.AimAssistDist.ContainsKey(curWeaponName)){
+					aimDist = Constant.AimAssistDist[curWeaponName];
+				}
+				float a = p2e.magnitude, b = aimDist;
+				float aimDegree = b / Mathf.Sqrt(a * a + b * b) * Mathf.Rad2Deg;
 				float angle = Vector3.Angle(p2e, sLD3D);
-				if (angle <= aimDegree / 2) {
+				if (angle <= aimDegree) {
 					//RaycastHit hit;
 					bool isDead = collider.transform.GetComponent<Manager>().IsDead();
 					if (!isDead && !Physics.Linecast(player.position, collider.transform.position, ignoreLayerMask)) {
@@ -282,10 +294,10 @@ public class PlayerController : Controller {
 	// 设置瞄准三角
 	void SetAimTriangleAndCamera()
 	{
-		WeaponType weaponType = I_Manager.GetWeaponType();
+		WeaponType curWeaponType = I_Manager.GetWeaponType();
 		// 设置瞄准三角是否可见
 		if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
-			(weaponType == WeaponType.autoDistant || weaponType == WeaponType.singleLoader)) {
+			(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
 			I_AimController.SetVisible(true);
 			// 设置瞄准三角大小
 			Transform target = null;

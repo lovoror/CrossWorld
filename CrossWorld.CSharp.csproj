@@ -955,9 +955,11 @@
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\BoolEqualTo.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\IsPlayerDead.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\IsSelfDead.cs" />
+    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\SavePlayerPos.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\SetNoisePos.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\TurnTo.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\UntilPlayerDead.cs" />
+    <Compile Include="Assets\Script\Manager\EnemyManager\Tasks\Vecter3EqualTo.cs" />
     <Compile Include="Assets\Script\Manager\FollowTarget.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\AimController.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\MeshTriangle.cs" />
@@ -969,9 +971,11 @@
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\M16.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\Machinegun.cs" />
+    <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\Sniper.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeapons\Knife.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\WeaponManager.cs" />
+    <Compile Include="Assets\Script\Map\Window\WindowController.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\AttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\DistantAttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\MeleeAttackOB.cs" />

@@ -9,7 +9,7 @@ public enum WeaponType
 
 public enum WeaponNameType
 {
-	unknown, M16, Knife, Machinegun
+	unknown, M16, Knife, Machinegun, Sniper
 }
 
 public class Constant
@@ -39,18 +39,28 @@ public class Constant
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
 		{WeaponNameType.Machinegun, new List<float>(){0, 100, 200, 300, 350}},
 		{WeaponNameType.Knife, new List<float>(){0, 150, 300, 450, 500}},
+		{WeaponNameType.Sniper, new List<float>(){0, 300, 600, 900, 1100}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
+		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
 		{ WeaponNameType.Knife, 50 },
 		{ WeaponNameType.M16, 15 },
 		{ WeaponNameType.Machinegun, 20 },
+		{ WeaponNameType.Sniper, 200 },
+	};
+
+	// 远程武器瞄准的辅助距离
+	public static Dictionary<WeaponNameType, float> AimAssistDist = new Dictionary<WeaponNameType, float>() {
+		{ WeaponNameType.M16, 5 },
+		{ WeaponNameType.Machinegun, 5 },
+		{ WeaponNameType.Sniper, 3 },
 	};
 
 	public static float GetBaseDamage(WeaponNameType weaponName)

@@ -25,7 +25,8 @@ public class MoboController : MonoBehaviour
 
 	AttackButton ButtonA;
 	LeftStick StickL;
-	FuncRButton[] FuncRButtons = new FuncRButton[2];
+	//FuncRButton[] FuncRButtons = new FuncRButton[3];
+	Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
 	//ControlType controlType;
 	
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
@@ -45,8 +46,7 @@ public class MoboController : MonoBehaviour
 		ButtonA = GetComponentInChildren<AttackButton>();
 		StickL = GetComponentInChildren<LeftStick>();
 		//controlType = ControlType.modern;
-		FuncRButtons[0] = new FuncRButton(WeaponNameType.Machinegun);
-		FuncRButtons[1] = new FuncRButton(WeaponNameType.Knife);
+		//FuncRButtons[0] = new FuncRButton(WeaponNameType.Machinegun);
 	}
 
 	void OnEnable()
@@ -111,16 +111,19 @@ public class MoboController : MonoBehaviour
 	}
 	/*==================== UIAttackUpEvent ====================*/
 
-	public void OnClick_Func_R1()
+	public void OnClick_Func_R(string str_WeaponName)
 	{
 		if (Observer.IsPlayerDead()) return;
-		FuncRButtons[0].OnClick();
-	}
-
-	public void OnClick_Func_R2()
-	{
-		if (Observer.IsPlayerDead()) return;
-		FuncRButtons[1].OnClick();
+		WeaponNameType weaponName = (WeaponNameType)System.Enum.Parse(typeof(WeaponNameType), str_WeaponName, true);
+		FuncRButton func;
+		if (FuncRButtons.ContainsKey(weaponName)) {
+			func = FuncRButtons[weaponName];
+		}
+		else {
+			func = new FuncRButton(weaponName);
+			FuncRButtons[weaponName] = func;
+		}
+		func.OnClick();
 	}
 
 	public void Restart()

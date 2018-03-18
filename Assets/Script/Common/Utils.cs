@@ -86,6 +86,9 @@ public class Utils {
 		else if (weaponName == WeaponNameType.Knife) {
 			return WeaponType.melee;
 		}
+		else if (weaponName == WeaponNameType.Sniper) {
+			return WeaponType.singleLoader;
+		}
 		else {
 			return WeaponType.unknow;
 		}
