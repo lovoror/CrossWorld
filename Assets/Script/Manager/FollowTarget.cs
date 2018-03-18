@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FollowTarget : MonoBehaviour {
-	public float followSpeed = 4.0f;
+	public float followSpeed = 8.0f;
+	public float aimSpeed = 4.0f;
 	public float scaleSpeed = 2f;
 	public Vector2 offset = Vector2.zero;
 
@@ -34,11 +35,15 @@ public class FollowTarget : MonoBehaviour {
 
 	}
 
+	Vector3 curOffset = Vector3.zero;
 	void FixedUpdate()
 	{
+		// 根据offset来同步Camera的位置，可实现跟随和瞄准/恢复不冲突。
 		Vector3 offset3D = new Vector3(offset.x, 10, offset.y);
-		Vector3 tarPosition = follow.position + offset3D;
-		transform.position = Vector3.Lerp(transform.position, tarPosition, Time.fixedDeltaTime * followSpeed);
+		curOffset = Vector3.Lerp(curOffset, offset3D, Time.fixedDeltaTime * aimSpeed);  // 当前的offset点
+		// 跟随curOffset点
+		transform.position = Vector3.Lerp(transform.position, follow.position + curOffset, Time.fixedDeltaTime * followSpeed);
+
 		if (mainCamera.orthographicSize != sizeScale * orgSize) {
 			mainCamera.orthographicSize = Mathf.Lerp(mainCamera.orthographicSize, sizeScale * orgSize, Time.fixedDeltaTime * scaleSpeed);
 		}
