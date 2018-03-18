@@ -10,6 +10,7 @@ public class PlayerController : Controller {
 	public float moveSmooth = 10;
 
 	protected bool canControl;
+	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
@@ -17,7 +18,13 @@ public class PlayerController : Controller {
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
 	Rigidbody rb;
-	SpriteRenderer bodyRender { get; set; }
+	SpriteRenderer bodyRender
+	{
+		get
+		{
+			return body.GetComponent<SpriteRenderer>();
+		}
+	}
 	PlayerManager I_PlayerManager;
 	AimController I_AimController;
 	FollowTarget I_FollowTarget;
@@ -57,7 +64,6 @@ public class PlayerController : Controller {
 		I_PlayerManager = transform.GetComponent<PlayerManager>();
 		I_AimController = transform.GetComponentInChildren<AimController>();
 		I_FollowTarget = GameObject.FindWithTag("MainCamera").transform.GetComponent<FollowTarget>();
-		bodyRender = body.GetComponent<SpriteRenderer>();
 		attackType = AimAttackType.none;
 		rb = self.GetComponent<Rigidbody>();
 	}
@@ -66,11 +72,6 @@ public class PlayerController : Controller {
 	{
 		base.Start();
 		canControl = true;
-
-		// test
-		// 设置瞄准三角是否可见
-		//I_AimController.SetVisible(true);
-		// test
 	}
 
 	protected new void OnEnable()
@@ -103,22 +104,33 @@ public class PlayerController : Controller {
 		faceDirection = transform.forward;
 	}
 
-	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	new void Update()
 	{
 		base.Update();
-		if (attackType == AimAttackType.unknown) {
+		// 确定武器的攻击状态
+		if (attackType != AimAttackType.none) {
 			btnATouchedTime += Time.deltaTime;
-			if (btnATouchedTime >= aimAttackBoundaryTime || curWeaponType == WeaponType.singleLoader) {
-				attackType = AimAttackType.aming;
+			if (curWeaponType == WeaponType.singleLoader) {
+				if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+					attackType = AimAttackType.aming;
+				}
+				else {
+					attackType = AimAttackType.unknown;
+				}
 			}
-			else if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
-				attackType = AimAttackType.attacking;
-				ShowAttackAnim(true);
+			else if (curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.melee) {
+				if (attackType == AimAttackType.unknown) {
+					if (btnATouchedTime >= aimAttackBoundaryTime) {
+						attackType = AimAttackType.aming;
+					}
+					else {
+						if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+							attackType = AimAttackType.attacking;
+							ShowAttackAnim(true);
+						}
+					}
+				}
 			}
-		}
-		else {
-			btnATouchedTime = 0;
 		}
 #if UNITY_EDITOR
 		float x = Input.GetAxisRaw("Horizontal");
@@ -146,22 +158,20 @@ public class PlayerController : Controller {
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
 
-			float trueAttackBoundary = attackBoundary;
-			if (curWeaponType == WeaponType.melee) {
+			if (curWeaponType == WeaponType.singleLoader) {
 
 			}
-			else if (curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.aming) {
-				trueAttackBoundary *= atkBoundaryRate;
+			else if (curWeaponType == WeaponType.melee || curWeaponType == WeaponType.autoDistant) {
+				float trueAttackBoundary = attackBoundary;
+				if (attackType == AimAttackType.aming) {
+					trueAttackBoundary *= atkBoundaryRate;
+				}
+				if (faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
+					// 攻击
+					attackType = AimAttackType.attacking;
+					ShowAttackAnim(true);
+				}
 			}
-			
-			if ((attackType == AimAttackType.unknown || attackType == AimAttackType.aming) &&
-				curWeaponType != WeaponType.singleLoader &&
-				faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
-				// 攻击
-				attackType = AimAttackType.attacking;
-				ShowAttackAnim(true);
-			}
-
 			SetAimTriangleAndCamera();
 #endif
 			// Move the player
@@ -192,6 +202,7 @@ public class PlayerController : Controller {
 	void AttackDownEventFunc(Vector2 position)
 	{
 		attackType = AimAttackType.unknown;
+		btnATouchedTime = 0;
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
 
@@ -200,12 +211,14 @@ public class PlayerController : Controller {
 	{
 		ShowAttackAnim(false);
 		stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
-		if (curWeaponType == WeaponType.melee || curWeaponType == WeaponType.singleLoader ||
-			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown)) {
+		if (curWeaponType == WeaponType.melee ||
+			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
+			(curWeaponType == WeaponType.singleLoader && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))) {
 			// 抬手后单次射击
 			AttackOnce();
 		}
 		attackType = AimAttackType.none;
+		btnATouchedTime = 0;
 		// 防止下次按下攻击后直接射击
 		faceDirection = faceDirection.normalized * 0.1f;
 		stickLDirection = stickLDirection.normalized * 0.1f;
@@ -226,6 +239,7 @@ public class PlayerController : Controller {
 			int playerCollider = LayerMask.NameToLayer("Player");
 			Physics.IgnoreLayerCollision(playerCollider, enemyCollider);
 			bodyRender.sortingLayerName = "Default";
+			I_AimController.SetVisible(false);
 			if (rb) {
 				rb.velocity = Vector3.zero;
 				rb.angularVelocity = Vector3.zero;
@@ -311,22 +325,25 @@ public class PlayerController : Controller {
 				degree = degree > 180 ? degree - 360 : degree;
 				I_AimController.UpdateAim(distance / 10, degree);
 				faceDirection = p2e2D.normalized * stickLDirection.magnitude;
+				// 设置Camera的aimPos
+				Vector2 aimPos = new Vector2(target.position.x, target.position.z);
+				I_FollowTarget.SetAimPos(aimPos);
+
+
 				// 设置Camera的Offset
-				I_FollowTarget.SetOffset(p2e2D / 2);
+				//I_FollowTarget.SetOffset(p2e2D / 2);
 				// 设置Camera的sizeScale
-				float dZ = Mathf.Abs(target.position.z - transform.position.z);
-				if (dZ >= 30) {
-					I_FollowTarget.SetSizeScale(dZ / 30);
-				}
+				//float dZ = Mathf.Abs(target.position.z - transform.position.z);
+				//if (dZ >= 30) {
+				//	I_FollowTarget.SetSizeScale(dZ / 30);
+				//}
 			}
 			else {
 				faceDirection = stickLDirection;
 				I_AimController.UpdateAim(4, 0);
-				// 设置Camera的Offset
-				float degree = Utils.GetAnglePY(new Vector3(faceDirection.x, 0, faceDirection.y), Vector3.right);
-				float rate = faceDirection.magnitude / 1.5f;
-				rate = rate < 1 ? rate : 1;
-				I_FollowTarget.SetOffset(GetOffsetByAngle(degree)*rate);
+				// 设置Camera的aimDirection
+				I_FollowTarget.Reset();
+				I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
 			}
 		}
 		else {
@@ -334,17 +351,5 @@ public class PlayerController : Controller {
 			I_AimController.SetVisible(false);
 			I_FollowTarget.Reset();
 		}
-	}
-
-	// 以Player为中心做一个椭圆，返回椭圆与Player面朝方向的焦点:
-	// deno = √(b^2(Cosθ)^2+a^2(Sinθ)^2) 焦点：(abCosθ/deno, abSinθ/deno)
-	Vector2 GetOffsetByAngle(float degree)
-	{
-		float a = 17.78f, b = 10;
-		float r = degree * Mathf.Deg2Rad;
-		float Cr = Mathf.Cos(r);
-		float Sr = Mathf.Sin(r);
-		float deno = Mathf.Sqrt(b * b * Cr * Cr + a * a * Sr * Sr);
-		return new Vector2(a * b * Cr / deno, a * b * Sr / deno);
 	}
 }
