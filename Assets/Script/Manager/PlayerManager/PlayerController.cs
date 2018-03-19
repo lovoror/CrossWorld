@@ -15,6 +15,7 @@ public class PlayerController : Controller {
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
 	Transform curAimTarget = null;
+	Vector3 aimHitPoint = new Vector3(-1000, -1000, -1000);
 	Vector2 stickLDirection { get; set; }
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
@@ -218,11 +219,12 @@ public class PlayerController : Controller {
 			// 抬手后单次射击
 			AttackOnce();
 		}
-		// 狙击枪朝Enemy开枪后，镜头延迟归位
+		// 狙击枪朝Enemy或Wall开枪后，镜头延迟归位
 		if (curWeaponType == WeaponType.singleLoader && curAimTarget != null) {
 			Invoke("DelayInitAimTarget", 0.5f);
 		}
 		else {
+			//aimHitPoint = new Vector3(-1000, -1000, -1000);
 			curAimTarget = null;
 		}
 		attackType = AimAttackType.none;
@@ -282,7 +284,7 @@ public class PlayerController : Controller {
 	/*------------ PlayerChangeWeaponEvent --------------*/
 
 
-	bool HasEnemyInRange(ref Transform target)
+	bool HasEnemyInRange(ref Transform target, ref Vector3 hitPosition)
 	{
 		float maxDist = 30;
 		if (Constant.AimMaxDist.ContainsKey(curWeaponName)) {
@@ -290,7 +292,7 @@ public class PlayerController : Controller {
 		}
 		Transform player = transform;
 		LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
-		LayerMask ignoreLayerMask = LayerMask.GetMask("Wall");
+		LayerMask wallLayerMask = LayerMask.GetMask("Wall");
 		Collider[] hitColliders = null;
 		hitColliders = Physics.OverlapSphere(player.position, maxDist, enemyLayerMask);
 		// 检测是否被墙格挡 是否在瞄准范围内
@@ -309,12 +311,20 @@ public class PlayerController : Controller {
 				if (angle <= aimDegree) {
 					//RaycastHit hit;
 					bool isDead = collider.transform.GetComponent<Manager>().IsDead();
-					if (!isDead && !Physics.Linecast(player.position, collider.transform.position, ignoreLayerMask)) {
+					if (!isDead && !Physics.Linecast(player.position, collider.transform.position, wallLayerMask)) {
 						target = collider.transform;
 						return true;
 					}
 				}
 			}
+		}
+		// 返回瞄准线与墙的交接点
+		Ray ray = new Ray();
+		ray.origin = player.position;
+		ray.direction = player.forward;
+		RaycastHit hitInfo;
+		if (Physics.Raycast(ray, out hitInfo, maxDist, wallLayerMask)) {
+			hitPosition = hitInfo.point;
 		}
 		target = null;
 		return false;
@@ -330,12 +340,13 @@ public class PlayerController : Controller {
 	void SetAimTriangle()
 	{
 		WeaponType curWeaponType = I_Manager.GetWeaponType();
+		aimHitPoint = new Vector3(-1000, -1000, -1000);
 		// 设置瞄准三角是否可见
 		if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
 			(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
 			I_AimController.SetVisible(true);
 			// 设置瞄准三角大小
-			HasEnemyInRange(ref curAimTarget);
+			HasEnemyInRange(ref curAimTarget, ref aimHitPoint);
 			if (curAimTarget != null) {
 				float distance = (transform.position - curAimTarget.position).magnitude;
 				Vector3 p2e = curAimTarget.position - transform.position;
@@ -345,6 +356,11 @@ public class PlayerController : Controller {
 				degree = degree > 180 ? degree - 360 : degree;
 				I_AimController.UpdateAim(distance / 10, degree);
 				faceDirection = p2e2D.normalized * stickLDirection.magnitude;
+			}
+			else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
+				float distance = (transform.position - aimHitPoint).magnitude;
+				I_AimController.UpdateAim(distance / 10, 0);
+				faceDirection = stickLDirection;
 			}
 			else {
 				faceDirection = stickLDirection;
@@ -367,6 +383,10 @@ public class PlayerController : Controller {
 		if (curAimTarget != null) {
 			// 设置Camera的aimPos
 			Vector2 aimPos = new Vector2(curAimTarget.position.x, curAimTarget.position.z);
+			I_FollowTarget.SetAimPos(aimPos);
+		}
+		else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
+			Vector2 aimPos = new Vector2(aimHitPoint.x, aimHitPoint.z);
 			I_FollowTarget.SetAimPos(aimPos);
 		}
 		else {

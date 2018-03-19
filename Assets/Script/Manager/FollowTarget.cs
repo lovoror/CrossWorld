@@ -91,9 +91,10 @@ public class FollowTarget : MonoBehaviour {
 
 	// 以Follow为中心做一个椭圆，Camera被限制在这个椭圆内移动，返回椭圆与Follow面朝方向的焦点:
 	// deno = √(b^2(Cosθ)^2+a^2(Sinθ)^2) 焦点：(abCosθ/deno, abSinθ/deno)
+	// 1080分辨率对应为40m，1920对应为71.11m
 	Vector2 GetOffsetByAngle(float degree)
 	{
-		float a = 17.78f, b = 10;
+		float a = 17.78f, b = 15;
 		float r = degree * Mathf.Deg2Rad;
 		float Cr = Mathf.Cos(r);
 		float Sr = Mathf.Sin(r);
