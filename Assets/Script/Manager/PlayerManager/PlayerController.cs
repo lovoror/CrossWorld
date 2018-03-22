@@ -10,6 +10,7 @@ public class PlayerController : Controller {
 	public float moveSmooth = 10;
 
 	protected bool canControl;
+	bool isBtnADown = false;
 	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
@@ -19,6 +20,13 @@ public class PlayerController : Controller {
 	Vector2 stickLDirection { get; set; }
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
+	int leftBullets
+	{
+		get
+		{
+			return I_BaseData.GetCurLeftBullets();
+		}
+	}
 	Rigidbody rb;
 	SpriteRenderer bodyRender
 	{
@@ -88,6 +96,10 @@ public class PlayerController : Controller {
 		MoboController.AttackDownEvent += new MoboController.AttackDownEventHandler(AttackDownEventFunc);
 		// AttackUpEvent
 		MoboController.AttackUpEvent += new MoboController.AttackUpEventHandler(AttackUpEventFunc);
+		// PlayerChangeWeaponEvent
+		FuncRButton.PlayerChangeWeaponEvent += new FuncRButton.PlayerChangeWeaponEventHandler(PlayerChangeWeaponEventFunc);
+		// PlayerReloadWeaponEvent
+		FuncRButton.PlayerReloadEvent += new FuncRButton.PlayerReloadEventHandler(PlayerReloadWeaponEventFunc);
 	}
 
 	protected new void OnDisable()
@@ -97,6 +109,8 @@ public class PlayerController : Controller {
 		MoboController.PlayerFaceEvent -= PlayerFaceEventFunc;
 		MoboController.AttackDownEvent -= AttackDownEventFunc;
 		MoboController.AttackUpEvent   -= AttackUpEventFunc;
+		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
+		FuncRButton.PlayerReloadEvent -= PlayerReloadWeaponEventFunc;
 	}
 
 	void Reset()
@@ -203,8 +217,25 @@ public class PlayerController : Controller {
 	/*--------------------- AttackDownEvent ---------------------*/
 	void AttackDownEventFunc(Vector2 position)
 	{
-		attackType = AimAttackType.unknown;
-		btnATouchedTime = 0;
+		isBtnADown = true;
+		// Reload
+		if ((curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader) &&
+			leftBullets < 1) {
+			DistantWeaponManager dstWeaponManager = (DistantWeaponManager)I_Manager.I_WeaponManager;
+			MyDelegate.vfv myCallback = new MyDelegate.vfv(ReloadCallback);
+			dstWeaponManager.Reload(myCallback);
+		}
+		else {
+			attackType = AimAttackType.unknown;
+			btnATouchedTime = 0;
+		}
+	}
+	void ReloadCallback()
+	{
+		if (isBtnADown) {
+			attackType = AimAttackType.unknown;
+			btnATouchedTime = 0;
+		}
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
 
@@ -215,7 +246,8 @@ public class PlayerController : Controller {
 		stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
 		if (curWeaponType == WeaponType.melee ||
 			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
-			(curWeaponType == WeaponType.singleLoader && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))) {
+			(curWeaponType == WeaponType.singleLoader && attackType != AimAttackType.none &&
+			(attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))) {
 			// 抬手后单次射击
 			AttackOnce();
 		}
@@ -229,6 +261,7 @@ public class PlayerController : Controller {
 		}
 		attackType = AimAttackType.none;
 		btnATouchedTime = 0;
+		isBtnADown = false;
 		// 防止下次按下攻击后直接射击
 		faceDirection = faceDirection.normalized * 0.1f;
 		stickLDirection = stickLDirection.normalized * 0.1f;
@@ -270,6 +303,11 @@ public class PlayerController : Controller {
 	/*-------------------- AttackSpeedChangeEvent ---------------------*/
 
 	/*------------ PlayerChangeWeaponEvent --------------*/
+	void PlayerChangeWeaponEventFunc(Transform player, WeaponNameType weaponName)
+	{
+		PlayerData.Instance.curWeaponName = weaponName;
+		ChangeWeapon();
+	}
 	public void ChangeWeapon()
 	{
 		var d_bodys = PlayerData.Instance.d_Bodys;
@@ -280,9 +318,37 @@ public class PlayerController : Controller {
 		foreach (var weapon in d_weapons) {
 			weapon.Value.gameObject.SetActive(weapon.Key == curWeaponName);
 		}
+		// 弹夹空了则Reload
+		Invoke("DelayReload", 0.5f);
+	}	
+	void DelayReload()
+	{
+		if (curWeaponType == WeaponType.singleLoader || curWeaponType == WeaponType.autoDistant) {
+			int bullets = PlayerData.Instance.GetCurLeftBullets();
+			if (bullets <= 0) {
+				((DistantWeaponManager)I_Manager.I_WeaponManager).Reload();
+			}
+		}
 	}
 	/*------------ PlayerChangeWeaponEvent --------------*/
 
+	/*------------ PlayerReloadWeaponEvent --------------*/
+	void PlayerReloadWeaponEventFunc(Transform player)
+	{
+		if (transform != player) return;
+		if (curWeaponType == WeaponType.singleLoader || curWeaponType == WeaponType.autoDistant) {
+			int bullets = PlayerData.Instance.GetCurLeftBullets();
+			int magazineSize = 0;
+			if (Constant.MagazineSize.ContainsKey(curWeaponName)) {
+				magazineSize = Constant.MagazineSize[curWeaponName];
+			}
+			if (bullets < magazineSize) {
+				((DistantWeaponManager)I_Manager.I_WeaponManager).Reload();
+			}
+		}
+	}
+	/*------------ PlayerReloadWeaponEvent --------------*/
+	
 
 	bool HasEnemyInRange(ref Transform target, ref Vector3 hitPosition)
 	{

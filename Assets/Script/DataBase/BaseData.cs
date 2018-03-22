@@ -95,6 +95,7 @@ public class BaseData
 	}
 	public Dictionary<WeaponNameType, Transform> d_Bodys = new Dictionary<WeaponNameType, Transform>();
 	public Dictionary<WeaponNameType, Transform> d_Weapons = new Dictionary<WeaponNameType, Transform>();
+	public Dictionary<WeaponNameType, int> d_LeftBullets = new Dictionary<WeaponNameType, int>();
 	Dictionary<WeaponNameType, float> d_WeaponEnergy = new Dictionary<WeaponNameType, float>();
 	Dictionary<WeaponNameType, float> d_WeaponLeftEnergy = new Dictionary<WeaponNameType, float>();
 	Dictionary<WeaponNameType, float> d_WeaponEnergyGap = new Dictionary<WeaponNameType, float>();
@@ -111,6 +112,14 @@ public class BaseData
 				d_WeaponEnergyGap.Add(weaponName, 99999);
 				d_WeaponSpeed.Add(weaponName, 1);
 				d_WeaponLevel.Add(weaponName, 1);
+				WeaponType weaponType = Utils.GetWeaponTypeByName(weaponName);
+				if (weaponType == WeaponType.autoDistant || weaponType == WeaponType.singleLoader) {
+					int count = 0;
+					if (Constant.MagazineSize.ContainsKey(weaponName)) {
+						count = Constant.MagazineSize[weaponName];
+					}
+					d_LeftBullets.Add(weaponName, count);
+				}
 			}
 			else {
 				d_WeaponEnergy.Add(weaponName, -1);
@@ -118,6 +127,7 @@ public class BaseData
 				d_WeaponEnergyGap.Add(weaponName, -1);
 				d_WeaponSpeed.Add(weaponName, -1);
 				d_WeaponLevel.Add(weaponName, -1);
+				d_LeftBullets.Add(weaponName, -1);
 			}
 		}
 	}
@@ -301,6 +311,48 @@ public class BaseData
 		Transform[] transforms = new Transform[d_Weapons.Count];
 		d_Weapons.Values.CopyTo(transforms, 0);
 		return transforms;
+	}
+
+	public void ReloadWeapon(WeaponNameType weaponName = WeaponNameType.unknown)
+	{
+		weaponName = weaponName == WeaponNameType.unknown ? curWeaponName : weaponName;
+		int count = -1;
+		if (Constant.MagazineSize.ContainsKey(weaponName)) {
+			count = Constant.MagazineSize[weaponName];
+		}
+		if (count < 0) return;
+		if (d_LeftBullets.ContainsKey(weaponName)) {
+			d_LeftBullets[weaponName] = count;
+		}
+		else {
+			d_LeftBullets.Add(weaponName, count);
+		}
+	}
+
+	public int GetLeftBulletsByName(WeaponNameType weaponName)
+	{
+		int count = -1;
+		if (d_LeftBullets.ContainsKey(weaponName)) {
+			count = d_LeftBullets[weaponName];
+		}
+		return count;
+	}
+
+	public int GetCurLeftBullets()
+	{
+		return GetLeftBulletsByName(curWeaponName);
+	}
+
+	public bool ShootOneBullet()
+	{
+		if (d_LeftBullets.ContainsKey(curWeaponName)) {
+			int count = d_LeftBullets[curWeaponName];
+			if (count > 0) {
+				d_LeftBullets[curWeaponName] = count - 1;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void AddToBodys(WeaponNameType weaponName, Transform body)

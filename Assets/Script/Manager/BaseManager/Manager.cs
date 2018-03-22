@@ -19,23 +19,26 @@ public class Manager : MonoBehaviour
 	[HideInInspector]
 	public DataManager I_DataManager;
 	[HideInInspector]
+	public Controller I_Controller;
+	[HideInInspector]
 	public AnimEventsManager I_AnimEventsManager { get; set; }
 	[HideInInspector]
 	public Animator I_Animator { get; set; }
 	[HideInInspector]
 	public bool isPlayer;
 	[HideInInspector]
-	public BaseData selfData;
+	public BaseData I_BaseData { get; set; }
 
 	private List<string> ownerTags = new List<string> { "Player", "Enemy" };
 
 	protected void Awake()
 	{
 		self = Utils.GetOwner(transform, ownerTags);
-		selfData = Utils.GetBaseData(self);
+		I_BaseData = Utils.GetBaseData(self);
 		I_AnimEventsManager = transform.GetComponentInChildren<AnimEventsManager>();
 		I_Messenger = self.GetComponent<Messenger>();
 		I_DataManager = self.GetComponent<DataManager>();
+		I_Controller = self.GetComponent<Controller>();
 		I_Animator = self.GetComponentInChildren<Animator>();
 	}
 

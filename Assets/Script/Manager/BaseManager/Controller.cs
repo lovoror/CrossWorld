@@ -6,7 +6,13 @@ using UnityEngine;
 public class Controller : MonoBehaviour {
 	[HideInInspector]
 	public Manager I_Manager;
-
+	protected BaseData I_BaseData
+	{
+		get
+		{
+			return I_Manager.I_BaseData;
+		}
+	}
 	protected Transform self;
 	protected Transform body
 	{
@@ -23,6 +29,20 @@ public class Controller : MonoBehaviour {
 		}
 	}
 	protected SphereCollider bodyCollider;
+	protected AudioSource reloadAudio
+	{
+		get
+		{
+			Transform weapon = I_BaseData.curWeaponTransform;
+			if (weapon) {
+				AudioSource[] audios = weapon.GetComponents<AudioSource>();
+				if (audios.Length >= 2) {
+					return audios[1];
+				}
+			}
+			return null;
+		}
+	}
 	protected Animator legAnim;
 	protected Animator bodyAnim
 	{
@@ -37,6 +57,13 @@ public class Controller : MonoBehaviour {
 		get
 		{
 			return bodyAnim.GetCurrentAnimatorStateInfo(0);
+		}
+	}
+	protected WeaponNameType curWeaponName
+	{
+		get
+		{
+			return I_Manager.GetCurWeaponName();
 		}
 	}
 
@@ -57,11 +84,13 @@ public class Controller : MonoBehaviour {
 	protected void OnEnable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
+		I_Manager.I_AnimEventsManager.PlayReloadSoundEvent += new AnimEventsManager.PlayReloadSoundEventHandler(PlayReloadSoundEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
+		I_Manager.I_AnimEventsManager.PlayReloadSoundEvent -= PlayReloadSoundEventFunc;
 	}
 
 	protected void Update()
@@ -81,6 +110,15 @@ public class Controller : MonoBehaviour {
 		}
 	}
 	/*-------------------- DeadEvent ---------------------*/
+
+	/*-------------------- PlayReloadSoundEvent ---------------------*/
+	void PlayReloadSoundEventFunc()
+	{
+		if (reloadAudio) {
+			reloadAudio.Play();
+		}
+	}
+	/*-------------------- PlayReloadSoundEvent ---------------------*/
 
 	/*------------------ 状态机 ------------------*/
 	protected void ShowWalkAnim(float speedRate)
@@ -107,6 +145,19 @@ public class Controller : MonoBehaviour {
 		int deadState = Mathf.FloorToInt(Random.value * 8);
 		bodyAnim.SetInteger("DeadState", deadState);
 		bodyAnim.SetBool("Dead", show);
+	}
+
+	public void ShowReloadAnim()
+	{
+		bodyAnim.SetTrigger("Reload");
+		//AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
+		//if (!stateInfo.IsName("Reload")) {
+		//	bodyAnim.SetTrigger("Reload");
+		//	AudioSource reloadAudio = this.reloadAudio;
+		//	if (reloadAudio) {
+		//		reloadAudio.Play();
+		//	}
+		//}
 	}
 	/*------------------ 状态机 ------------------*/
 }

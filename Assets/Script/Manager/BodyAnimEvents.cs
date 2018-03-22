@@ -30,4 +30,20 @@ public class BodyAnimEvents : MonoBehaviour {
 	{
 		I_AnimEventsManager.OnAttack();
 	}
+
+	// 攻击结束
+	void OnAttackEnd()
+	{
+		I_AnimEventsManager.OnAttackEnd();
+	}
+
+	void OnReloadEnd()
+	{
+		I_AnimEventsManager.OnReloadEnd();
+	}
+
+	void PlayReloadSound()
+	{
+		I_AnimEventsManager.PlayReloadSound();
+	}
 }

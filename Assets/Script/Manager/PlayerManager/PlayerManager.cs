@@ -35,11 +35,4 @@ public class PlayerManager : Manager {
 	void Update () {
 		
 	}
-
-	/*------------ PlayerChangeWeaponEvent --------------*/
-	public void ChangeWeapon()
-	{
-		I_PlayerController.ChangeWeapon();
-	}
-	/*------------ PlayerChangeWeaponEvent --------------*/
 }

@@ -13,12 +13,12 @@ public class WeaponManager : MonoBehaviour {
 	protected Manager I_Manager;  // attacker的Manager管理类
 	protected AnimEventsManager I_AnimEventsManager { get; set; }
 	protected AudioSource attackAudioSource;  // 攻击音效
-	protected BaseData selfData { get; set; }
+	protected BaseData I_BaseData { get; set; }
 	protected Transform body
 	{
 		get
 		{
-			return selfData.curBodyTransform;
+			return I_BaseData.curBodyTransform;
 		}
 	}
 
@@ -28,7 +28,7 @@ public class WeaponManager : MonoBehaviour {
 		if (self) {
 			I_Manager = self.GetComponent<Manager>();
 		}
-		selfData = I_Manager.selfData;
+		I_BaseData = I_Manager.I_BaseData;
 		I_AnimEventsManager = I_Manager.I_AnimEventsManager;
 	}
 
@@ -40,12 +40,14 @@ public class WeaponManager : MonoBehaviour {
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
 		I_AnimEventsManager.AttackEvent += new AnimEventsManager.AttackEventHandler(AttackEventFunc);
+		I_AnimEventsManager.AttackEndEvent += new AnimEventsManager.AttackEndEventHandler(AttackEndEventFunc);
 	}
 
 	protected void OnDisable()
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
 		I_AnimEventsManager.AttackEvent -= AttackEventFunc;
+		I_AnimEventsManager.AttackEndEvent -= AttackEndEventFunc;
 	}
 
 	protected virtual void OnTriggerEnter(Collider other)
@@ -75,6 +77,11 @@ public class WeaponManager : MonoBehaviour {
 	protected virtual void AttackEventFunc()
 	{
 		PlayAttackShound();
+	}
+
+	protected virtual void AttackEndEventFunc()
+	{
+		
 	}
 
 	protected virtual void PlayAttackShound()

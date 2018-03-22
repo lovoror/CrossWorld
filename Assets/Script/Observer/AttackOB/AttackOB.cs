@@ -4,16 +4,12 @@ using UnityEngine;
 
 public class AttackOB : Observer
 {
-	public delegate void PlayerChangeWeaponNotifyEventHandler(Transform player);
-	public static event PlayerChangeWeaponNotifyEventHandler PlayerChangeWeaponNotifyEvent;
-
 	private static bool isRegisted = false;
 	protected new void OnEnable()
 	{
 		base.OnEnable();
 		if (isRegisted) return;
 		Messenger.HurtDeclarationEvent += new Messenger.HurtDeclarationEventHandler(HurtDeclarationEventFunc);
-		FuncRButton.PlayerChangeWeaponEvent += new FuncRButton.PlayerChangeWeaponEventHandler(PlayerChangeWeaponEventFunc);
 		isRegisted = true;
 	}
 
@@ -21,7 +17,6 @@ public class AttackOB : Observer
 	{
 		base.OnDisable();
 		Messenger.HurtDeclarationEvent -= HurtDeclarationEventFunc;
-		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
 	}
 
 	protected new void Start(){
@@ -103,16 +98,6 @@ public class AttackOB : Observer
 		//}
 	}
 	/*------------ WeaponEnergyChangeEvent -------------*/
-
-	/*------------ PlayerChangeWeaponEvent --------------*/
-	void PlayerChangeWeaponEventFunc(Transform player, WeaponNameType weaponName)
-	{
-		PlayerData.Instance.curWeaponName = weaponName;
-		if (PlayerChangeWeaponNotifyEvent != null) {
-			PlayerChangeWeaponNotifyEvent(player);
-		}
-	}
-	/*------------ PlayerChangeWeaponEvent --------------*/
 
 	public static new void StageEnd()
 	{

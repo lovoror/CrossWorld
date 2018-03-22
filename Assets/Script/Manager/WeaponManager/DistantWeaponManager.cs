@@ -5,13 +5,23 @@ using UnityEngine;
 public class DistantWeaponManager : WeaponManager {
 
 	public Transform bullet;
-	float damage = 10;
 	public float bulletSpeed = 100;
 	public bool canPenetrate = false;
 	public Transform muzzle;
 
+	MyDelegate.vfv ReloadCallback = null;
+	int leftBullets
+	{
+		get
+		{
+			return I_BaseData.GetCurLeftBullets();
+		}
+	}
+	float damage = 10;  // 并无作用
+
 	protected new void Awake()
 	{
+		
 		base.Awake();
 	}
 	protected new void Start ()
@@ -22,16 +32,48 @@ public class DistantWeaponManager : WeaponManager {
 	protected new void OnEnable()
 	{
 		base.OnEnable();
+		I_Manager.I_AnimEventsManager.OnReloadEndEvent += new AnimEventsManager.OnReloadEndEventHandler(OnReloadEndEventFunc);
 	}
 	protected new void OnDisable()
 	{
 		base.OnDisable();
+		I_Manager.I_AnimEventsManager.OnReloadEndEvent -= OnReloadEndEventFunc;
 	}
+
+	/************************* OnReloadEnd **************************/
+	void OnReloadEndEventFunc()
+	{
+		I_BaseData.ReloadWeapon();
+		if (ReloadCallback != null) {
+			ReloadCallback();
+			ReloadCallback = null;
+		}
+	}
+	/************************* OnReloadEnd **************************/
 
 	protected override void AttackEventFunc()
 	{
 		base.AttackEventFunc();
-		CreateBullet(self, I_Manager.GetCurWeaponName());
+		if (leftBullets > 0) {
+			CreateBullet(self, I_Manager.GetCurWeaponName());
+			I_BaseData.ShootOneBullet();
+		}
+		else {
+			Reload();
+		}
+	}
+	protected override void AttackEndEventFunc()
+	{
+		base.AttackEndEventFunc();
+		if (leftBullets <= 0) {
+			Reload();
+		}
+	}
+
+	public void Reload(MyDelegate.vfv callback = null)
+	{
+		ReloadCallback = callback;
+		I_Manager.I_Controller.ShowReloadAnim();
 	}
 
 	void CreateBullet(Transform shooter, WeaponNameType weaponName)

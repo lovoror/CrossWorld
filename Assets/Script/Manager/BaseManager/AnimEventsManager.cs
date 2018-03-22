@@ -8,6 +8,12 @@ public class AnimEventsManager : MonoBehaviour
 	// 攻击事件：BodyAnimEvents -> WeaponManager
 	public delegate void AttackEventHandler();  // 通知WeaponManager武器攻击
 	public event AttackEventHandler AttackEvent;
+	public delegate void AttackEndEventHandler();  // 通知WeaponManager武器攻击结束
+	public event AttackEndEventHandler AttackEndEvent;
+	public delegate void OnReloadEndEventHandler();
+	public event OnReloadEndEventHandler OnReloadEndEvent;
+	public delegate void PlayReloadSoundEventHandler();
+	public event PlayReloadSoundEventHandler PlayReloadSoundEvent;
 
 	Manager I_Manager;
 
@@ -40,6 +46,29 @@ public class AnimEventsManager : MonoBehaviour
 	{
 		if (AttackEvent != null) {
 			AttackEvent();
+		}
+	}
+
+	// 攻击结束
+	public void OnAttackEnd()
+	{
+		if (AttackEndEvent != null) {
+			AttackEndEvent();
+		}
+	}
+
+	// Reload动画结束
+	public void OnReloadEnd()
+	{
+		if (OnReloadEndEvent != null) {
+			OnReloadEndEvent();
+		}
+	}
+
+	public void PlayReloadSound()
+	{
+		if (PlayReloadSoundEvent != null) {
+			PlayReloadSoundEvent();
 		}
 	}
 }

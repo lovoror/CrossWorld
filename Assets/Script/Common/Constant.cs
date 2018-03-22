@@ -70,6 +70,13 @@ public class Constant
 		{ WeaponNameType.Sniper, 90 },
 	};
 
+	// 远程武器弹夹容量
+	public static Dictionary<WeaponNameType, int> MagazineSize = new Dictionary<WeaponNameType, int>{
+		{ WeaponNameType.M16, 30 },
+		{ WeaponNameType.Machinegun, 30 },
+		{ WeaponNameType.Sniper, 6 },
+	};
+
 	public static float GetBaseDamage(WeaponNameType weaponName)
 	{
 		if (BaseDamage.ContainsKey(weaponName)) {

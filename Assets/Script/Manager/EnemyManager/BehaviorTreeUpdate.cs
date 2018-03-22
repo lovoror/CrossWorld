@@ -11,12 +11,12 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	Manager I_Manager;
 	SharedFloat baseSpeed;
 	SharedFloat curSpeed;
-	BaseData selfData;
+	BaseData I_BaseData;
 	Transform body
 	{
 		get
 		{
-			return selfData.curBodyTransform;
+			return I_BaseData.curBodyTransform;
 		}
 	}
 	Transform leg;
@@ -31,7 +31,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	{
 		get
 		{
-			return selfData.curWeaponSpeed;
+			return I_BaseData.curWeaponSpeed;
 		}
 	}
 
@@ -56,7 +56,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 
 	void Start ()
 	{
-		selfData = I_Manager.selfData;
+		I_BaseData = I_Manager.I_BaseData;
 		bodyAnim = body.GetComponent<Animator>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
 		baseSpeed = (float)behaviorTree.GetVariable("RunSpeed").GetValue();

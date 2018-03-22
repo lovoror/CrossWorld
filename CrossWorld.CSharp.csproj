@@ -931,6 +931,7 @@
     <Compile Include="Assets\Behavior Designer\Runtime\Variables\SharedVector4.cs" />
     <Compile Include="Assets\Scenes\Move.cs" />
     <Compile Include="Assets\Script\Common\Constant.cs" />
+    <Compile Include="Assets\Script\Common\MyDelegate.cs" />
     <Compile Include="Assets\Script\Common\Singleton.cs" />
     <Compile Include="Assets\Script\Common\Utils.cs" />
     <Compile Include="Assets\Script\DataBase\BaseData.cs" />
@@ -988,6 +989,7 @@
     <Compile Include="Assets\Script\StageMachine\GameStageBase.cs" />
     <Compile Include="Assets\Script\StageMachine\GameStageMachine.cs" />
     <Compile Include="Assets\Script\StageMachine\LevelTestStage.cs" />
+    <Compile Include="Assets\Script\UI\BulletNumberUpdate.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\FuncRButton.cs" />
