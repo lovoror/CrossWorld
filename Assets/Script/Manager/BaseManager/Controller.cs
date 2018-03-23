@@ -149,15 +149,10 @@ public class Controller : MonoBehaviour {
 
 	public void ShowReloadAnim()
 	{
-		bodyAnim.SetTrigger("Reload");
-		//AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
-		//if (!stateInfo.IsName("Reload")) {
-		//	bodyAnim.SetTrigger("Reload");
-		//	AudioSource reloadAudio = this.reloadAudio;
-		//	if (reloadAudio) {
-		//		reloadAudio.Play();
-		//	}
-		//}
+		AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
+		if (!stateInfo.IsName("Base.Reload")) {
+			bodyAnim.SetTrigger("Reload");
+		}
 	}
 	/*------------------ 状态机 ------------------*/
 }
