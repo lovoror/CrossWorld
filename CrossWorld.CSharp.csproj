@@ -929,7 +929,6 @@
     <Compile Include="Assets\Behavior Designer\Runtime\Variables\SharedVector2.cs" />
     <Compile Include="Assets\Behavior Designer\Runtime\Variables\SharedVector3.cs" />
     <Compile Include="Assets\Behavior Designer\Runtime\Variables\SharedVector4.cs" />
-    <Compile Include="Assets\Scenes\Move.cs" />
     <Compile Include="Assets\Script\Common\Constant.cs" />
     <Compile Include="Assets\Script\Common\MyDelegate.cs" />
     <Compile Include="Assets\Script\Common\Singleton.cs" />
@@ -992,9 +991,11 @@
     <Compile Include="Assets\Script\UI\BulletNumberUpdate.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\AttackStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\FuncRButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\LeftStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoboController.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\MoveCamera.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
     <Compile Include="Assets\Script\UI\UiDebugTxt.cs" />
   </ItemGroup>

@@ -7,6 +7,7 @@ public class FollowTarget : MonoBehaviour {
 	public float aimSpeed = 4.0f;
 	public float scaleSpeed = 2f;
 	public Vector2 offset = Vector2.zero;
+	public bool controlByOther = false; // 是否被外部脚本控制
 
 	Transform follow;
 	Vector2 followPos
@@ -38,6 +39,7 @@ public class FollowTarget : MonoBehaviour {
 	Vector3 curOffset = Vector3.zero;
 	void FixedUpdate()
 	{
+		if (controlByOther) return;
 		// 根据offset来同步Camera的位置，可实现跟随和瞄准/恢复不冲突。
 		Vector3 offset3D = new Vector3(offset.x, 10, offset.y);
 		curOffset = Vector3.Lerp(curOffset, offset3D, Time.fixedDeltaTime * aimSpeed);  // 当前的offset点

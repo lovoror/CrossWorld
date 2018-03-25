@@ -37,12 +37,30 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	float buttonRadious;
 
+	[SerializeField]
+	RectTransform AStickBg;
+	[SerializeField]
+	RectTransform AStick;
+	Vector2 bgSize;
+	Image bgImage;
+	Image stickImage;
+	Vector2 stickSize;
+	Vector2 orgPosition;
+	float radious;
+
 	void Awake()
 	{
 		Image image = GetComponent<Image>();
-		image.alphaHitTestMinimumThreshold = 0.1f;
+		//image.alphaHitTestMinimumThreshold = 0.08f;
 		buttonRadious = image.rectTransform.sizeDelta[0] / 2;
 		dragThreshold *= buttonRadious;
+
+		bgImage = AStickBg.GetComponent<Image>();
+		stickImage = AStick.GetComponent<Image>();
+		bgSize = AStickBg.sizeDelta;
+		stickSize = AStick.sizeDelta;
+		orgPosition = AStickBg.position;
+		radious = (bgSize.x - stickSize.x) / 2;
 	}
 
 	public void Reset()
@@ -69,6 +87,12 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	public void OnPointerDown(PointerEventData data)
 	{
+		// 显示背景
+		Color c = bgImage.color;
+		bgImage.color = new Color(c.r, c.g, c.b, 1);
+		AStickBg.position = data.pressPosition + new Vector2(bgSize.x / 2, 0) - new Vector2(0, bgSize.y / 2);
+		stickImage.color = new Color(0.31f, 0.89f, 0.94f, 1);
+
 		if (touchId < 0) {
 			lastPressDownTime = Time.time;
 			touchId = data.pointerId;
@@ -80,6 +104,12 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 	}
 	public void OnPointerUp(PointerEventData eventData)
 	{
+		// 隐藏背景
+		Color c = bgImage.color;
+		bgImage.color = new Color(c.r, c.g, c.b, 0);
+		AStickBg.position = orgPosition;
+		AStick.position = orgPosition - new Vector2(AStickBg.sizeDelta.x / 2, 0) + new Vector2(0, AStickBg.sizeDelta.y / 2);
+		stickImage.color = new Color(1, 1, 1, 0.8f);
 		// 检测是否是click
 		if (!isHolding) {
 			// Click Type
@@ -95,6 +125,16 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	public void OnDrag(PointerEventData data)
 	{
+		// 准星滑动
+		Vector2 localPointerPosition = data.position - data.pressPosition;
+		if (localPointerPosition.magnitude <= radious) {
+			AStick.position = data.position;
+		}
+		else {
+			AStick.position = data.pressPosition + localPointerPosition.normalized * radious;
+		}
+
+		// 功能实现
 		Vector2 pointer = data.position - data.pressPosition;
 
 		if (pointer.sqrMagnitude > dragThreshold * dragThreshold) {
