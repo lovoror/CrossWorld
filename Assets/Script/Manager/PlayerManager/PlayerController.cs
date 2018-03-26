@@ -38,7 +38,7 @@ public class PlayerController : Controller {
 	PlayerManager I_PlayerManager;
 	AimController I_AimController;
 	FollowTarget I_FollowTarget;
-	WeaponNameType curWeaponName
+	new WeaponNameType curWeaponName
 	{
 		get
 		{
@@ -100,6 +100,8 @@ public class PlayerController : Controller {
 		FuncRButton.PlayerChangeWeaponEvent += new FuncRButton.PlayerChangeWeaponEventHandler(PlayerChangeWeaponEventFunc);
 		// PlayerReloadWeaponEvent
 		FuncRButton.PlayerReloadEvent += new FuncRButton.PlayerReloadEventHandler(PlayerReloadWeaponEventFunc);
+		// OnReloadEndEvent
+		I_Manager.I_AnimEventsManager.OnReloadEndEvent += new AnimEventsManager.OnReloadEndEventHandler(OnReloadEndEventFunc);
 	}
 
 	protected new void OnDisable()
@@ -134,7 +136,7 @@ public class PlayerController : Controller {
 					attackType = AimAttackType.unknown;
 				}
 			}
-			else if (curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.melee) {
+			else if (curWeaponType == WeaponType.autoDistant) {
 				if (attackType == AimAttackType.unknown) {
 					if (btnATouchedTime >= aimAttackBoundaryTime) {
 						attackType = AimAttackType.aming;
@@ -146,6 +148,9 @@ public class PlayerController : Controller {
 						}
 					}
 				}
+			}
+			else if (curWeaponType == WeaponType.melee) {
+				
 			}
 		}
 #if UNITY_EDITOR
@@ -177,7 +182,10 @@ public class PlayerController : Controller {
 			if (curWeaponType == WeaponType.singleLoader) {
 
 			}
-			else if (curWeaponType == WeaponType.melee || curWeaponType == WeaponType.autoDistant) {
+			else if (curWeaponType == WeaponType.melee) {
+
+			}
+			else if (curWeaponType == WeaponType.autoDistant) {
 				float trueAttackBoundary = attackBoundary;
 				if (attackType == AimAttackType.aming) {
 					trueAttackBoundary *= atkBoundaryRate;
@@ -219,14 +227,20 @@ public class PlayerController : Controller {
 	{
 		isBtnADown = true;
 		// Reload
-		if ((curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader) &&
-			leftBullets < 1) {
-			DistantWeaponManager dstWeaponManager = (DistantWeaponManager)I_Manager.I_WeaponManager;
-			MyDelegate.vfv myCallback = new MyDelegate.vfv(ReloadCallback);
-			dstWeaponManager.Reload(myCallback);
+		if (curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader) {
+			if (leftBullets < 1) {
+				DistantWeaponManager dstWeaponManager = (DistantWeaponManager)I_Manager.I_WeaponManager;
+				MyDelegate.vfv myCallback = new MyDelegate.vfv(ReloadCallback);
+				dstWeaponManager.Reload(myCallback);
+			}
+			else {
+				attackType = AimAttackType.unknown;
+				btnATouchedTime = 0;
+			}
 		}
-		else {
-			attackType = AimAttackType.unknown;
+		else if (curWeaponType == WeaponType.melee) {
+			attackType = AimAttackType.attacking;
+			ShowAttackAnim(true);
 			btnATouchedTime = 0;
 		}
 	}
@@ -263,8 +277,8 @@ public class PlayerController : Controller {
 		btnATouchedTime = 0;
 		isBtnADown = false;
 		// 防止下次按下攻击后直接射击
-		faceDirection = faceDirection.normalized * 0.1f;
-		stickLDirection = stickLDirection.normalized * 0.1f;
+		faceDirection = faceDirection.normalized * 0.0001f;
+		stickLDirection = stickLDirection.normalized * 0.0001f;
 	}
 	void DelayInitAimTarget()
 	{
@@ -347,8 +361,14 @@ public class PlayerController : Controller {
 			}
 		}
 	}
+
 	/*------------ PlayerReloadWeaponEvent --------------*/
-	
+
+	/*--------------- OnReloadEndEvent -----------------*/
+	void OnReloadEndEventFunc()
+	{
+	}
+	/*--------------- OnReloadEndEvent -----------------*/
 
 	bool HasEnemyInRange(ref Transform target, ref Vector3 hitPosition)
 	{
@@ -410,7 +430,8 @@ public class PlayerController : Controller {
 		// 设置瞄准三角是否可见
 		if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
 			(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
-			I_AimController.SetVisible(true);
+			AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
+			I_AimController.SetVisible(!stateInfo.IsName("Base.Reload"));
 			// 设置瞄准三角大小
 			HasEnemyInRange(ref curAimTarget, ref aimHitPoint);
 			if (curAimTarget != null) {
@@ -451,10 +472,10 @@ public class PlayerController : Controller {
 			Vector2 aimPos = new Vector2(curAimTarget.position.x, curAimTarget.position.z);
 			I_FollowTarget.SetAimPos(aimPos);
 		}
-		else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
-			Vector2 aimPos = new Vector2(aimHitPoint.x, aimHitPoint.z);
-			I_FollowTarget.SetAimPos(aimPos);
-		}
+		//else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
+		//	Vector2 aimPos = new Vector2(aimHitPoint.x, aimHitPoint.z);
+		//	I_FollowTarget.SetAimPos(aimPos);
+		//}
 		else {
 			I_FollowTarget.Reset();
 			if (curWeaponType == WeaponType.autoDistant) {

@@ -50,9 +50,9 @@ public class Constant
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.Knife, 50 },
-		{ WeaponNameType.M16, 15 },
-		{ WeaponNameType.Machinegun, 20 },
+		{ WeaponNameType.Knife, 150 },
+		{ WeaponNameType.M16, 45 },
+		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Sniper, 200 },
 	};
 
