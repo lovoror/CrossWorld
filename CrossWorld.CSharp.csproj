@@ -993,6 +993,7 @@
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackStick.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\FocusButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\FuncRButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\LeftStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoboController.cs" />

@@ -8,17 +8,24 @@ public enum InOutType
 }
 
 public class TargetInOutCheck : MonoBehaviour {
+	public delegate void FocusTargetsChangeEventHandler();
+	public event FocusTargetsChangeEventHandler FocusTargetsChangeEvent;
+
 	public List<string> targetTags;
 	public Rect inRect;
 	public Rect outRect;
 
+	PlayerData I_PlayerData;
 	List<Transform> targets = new List<Transform>();
 	List<Transform> inRangeTargets = new List<Transform>();  // 在可选中范围内的目标
 	List<Transform> outRangeTargets = new List<Transform>(); // 在可选中范围外的目标
 	bool hasTargetsIn = false;
 	bool hasTargetsOut = false;
+	float checkDeltaTime = 0.1f;
+	float lastCheckTime = -1;
 	void Awake()
 	{
+		I_PlayerData = PlayerData.Instance;
 		foreach (string tag in targetTags) {
 			GameObject[] tagTargets = GameObject.FindGameObjectsWithTag(tag);
 			for (int i = 0; i < tagTargets.Length; ++i) {
@@ -34,14 +41,20 @@ public class TargetInOutCheck : MonoBehaviour {
 	{
 		
 	}
-	
-	void Update ()
+
+	void Update()
 	{
-		CheckTargetsIn();
-		CheckTargetsOut();
-		if (hasTargetsIn || hasTargetsOut) {
-			print("hasTargetsIn:" + hasTargetsIn);
-			print("hasTargetsOut:" + hasTargetsOut);
+		// 每checkDeltaTime进行一次检查
+		if (Time.realtimeSinceStartup > lastCheckTime + checkDeltaTime) {
+			lastCheckTime = Time.realtimeSinceStartup;
+			CheckTargetsIn();
+			CheckTargetsOut();
+			if (hasTargetsIn || hasTargetsOut) {
+				I_PlayerData.I_FocusTargets.SetTargets(inRangeTargets);
+				if (FocusTargetsChangeEvent != null) {
+					FocusTargetsChangeEvent();
+				}
+			}
 		}
 	}
 
@@ -56,9 +69,10 @@ public class TargetInOutCheck : MonoBehaviour {
 			Vector2 offset = new Vector2(t.x - o.x, o.y - t.y);  // Rect的坐标系Y轴与Unity坐标系相反
 			if (inRect.Contains(offset)) {
 				if (!inRangeTargets.Contains(target)) {
-					inRangeTargets.Add(target);
+					if (!Utils.IsDead(target)) {
+						inRangeTargets.Add(target);
+					}
 				}
-				//outRangeTargets.Remove(target);
 				removeTemp.Add(target);
 				hasTargetsIn = true;
 			}
@@ -82,7 +96,6 @@ public class TargetInOutCheck : MonoBehaviour {
 				if (!outRangeTargets.Contains(target)) {
 					outRangeTargets.Add(target);
 				}
-				//inRangeTargets.Remove(target);
 				removeTemp.Add(target);
 				hasTargetsOut = true;
 			}

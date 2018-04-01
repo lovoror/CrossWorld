@@ -15,6 +15,7 @@ public class PlayerMessenger : Messenger {
 	protected new void OnEnable()
 	{
 		base.OnEnable();
+		MoboController.OnFocusBtnClickEvent += new MoboController.OnFocusBtnClickHandler(OnFocusBtnClickEventFunc);
 	}
 
 	protected new void OnDisable()
@@ -29,4 +30,11 @@ public class PlayerMessenger : Messenger {
 			I_PlayerManager = self.GetComponent<PlayerManager>();
 		}
 	}
+
+	/*-------------------- OnFocusBtnClickEvent --------------------*/
+	void OnFocusBtnClickEventFunc(int btnIndex)
+	{
+
+	}
+	/*-------------------- OnFocusBtnClickEvent --------------------*/
 }

@@ -41,6 +41,9 @@ public class MoboController : MonoBehaviour
 	public delegate void AttackUpEventHandler(float deltaTime);
 	public static event AttackUpEventHandler AttackUpEvent;
 
+	public delegate void OnFocusBtnClickHandler(int btnIndex);
+	public static event OnFocusBtnClickHandler OnFocusBtnClickEvent;
+
 	void Awake()
 	{
 		ButtonA = GetComponentInChildren<AttackButton>();
@@ -93,23 +96,32 @@ public class MoboController : MonoBehaviour
 		}
 	}
 
-	/*==================== UIAttackUpEvent ====================*/
+	/*--------------------- UIAttackUpEvent ---------------------*/
 	void UIAttackUpEventFunc(float deltaTime)
 	{
 		if (AttackUpEvent != null) {
 			AttackUpEvent(deltaTime);
 		}
 	}
-	/*==================== UIAttackUpEvent ====================*/
+	/*--------------------- UIAttackUpEvent ---------------------*/
 
-	/*==================== UIAttackUpEvent ====================*/
+	/*--------------------- UIAttackUpEvent ---------------------*/
 	void UIAttackDownEventFunc(Vector2 position)
 	{
 		if (AttackDownEvent != null) {
 			AttackDownEvent(position);
 		}
 	}
-	/*==================== UIAttackUpEvent ====================*/
+	/*--------------------- UIAttackUpEvent ---------------------*/
+
+	/*------------------ OnFocusBtnClickEvent -------------------*/
+	public void OnFocusBtnClick(int btnIndex)
+	{
+		if (OnFocusBtnClickEvent != null) {
+			OnFocusBtnClickEvent(btnIndex);
+		}
+	}
+	/*------------------ OnFocusBtnClickEvent -------------------*/
 
 	public void OnClick_Func_R(string str_WeaponName)
 	{

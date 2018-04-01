@@ -106,4 +106,13 @@ public class Utils {
 		}
 		return baseData;
 	}
+
+	public static bool IsDead(Transform gamer)
+	{
+		BaseData baseData = GetBaseData(gamer);
+		if (baseData != null) {
+			return baseData.curHealth <= 0;
+		}
+		return false;
+	}
 }
