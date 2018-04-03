@@ -12,15 +12,18 @@ public class PlayerMessenger : Messenger {
 
 	protected PlayerManager I_PlayerManager;
 
+	Transform preFocusTarget;
+
 	protected new void OnEnable()
 	{
 		base.OnEnable();
-		MoboController.OnFocusBtnClickEvent += new MoboController.OnFocusBtnClickHandler(OnFocusBtnClickEventFunc);
+		MoboController.FocusTargetChangeEvent += new MoboController.FocusTargetChangeHandler(FocusTargetChangeEventFunc);
 	}
 
 	protected new void OnDisable()
 	{
 		base.OnDisable();
+		MoboController.FocusTargetChangeEvent -= FocusTargetChangeEventFunc;
 	}
 
 	new void Awake()
@@ -31,10 +34,34 @@ public class PlayerMessenger : Messenger {
 		}
 	}
 
-	/*-------------------- OnFocusBtnClickEvent --------------------*/
-	void OnFocusBtnClickEventFunc(int btnIndex)
+	/*-------------------- FocusTargetChangedEvent --------------------*/
+	void FocusTargetChangeEventFunc()
 	{
-
+		Transform target = PlayerData.Instance.GetFocusTarget();
+		I_PlayerManager.I_PlayerController.FocusTarget(target);
+		preFocusTarget = target;
 	}
-	/*-------------------- OnFocusBtnClickEvent --------------------*/
+	/*-------------------- FocusTargetChangedEvent --------------------*/
+
+	/*-------------------- FocusTargetsChangeEvent --------------------*/
+	public delegate void FocusTargetsChangeEventHandler();
+	public static event FocusTargetsChangeEventHandler FocusTargetsChangeEvent;
+	public void FocusTragetsChange()
+	{
+		if (FocusTargetsChangeEvent != null) {
+			FocusTargetsChangeEvent();
+		}
+	}
+	/*-------------------- FocusTargetsChangeEvent --------------------*/
+
+	/*-------------------- DeadNotifyEvent --------------------*/
+	protected override void DeadNotifyEventFunc(Transform killer, Transform dead, WeaponNameType weaponName)
+	{
+		base.DeadNotifyEventFunc(killer, dead, weaponName);
+		if (preFocusTarget == dead) {
+			I_PlayerManager.I_PlayerController.FocusTarget(null);
+			preFocusTarget = null;
+		}
+	}
+	/*-------------------- DeadNotifyEvent --------------------*/
 }

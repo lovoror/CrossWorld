@@ -22,12 +22,12 @@ public enum ControlType
 
 public class MoboController : MonoBehaviour
 {
-
+	public GameObject BtnFocus;
+	GameObject FocusBtns;
 	AttackButton ButtonA;
 	LeftStick StickL;
-	//FuncRButton[] FuncRButtons = new FuncRButton[3];
 	Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
-	//ControlType controlType;
+	PlayerData I_PlayerData;
 	
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
@@ -41,15 +41,15 @@ public class MoboController : MonoBehaviour
 	public delegate void AttackUpEventHandler(float deltaTime);
 	public static event AttackUpEventHandler AttackUpEvent;
 
-	public delegate void OnFocusBtnClickHandler(int btnIndex);
-	public static event OnFocusBtnClickHandler OnFocusBtnClickEvent;
+	public delegate void FocusTargetChangeHandler();
+	public static event FocusTargetChangeHandler FocusTargetChangeEvent;
 
 	void Awake()
 	{
 		ButtonA = GetComponentInChildren<AttackButton>();
 		StickL = GetComponentInChildren<LeftStick>();
-		//controlType = ControlType.modern;
-		//FuncRButtons[0] = new FuncRButton(WeaponNameType.Machinegun);
+		I_PlayerData = PlayerData.Instance;
+		FocusBtns = GameObject.Find("FocusBtns");
 	}
 
 	void OnEnable()
@@ -58,12 +58,15 @@ public class MoboController : MonoBehaviour
 		AttackButton.UIAttackUpEvent += new AttackButton.UIAttackUpEventHandler(UIAttackUpEventFunc);
 		// UIAttackDownEvent
 		AttackButton.UIAttackDownEvent += new AttackButton.UIAttackDownEventHandler(UIAttackDownEventFunc);
+		// FocusTargetsChangeEvent
+		PlayerMessenger.FocusTargetsChangeEvent += new PlayerMessenger.FocusTargetsChangeEventHandler(FocusTargetsChangeEventFunc);
 	}
 
 	void OnDisable()
 	{
 		AttackButton.UIAttackUpEvent -= UIAttackUpEventFunc;
 		AttackButton.UIAttackDownEvent -= UIAttackDownEventFunc;
+		PlayerMessenger.FocusTargetsChangeEvent -= FocusTargetsChangeEventFunc;
 	}
 
 	Vector2 last_bodyDirection = Vector2.zero;
@@ -114,14 +117,48 @@ public class MoboController : MonoBehaviour
 	}
 	/*--------------------- UIAttackUpEvent ---------------------*/
 
-	/*------------------ OnFocusBtnClickEvent -------------------*/
+	/*------------------ FocusTargetChangedEvent -------------------*/
 	public void OnFocusBtnClick(int btnIndex)
 	{
-		if (OnFocusBtnClickEvent != null) {
-			OnFocusBtnClickEvent(btnIndex);
+		if (FocusTargetChangeEvent != null) {
+			FocusTargetChangeEvent();
 		}
 	}
-	/*------------------ OnFocusBtnClickEvent -------------------*/
+	/*------------------ FocusTargetChangedEvent -------------------*/
+
+	/*------------------ FocusTargetsChangeEvent -------------------*/
+	void FocusTargetsChangeEventFunc()
+	{
+		// 删除先前的FocusBtns
+		foreach (Transform child in FocusBtns.transform) {
+			Destroy(child.gameObject);
+		}
+		// 新建FocusBtns
+		FocusTargets I_FocusTargets = I_PlayerData.I_FocusTargets;
+		float topY = 360;
+		float X = -7;
+		float deltaY = 124;
+		int count = I_FocusTargets.focusTargets.Count;
+		if (count > 3) {
+			topY += deltaY * (count - 3);
+		}
+		for (int i = 0; i < count; ++i) {
+			// 新建Button
+			FocusTarget I_FocusTarget = I_FocusTargets.focusTargets[i];
+			GameObject btn = Instantiate(BtnFocus, FocusBtns.transform);
+			((RectTransform)btn.transform).anchoredPosition = new Vector2(X, topY - deltaY * i);
+			// 是否选中
+			if (I_FocusTarget.isFocus) {
+				Transform imgFocus = btn.transform.Find("ImgFocus");
+				imgFocus.gameObject.SetActive(true);
+			}
+			// 初始化赋值
+			FocusButton I_FocusButton = btn.transform.GetComponent<FocusButton>();
+			I_FocusButton.btnIndex = i;
+			I_FocusButton.focusTarget = I_FocusTarget.focusTarget;
+		}
+	}
+	/*------------------ FocusTargetsChangeEvent -------------------*/
 
 	public void OnClick_Func_R(string str_WeaponName)
 	{

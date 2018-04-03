@@ -6,15 +6,23 @@ using UnityEngine.UI;
 public class FocusButton : MonoBehaviour {
 
 	public int btnIndex;
-	public MoboController I_MoboController;
 
 	[HideInInspector]
 	public Transform focusTarget;
 	[HideInInspector]
-	public bool isFocus = false;
+	public bool isFocus
+	{
+		get
+		{
+			return I_PlayerData.IsBtnFocused(btnIndex);
+		}
+	}
 	[HideInInspector]
 	public WeaponNameType targetWeaponName = WeaponNameType.unknown;
 
+	FocusButtons I_FocusButtons;
+	PlayerData I_PlayerData;
+	MoboController I_MoboController;
 	Image imgTarget;
 	Image imgFocus;
 
@@ -28,7 +36,9 @@ public class FocusButton : MonoBehaviour {
 		if (imgFocusTransform) {
 			imgFocus = imgFocusTransform.GetComponent<Image>();
 		}
-		
+		I_MoboController = transform.parent.GetComponentInParent<MoboController>();
+		I_PlayerData = PlayerData.Instance;
+		I_FocusButtons = transform.GetComponentInParent<FocusButtons>();
 	}
 
 	public void SetEnable(bool isActive, Transform target)
@@ -37,15 +47,18 @@ public class FocusButton : MonoBehaviour {
 		focusTarget = target;
 	}
 
-	public void SetFocus(bool isFocus)
-	{
-		this.isFocus = isFocus;
-		imgFocus.gameObject.SetActive(isFocus);
-	}
-
 	public void OnClick()
 	{
+		I_PlayerData.SetBtnFocus(!isFocus, btnIndex);
+		imgFocus.gameObject.SetActive(isFocus);
 		I_MoboController.OnFocusBtnClick(btnIndex);
-		SetFocus(true);
+		if (isFocus) {
+			I_FocusButtons.ResetOtherBtns(btnIndex);
+		}
+	}
+
+	public void ResetBtn()
+	{
+		imgFocus.gameObject.SetActive(isFocus);
 	}
 }

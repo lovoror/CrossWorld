@@ -3,8 +3,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class PlayerController : Controller {
-
+public class PlayerController : Controller
+{
 	public float speed = 3;
 	[Header("移动平滑度，越大越不平滑")]
 	public float moveSmooth = 10;
@@ -15,6 +15,7 @@ public class PlayerController : Controller {
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
+	Transform focusTarget = null;  // 当前锁定的目标
 	Transform curAimTarget = null;
 	Vector3 aimHitPoint = new Vector3(-1000, -1000, -1000);
 	Vector2 stickLDirection { get; set; }
@@ -78,7 +79,7 @@ public class PlayerController : Controller {
 		rb = self.GetComponent<Rigidbody>();
 	}
 
-	new void Start ()
+	new void Start()
 	{
 		base.Start();
 		canControl = true;
@@ -110,7 +111,7 @@ public class PlayerController : Controller {
 		MoboController.PlayerMoveEvent -= PlayerMoveEventFunc;
 		MoboController.PlayerFaceEvent -= PlayerFaceEventFunc;
 		MoboController.AttackDownEvent -= AttackDownEventFunc;
-		MoboController.AttackUpEvent   -= AttackUpEventFunc;
+		MoboController.AttackUpEvent -= AttackUpEventFunc;
 		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
 		FuncRButton.PlayerReloadEvent -= PlayerReloadWeaponEventFunc;
 	}
@@ -150,7 +151,7 @@ public class PlayerController : Controller {
 				}
 			}
 			else if (curWeaponType == WeaponType.melee) {
-				
+
 			}
 		}
 #if UNITY_EDITOR
@@ -176,8 +177,15 @@ public class PlayerController : Controller {
 				trueMoveDir = moveDirPC;
 			}
 #else
-			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
-			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
+			if (focusTarget) {
+				Vector3 player2Target = focusTarget.position - transform.position;
+				player2Target.y = 0;
+				transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, player2Target), 0);
+			}
+			else {
+				Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
+				transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
+			}
 
 			if (curWeaponType == WeaponType.singleLoader) {
 
@@ -334,7 +342,7 @@ public class PlayerController : Controller {
 		}
 		// 弹夹空了则Reload
 		Invoke("DelayReload", 0.5f);
-	}	
+	}
 	void DelayReload()
 	{
 		if (curWeaponType == WeaponType.singleLoader || curWeaponType == WeaponType.autoDistant) {
@@ -388,7 +396,7 @@ public class PlayerController : Controller {
 				p2e.y = 0;
 				Vector3 sLD3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
 				float aimDist = 0.01f;
-				if(Constant.AimAssistDist.ContainsKey(curWeaponName)){
+				if (Constant.AimAssistDist.ContainsKey(curWeaponName)) {
 					aimDist = Constant.AimAssistDist[curWeaponName];
 				}
 				float a = p2e.magnitude, b = aimDist;
@@ -492,5 +500,11 @@ public class PlayerController : Controller {
 				}
 			}
 		}
+	}
+
+	// 锁定目标
+	public void FocusTarget(Transform target)
+	{
+		focusTarget = target;
 	}
 }

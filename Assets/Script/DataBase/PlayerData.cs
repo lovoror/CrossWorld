@@ -73,6 +73,7 @@ public class PlayerData : BaseData
 	protected static PlayerData m_instance = null;
 	[HideInInspector]
 	public FocusTargets I_FocusTargets = new FocusTargets();
+
 	public static PlayerData Instance
 	{
 		get
@@ -103,6 +104,34 @@ public class PlayerData : BaseData
 		maxHealth = playerMaxHealth;
 		curHealth = playerMaxHealth;
 		this.curWeaponName = curWeaponName;
+	}
+
+	public Transform GetFocusTarget()
+	{
+		Transform target = null;
+		int index = I_FocusTargets.focusIndex;
+		if (index >= 0) {
+			target = I_FocusTargets.focusTargets[index].focusTarget;
+		}
+		return target;
+	}
+
+	public bool IsBtnFocused(int btnIndex)
+	{
+		return I_FocusTargets.focusTargets[btnIndex].isFocus;
+	}
+
+	public void SetBtnFocus(bool isFocus, int index)
+	{
+		if (index < I_FocusTargets.focusTargets.Count) {
+			// 重置所有isFocus状态
+			if (isFocus) {
+				foreach (FocusTarget I_FocusTarget in I_FocusTargets.focusTargets) {
+					I_FocusTarget.isFocus = false;
+				}
+			}
+			I_FocusTargets.focusTargets[index].isFocus = isFocus;
+		}
 	}
 
 	public void StageEnd()

@@ -8,14 +8,12 @@ public enum InOutType
 }
 
 public class TargetInOutCheck : MonoBehaviour {
-	public delegate void FocusTargetsChangeEventHandler();
-	public event FocusTargetsChangeEventHandler FocusTargetsChangeEvent;
-
 	public List<string> targetTags;
 	public Rect inRect;
 	public Rect outRect;
 
 	PlayerData I_PlayerData;
+	PlayerMessenger I_PlayerMessenger;
 	List<Transform> targets = new List<Transform>();
 	List<Transform> inRangeTargets = new List<Transform>();  // 在可选中范围内的目标
 	List<Transform> outRangeTargets = new List<Transform>(); // 在可选中范围外的目标
@@ -26,6 +24,7 @@ public class TargetInOutCheck : MonoBehaviour {
 	void Awake()
 	{
 		I_PlayerData = PlayerData.Instance;
+		I_PlayerMessenger = transform.GetComponentInParent<PlayerMessenger>();
 		foreach (string tag in targetTags) {
 			GameObject[] tagTargets = GameObject.FindGameObjectsWithTag(tag);
 			for (int i = 0; i < tagTargets.Length; ++i) {
@@ -47,13 +46,12 @@ public class TargetInOutCheck : MonoBehaviour {
 		// 每checkDeltaTime进行一次检查
 		if (Time.realtimeSinceStartup > lastCheckTime + checkDeltaTime) {
 			lastCheckTime = Time.realtimeSinceStartup;
+			bool hasDeads = RemoveDeads();
 			CheckTargetsIn();
 			CheckTargetsOut();
-			if (hasTargetsIn || hasTargetsOut) {
+			if (hasDeads || hasTargetsIn || hasTargetsOut) {
 				I_PlayerData.I_FocusTargets.SetTargets(inRangeTargets);
-				if (FocusTargetsChangeEvent != null) {
-					FocusTargetsChangeEvent();
-				}
+				I_PlayerMessenger.FocusTragetsChange();
 			}
 		}
 	}
@@ -104,5 +102,34 @@ public class TargetInOutCheck : MonoBehaviour {
 			inRangeTargets.Remove(target);
 		}
 		return hasTargetsOut;
+	}
+
+	// 删除死亡的角色
+	bool RemoveDeads()
+	{
+		bool hasDeads = false;
+		List<Transform> removeTemp = new List<Transform>();
+		foreach (Transform target in inRangeTargets) {
+			bool isDead = Utils.IsDead(target);
+			if (isDead) {
+				removeTemp.Add(target);
+				hasDeads = true;
+			}
+		}
+		foreach (Transform target in removeTemp) {
+			inRangeTargets.Remove(target);
+		}
+		removeTemp.Clear();
+		foreach (Transform target in outRangeTargets) {
+			bool isDead = Utils.IsDead(target);
+			if (isDead) {
+				removeTemp.Add(target);
+				hasDeads = true;
+			}
+		}
+		foreach (Transform target in removeTemp) {
+			outRangeTargets.Remove(target);
+		}
+		return hasDeads;
 	}
 }
