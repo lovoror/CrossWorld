@@ -35,10 +35,9 @@ public class Controller : MonoBehaviour {
 		{
 			Transform weapon = I_BaseData.curWeaponTransform;
 			if (weapon) {
-				AudioSource[] audios = weapon.GetComponents<AudioSource>();
-				if (audios.Length >= 2) {
-					return audios[1];
-				}
+				Transform sndReload = weapon.Find("SndReload");
+				AudioSource audio = sndReload.GetComponent<AudioSource>();
+				return audio;
 			}
 			return null;
 		}

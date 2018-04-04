@@ -127,31 +127,43 @@ public class PlayerController : Controller
 	{
 		base.Update();
 		// 确定武器的攻击状态
-		if (attackType != AimAttackType.none) {
-			btnATouchedTime += Time.deltaTime;
-			if (curWeaponType == WeaponType.singleLoader) {
-				if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+		if (focusTarget != null) {
+			if (curWeaponType == WeaponType.melee) {
+
+			}
+			else {
+				if (attackType != AimAttackType.attacking) {
 					attackType = AimAttackType.aming;
 				}
-				else {
-					attackType = AimAttackType.unknown;
-				}
 			}
-			else if (curWeaponType == WeaponType.autoDistant) {
-				if (attackType == AimAttackType.unknown) {
-					if (btnATouchedTime >= aimAttackBoundaryTime) {
+		}
+		else {
+			if (attackType != AimAttackType.none) {
+				btnATouchedTime += Time.deltaTime;
+				if (curWeaponType == WeaponType.singleLoader) {
+					if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
 						attackType = AimAttackType.aming;
 					}
 					else {
-						if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
-							attackType = AimAttackType.attacking;
-							ShowAttackAnim(true);
+						attackType = AimAttackType.unknown;
+					}
+				}
+				else if (curWeaponType == WeaponType.autoDistant) {
+					if (attackType == AimAttackType.unknown) {
+						if (btnATouchedTime >= aimAttackBoundaryTime) {
+							attackType = AimAttackType.aming;
+						}
+						else {
+							if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+								attackType = AimAttackType.attacking;
+								ShowAttackAnim(true);
+							}
 						}
 					}
 				}
-			}
-			else if (curWeaponType == WeaponType.melee) {
+				else if (curWeaponType == WeaponType.melee) {
 
+				}
 			}
 		}
 #if UNITY_EDITOR
@@ -177,6 +189,7 @@ public class PlayerController : Controller
 				trueMoveDir = moveDirPC;
 			}
 #else
+			// Player 面朝方向
 			if (focusTarget) {
 				Vector3 player2Target = focusTarget.position - transform.position;
 				player2Target.y = 0;
@@ -187,24 +200,37 @@ public class PlayerController : Controller
 				transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
 			}
 
-			if (curWeaponType == WeaponType.singleLoader) {
-
-			}
-			else if (curWeaponType == WeaponType.melee) {
-
-			}
-			else if (curWeaponType == WeaponType.autoDistant) {
-				float trueAttackBoundary = attackBoundary;
-				if (attackType == AimAttackType.aming) {
-					trueAttackBoundary *= atkBoundaryRate;
-				}
-				if (faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
-					// 攻击
-					attackType = AimAttackType.attacking;
-					ShowAttackAnim(true);
+			// 攻击状态
+			if (focusTarget) {
+				if (curWeaponType == WeaponType.autoDistant) {
+					if (attackType != AimAttackType.none) {
+						// 攻击
+						attackType = AimAttackType.attacking;
+						ShowAttackAnim(true);
+					}
 				}
 			}
-			SetAimTriangleAndCamera();
+			else {
+				if (curWeaponType == WeaponType.singleLoader) {
+
+				}
+				else if (curWeaponType == WeaponType.melee) {
+
+				}
+				else if (curWeaponType == WeaponType.autoDistant) {
+					float trueAttackBoundary = attackBoundary;
+					if (attackType == AimAttackType.aming) {
+						trueAttackBoundary *= atkBoundaryRate;
+					}
+					if (faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
+						// 攻击
+						attackType = AimAttackType.attacking;
+						ShowAttackAnim(true);
+					}
+				}
+			}
+			SetAimTriangle();
+			SetCamera();
 #endif
 			// Move the player
 			rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir * speed, Time.fixedDeltaTime * moveSmooth);
@@ -434,77 +460,104 @@ public class PlayerController : Controller
 	void SetAimTriangle()
 	{
 		WeaponType curWeaponType = I_Manager.GetWeaponType();
-		aimHitPoint = new Vector3(-1000, -1000, -1000);
-		// 设置瞄准三角是否可见
-		if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
-			(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
-			AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
-			I_AimController.SetVisible(!stateInfo.IsName("Base.Reload"));
-			// 设置瞄准三角大小
-			HasEnemyInRange(ref curAimTarget, ref aimHitPoint);
-			if (curAimTarget != null) {
-				float distance = (transform.position - curAimTarget.position).magnitude;
-				Vector3 p2e = curAimTarget.position - transform.position;
-				Vector2 p2e2D = new Vector2(p2e.x, p2e.z);
-				Vector3 direction3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
-				float degree = Utils.GetAnglePY(p2e, direction3D);
-				degree = degree > 180 ? degree - 360 : degree;
-				I_AimController.UpdateAim(distance / 10, degree);
-				faceDirection = p2e2D.normalized * stickLDirection.magnitude;
-			}
-			else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
-				float distance = (transform.position - aimHitPoint).magnitude;
+		if (focusTarget != null) {
+			if (curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader) {
+				float distance = (transform.position - focusTarget.position).magnitude;
 				I_AimController.UpdateAim(distance / 10, 0);
-				faceDirection = stickLDirection;
-			}
-			else {
-				faceDirection = stickLDirection;
-				float aimLangth = 3;
-				if (Constant.AimMaxDist.ContainsKey(curWeaponName)) {
-					aimLangth = Constant.AimMaxDist[curWeaponName] / 10;
-				}
-				I_AimController.UpdateAim(aimLangth, 0);
+				I_AimController.SetVisible(true);
 			}
 		}
 		else {
-			faceDirection = stickLDirection;
-			I_AimController.SetVisible(false);
+			aimHitPoint = new Vector3(-1000, -1000, -1000);
+			// 设置瞄准三角是否可见
+			if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
+				(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
+				AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
+				I_AimController.SetVisible(!stateInfo.IsName("Base.Reload"));
+				// 设置瞄准三角大小
+				HasEnemyInRange(ref curAimTarget, ref aimHitPoint);
+				if (curAimTarget != null) {
+					float distance = (transform.position - curAimTarget.position).magnitude;
+					Vector3 p2e = curAimTarget.position - transform.position;
+					Vector2 p2e2D = new Vector2(p2e.x, p2e.z);
+					Vector3 direction3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
+					float degree = Utils.GetAnglePY(p2e, direction3D);
+					degree = degree > 180 ? degree - 360 : degree;
+					I_AimController.UpdateAim(distance / 10, degree);
+					faceDirection = p2e2D.normalized * stickLDirection.magnitude;
+				}
+				else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
+					float distance = (transform.position - aimHitPoint).magnitude;
+					I_AimController.UpdateAim(distance / 10, 0);
+					faceDirection = stickLDirection;
+				}
+				else {
+					faceDirection = stickLDirection;
+					float aimLangth = 3;
+					if (Constant.AimMaxDist.ContainsKey(curWeaponName)) {
+						aimLangth = Constant.AimMaxDist[curWeaponName] / 10;
+					}
+					I_AimController.UpdateAim(aimLangth, 0);
+				}
+			}
+			else {
+				faceDirection = stickLDirection;
+				I_AimController.SetVisible(false);
+			}
 		}
 	}
 
 	// 需要在SetAimTriangle之后
 	void SetCamera()
 	{
-		if (curAimTarget != null) {
-			// 设置Camera的aimPos
-			Vector2 aimPos = new Vector2(curAimTarget.position.x, curAimTarget.position.z);
-			I_FollowTarget.SetAimPos(aimPos);
+		if (focusTarget) {
+			Vector2 targetPos2D = new Vector2(focusTarget.position.x, focusTarget.position.z);
+			I_FollowTarget.SetAimPos(targetPos2D);
 		}
-		//else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
-		//	Vector2 aimPos = new Vector2(aimHitPoint.x, aimHitPoint.z);
-		//	I_FollowTarget.SetAimPos(aimPos);
-		//}
 		else {
-			I_FollowTarget.Reset();
-			if (curWeaponType == WeaponType.autoDistant) {
-				if (attackType == AimAttackType.aming || attackType == AimAttackType.attacking) {
-					// autoDistant武器不允许根据BtnA的滑动距离改变Camera的offset
-					// 以免划出attackBoundary触发攻击，造成误操作
-					I_FollowTarget.SetAimDirection(faceDirection.normalized / 1.5f);
-				}
+			if (curAimTarget != null) {
+				// 设置Camera的aimPos
+				Vector2 aimPos = new Vector2(curAimTarget.position.x, curAimTarget.position.z);
+				I_FollowTarget.SetAimPos(aimPos);
 			}
-			else if (curWeaponType == WeaponType.singleLoader) {
-				if (attackType != AimAttackType.none) {
-					// singleLoader可以通过BtnA的滑动距离改变Camera的offset
-					I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
+			//else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
+			//	// 瞄准墙体
+			//	Vector2 aimPos = new Vector2(aimHitPoint.x, aimHitPoint.z);
+			//	I_FollowTarget.SetAimPos(aimPos);
+			//}
+			else {
+				I_FollowTarget.Reset();
+				if (curWeaponType == WeaponType.autoDistant) {
+					if (attackType == AimAttackType.aming || attackType == AimAttackType.attacking) {
+						// autoDistant武器不允许根据BtnA的滑动距离改变Camera的offset
+						// 以免划出attackBoundary触发攻击，造成误操作
+						I_FollowTarget.SetAimDirection(faceDirection.normalized / 1.5f);
+					}
+				}
+				else if (curWeaponType == WeaponType.singleLoader) {
+					if (attackType != AimAttackType.none) {
+						// singleLoader可以通过BtnA的滑动距离改变Camera的offset
+						I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
+					}
 				}
 			}
 		}
 	}
 
-	// 锁定目标
-	public void FocusTarget(Transform target)
+	// 取消、锁定目标
+	public void SetFocusTarget(Transform target)
 	{
+		// 取消目标锁定时，设置faceDirection
+		if (focusTarget != null && target == null) {
+			Vector3 player2Target = focusTarget.position - transform.position;
+			faceDirection = new Vector2(player2Target.x, player2Target.z).normalized * 0.0001f;
+			stickLDirection = faceDirection;
+		}
 		focusTarget = target;
+	}
+
+	public Transform GetFocusTarget()
+	{
+		return focusTarget;
 	}
 }

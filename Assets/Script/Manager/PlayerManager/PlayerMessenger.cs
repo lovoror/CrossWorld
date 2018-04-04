@@ -34,20 +34,25 @@ public class PlayerMessenger : Messenger {
 		}
 	}
 
-	/*-------------------- FocusTargetChangedEvent --------------------*/
+	/*-------------------- FocusTargetChangeEvent --------------------*/
 	void FocusTargetChangeEventFunc()
 	{
 		Transform target = PlayerData.Instance.GetFocusTarget();
-		I_PlayerManager.I_PlayerController.FocusTarget(target);
+		I_PlayerManager.I_PlayerController.SetFocusTarget(target);
 		preFocusTarget = target;
 	}
-	/*-------------------- FocusTargetChangedEvent --------------------*/
+	/*-------------------- FocusTargetChangeEvent --------------------*/
 
 	/*-------------------- FocusTargetsChangeEvent --------------------*/
 	public delegate void FocusTargetsChangeEventHandler();
 	public static event FocusTargetsChangeEventHandler FocusTargetsChangeEvent;
 	public void FocusTragetsChange()
 	{
+		Transform playerFocusTarget = I_PlayerManager.I_PlayerController.GetFocusTarget();
+		Transform focusTarget = I_PlayerManager.I_PlayerData.GetFocusTarget();
+		if (focusTarget != playerFocusTarget) {
+			I_PlayerManager.I_PlayerController.SetFocusTarget(focusTarget);
+		}
 		if (FocusTargetsChangeEvent != null) {
 			FocusTargetsChangeEvent();
 		}
@@ -59,7 +64,7 @@ public class PlayerMessenger : Messenger {
 	{
 		base.DeadNotifyEventFunc(killer, dead, weaponName);
 		if (preFocusTarget == dead) {
-			I_PlayerManager.I_PlayerController.FocusTarget(null);
+			I_PlayerManager.I_PlayerController.SetFocusTarget(null);
 			preFocusTarget = null;
 		}
 	}

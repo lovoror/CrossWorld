@@ -15,6 +15,8 @@ public class PlayerManager : Manager {
 	public PlayerController I_PlayerController;
 	[HideInInspector]
 	public PlayerDataManager I_PlayerDataManager;
+	[HideInInspector]
+	public PlayerData I_PlayerData;
 
 	new void Awake()
 	{
@@ -25,6 +27,7 @@ public class PlayerManager : Manager {
 			I_PlayerDataManager = self.GetComponent<PlayerDataManager>();
 			I_PlayerController = self.GetComponent<PlayerController>();
 		}
+		I_PlayerData = PlayerData.Instance;
 	}
 
 	new void Start () 
