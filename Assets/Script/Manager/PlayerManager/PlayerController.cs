@@ -127,43 +127,31 @@ public class PlayerController : Controller
 	{
 		base.Update();
 		// 确定武器的攻击状态
-		if (focusTarget != null) {
-			if (curWeaponType == WeaponType.melee) {
-
-			}
-			else {
-				if (attackType != AimAttackType.attacking) {
+		if (attackType != AimAttackType.none) {
+			btnATouchedTime += Time.deltaTime;
+			if (curWeaponType == WeaponType.singleLoader) {
+				if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
 					attackType = AimAttackType.aming;
 				}
+				else {
+					attackType = AimAttackType.unknown;
+				}
 			}
-		}
-		else {
-			if (attackType != AimAttackType.none) {
-				btnATouchedTime += Time.deltaTime;
-				if (curWeaponType == WeaponType.singleLoader) {
-					if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+			else if (curWeaponType == WeaponType.autoDistant) {
+				if (attackType == AimAttackType.unknown) {
+					if (btnATouchedTime >= aimAttackBoundaryTime) {
 						attackType = AimAttackType.aming;
 					}
 					else {
-						attackType = AimAttackType.unknown;
-					}
-				}
-				else if (curWeaponType == WeaponType.autoDistant) {
-					if (attackType == AimAttackType.unknown) {
-						if (btnATouchedTime >= aimAttackBoundaryTime) {
-							attackType = AimAttackType.aming;
-						}
-						else {
-							if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
-								attackType = AimAttackType.attacking;
-								ShowAttackAnim(true);
-							}
+						if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+							attackType = AimAttackType.attacking;
+							ShowAttackAnim(true);
 						}
 					}
 				}
-				else if (curWeaponType == WeaponType.melee) {
+			}
+			else if (curWeaponType == WeaponType.melee) {
 
-				}
 			}
 		}
 #if UNITY_EDITOR
@@ -294,8 +282,7 @@ public class PlayerController : Controller
 		stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
 		if (curWeaponType == WeaponType.melee ||
 			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
-			(curWeaponType == WeaponType.singleLoader && attackType != AimAttackType.none &&
-			(attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))) {
+			(curWeaponType == WeaponType.singleLoader && (focusTarget != null || (attackType != AimAttackType.none && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))))) {
 			// 抬手后单次射击
 			AttackOnce();
 		}
@@ -465,6 +452,9 @@ public class PlayerController : Controller
 				float distance = (transform.position - focusTarget.position).magnitude;
 				I_AimController.UpdateAim(distance / 10, 0);
 				I_AimController.SetVisible(true);
+			}
+			else {
+				I_AimController.SetVisible(false);
 			}
 		}
 		else {
