@@ -964,6 +964,7 @@
     <Compile Include="Assets\Script\Manager\PlayerManager\AimController.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\MeshTriangle.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerController.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\PlayerControllerSd.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerDataManager.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerManager.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerMessenger.cs" />
@@ -992,12 +993,14 @@
     <Compile Include="Assets\Script\UI\BulletNumberUpdate.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\AttackButtonSd.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\FocusButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\FocusButtons.cs" />
     <Compile Include="Assets\Script\UI\MoboController\FuncRButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\LeftStick.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoboController.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\MoboControllerSd.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoveCamera.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
     <Compile Include="Assets\Script\UI\UiDebugTxt.cs" />

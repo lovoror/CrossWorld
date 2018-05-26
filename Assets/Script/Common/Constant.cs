@@ -12,6 +12,16 @@ public enum WeaponNameType
 	unknown, M16, Knife, Machinegun, Sniper
 }
 
+public enum DirectionType8
+{
+	none, Up, UpRight, Right, DownRight, Down, DownLeft, Left, UpLeft
+}
+
+public enum DirectionType4
+{
+	none, Up, Down, Left, Right
+}
+
 public class Constant
 {
 	public static class TAGS {

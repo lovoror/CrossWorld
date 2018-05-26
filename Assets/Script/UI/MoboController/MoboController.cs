@@ -10,16 +10,6 @@ public enum AttackType
 	untouched, unknown, click, hold, clickPointer, holdPointer
 }
 
-public enum DirectionType
-{
-	up, upRight, right, downRight, down, downLeft, left, upLeft
-}
-
-public enum ControlType
-{
-	modern, ancient
-}
-
 public class MoboController : MonoBehaviour
 {
 	public GameObject BtnFocus;
