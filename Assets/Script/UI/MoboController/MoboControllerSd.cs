@@ -8,32 +8,37 @@ using UnityEngine.EventSystems;
 public class MoboControllerSd : MonoBehaviour
 {
 	LeftStick StickL;
-	PlayerData I_PlayerData;
-	
+
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
 
-	public delegate void AttackDownEventHandler(Vector2 position);
-	public static event AttackDownEventHandler AttackDownEvent;
-
-	public delegate void AttackUpEventHandler(float deltaTime);
-	public static event AttackUpEventHandler AttackUpEvent;
+	public delegate void PlayerAttackEventHandler(AttackSdType attackType);
+	public static event PlayerAttackEventHandler PlayerAttackEvent;
 
 	void Awake()
 	{
 		StickL = GetComponentInChildren<LeftStick>();
-		I_PlayerData = PlayerData.Instance;
 	}
 
 	void OnEnable()
 	{
-
+		AttackButtonSd.UIAttackSdTypeEvent += new AttackButtonSd.UIAttackSdTypeEventHandler(UIAttackSdTypeEventFunc);
 	}
 
 	void OnDisable()
 	{
-
+		AttackButtonSd.UIAttackSdTypeEvent -= UIAttackSdTypeEventFunc;
 	}
+
+	/*------------------- UIAttackSdTypeEvent -----------------------*/
+	void UIAttackSdTypeEventFunc(AttackSdType attackSdType)
+	{
+		if (PlayerAttackEvent != null) {
+			PlayerAttackEvent(attackSdType);
+		}
+	}
+
+	/*------------------- UIAttackSdTypeEvent -----------------------*/
 
 	Vector2 last_moveDirection = Vector2.zero;
 	void Update()
@@ -48,24 +53,6 @@ public class MoboControllerSd : MonoBehaviour
 			}
 		}
 	}
-
-	/*--------------------- UIAttackUpEvent ---------------------*/
-	void UIAttackUpEventFunc(float deltaTime)
-	{
-		if (AttackUpEvent != null) {
-			AttackUpEvent(deltaTime);
-		}
-	}
-	/*--------------------- UIAttackUpEvent ---------------------*/
-
-	/*--------------------- UIAttackUpEvent ---------------------*/
-	void UIAttackDownEventFunc(Vector2 position)
-	{
-		if (AttackDownEvent != null) {
-			AttackDownEvent(position);
-		}
-	}
-	/*--------------------- UIAttackUpEvent ---------------------*/
 
 	public void Restart()
 	{

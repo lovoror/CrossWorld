@@ -41,10 +41,12 @@ public class InitData : MonoBehaviour {
 		Dictionary<WeaponNameType, Transform> d_PlayerWeapons = new Dictionary<WeaponNameType, Transform>();
 		Dictionary<WeaponNameType, Transform> d_PlayerBodys = new Dictionary<WeaponNameType, Transform>();
 		WeaponNameType curWeaponName = WeaponNameType.unknown;
-		foreach (var info in playerData.playerWeaponInfos) {
-			d_PlayerWeapons.Add(info.weaponName, info.weapon);
-			d_PlayerBodys.Add(info.weaponName, info.body);
-			if (info.weapon.gameObject.activeSelf) curWeaponName = info.weaponName;
+		if (playerData.playerWeaponInfos.Count > 0) {
+			foreach (var info in playerData.playerWeaponInfos) {
+				d_PlayerWeapons.Add(info.weaponName, info.weapon);
+				d_PlayerBodys.Add(info.weaponName, info.body);
+				if (info.weapon.gameObject.activeSelf) curWeaponName = info.weaponName;
+			}
 		}
 		PlayerData.Instance.Init(playerData.player, curWeaponName, playerData.playerMaxHealth, d_PlayerWeapons, d_PlayerBodys);
 	}

@@ -947,6 +947,7 @@
     <Compile Include="Assets\Script\Manager\BaseManager\Messenger.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\StateDisplay.cs" />
     <Compile Include="Assets\Script\Manager\BodyAnimEvents.cs" />
+    <Compile Include="Assets\Script\Manager\BodyAnimSdEvents.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\BehaviorTreeUpdate.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyDataManager.cs" />
     <Compile Include="Assets\Script\Manager\EnemyManager\EnemyManager.cs" />

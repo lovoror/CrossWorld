@@ -119,17 +119,17 @@ public class Utils {
 	public static DirectionType4 GetDirection4(Vector2 direction)
 	{
 		float angle = Utils.GetAnglePZ2D(new Vector2(1, 0), direction);
-		if (angle >= 45 && angle < 135) {
-			return DirectionType4.Right;
+		if (45 <= angle && angle < 135) {
+			return DirectionType4.Up;
 		}
-		else if (angle >= 135 && angle < 225) {
-			return DirectionType4.Down;
-		}
-		else if (angle >= 225 && angle < 275) {
+		else if (135 <= angle && angle < 225) {
 			return DirectionType4.Left;
 		}
+		else if (225 <= angle && angle < 315) {
+			return DirectionType4.Down;
+		}
 		else {
-			return DirectionType4.Up;
+			return DirectionType4.Right;
 		}
 	}
 
