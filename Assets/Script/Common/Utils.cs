@@ -39,6 +39,19 @@ public class Utils {
 		return tar;
 	}
 
+	public static bool IsParallel(Vector3 a, Vector3 b)
+	{
+		float rx = a.x / b.x;
+		float ry = a.y / b.y;
+		float rz = a.z / b.z;
+		if (Mathf.Abs(rx - ry) + Mathf.Abs(rz - ry) < 0.01) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	// 以Y轴正方向为参考，获得一个0-360度的夹角
 	public static float GetAnglePY(Vector3 from, Vector3 to)
 	{

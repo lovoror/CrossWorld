@@ -4148,8 +4148,8 @@ public class iTween : MonoBehaviour
 		
 		//need physics?
 		postUpdate=thisTransform.eulerAngles;
-		if(physics){
-			thisTransform.eulerAngles=preUpdate;
+		if (physics) {
+			thisTransform.eulerAngles = preUpdate;
 			GetComponent<Rigidbody>().MoveRotation(Quaternion.Euler(postUpdate));
 		}
 	}
@@ -6514,7 +6514,8 @@ public class iTween : MonoBehaviour
 			
 		//do we need to use physics, is there a rigidbody?
 		if(GetComponent<Rigidbody>() != null){
-			physics=true;
+			//physics=true;
+			physics = false; // zpf change
 		}
                
 		if(tweenArguments.Contains("delay")){

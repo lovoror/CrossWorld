@@ -268,20 +268,23 @@
     <Reference Include="UnityEditor.Purchasing">
       <HintPath>Library\UnityAssemblies\UnityEditor.Purchasing.dll</HintPath>
     </Reference>
+    <Reference Include="Pathfinding.ClipperLib">
+      <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\Clipper\Pathfinding.ClipperLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Pathfinding.Ionic.Zip.Reduced">
+      <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\DotNetZip\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
+    <Reference Include="Pathfinding.Poly2Tri">
+      <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\Poly2Tri\Pathfinding.Poly2Tri.dll</HintPath>
+    </Reference>
     <Reference Include="BehaviorDesignerEditor">
       <HintPath>Assets\Plugins\Behavior Designer\Editor\BehaviorDesignerEditor.dll</HintPath>
     </Reference>
     <Reference Include="BehaviorDesignerRuntime">
       <HintPath>Assets\Plugins\Behavior Designer\Runtime\BehaviorDesignerRuntime.dll</HintPath>
     </Reference>
-    <Reference Include="Pathfinding.ClipperLib">
-      <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\Clipper\Pathfinding.ClipperLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Pathfinding.Poly2Tri">
-      <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\Poly2Tri\Pathfinding.Poly2Tri.dll</HintPath>
-    </Reference>
-    <Reference Include="Pathfinding.Ionic.Zip.Reduced">
-      <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\DotNetZip\Pathfinding.Ionic.Zip.Reduced.dll</HintPath>
+    <Reference Include="LitJson">
+      <HintPath>Assets\Plugins\LitJson.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

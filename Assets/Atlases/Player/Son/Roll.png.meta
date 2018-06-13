@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: e49eb3adeba84b449b11e247cf478ff1
-timeCreated: 1525705824
+guid: 1412d381d13416546a8154297de74d02
+timeCreated: 1528878598
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -54,7 +54,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 50
+  spritePixelsToUnits: 500
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -100,10 +100,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.26757324, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -112,12 +112,12 @@ TextureImporter:
       name: Roll_1
       rect:
         serializedVersion: 2
-        x: 60
+        x: 600
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -126,12 +126,12 @@ TextureImporter:
       name: Roll_2
       rect:
         serializedVersion: 2
-        x: 120
+        x: 1200
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -140,12 +140,12 @@ TextureImporter:
       name: Roll_3
       rect:
         serializedVersion: 2
-        x: 180
+        x: 1800
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -154,12 +154,12 @@ TextureImporter:
       name: Roll_4
       rect:
         serializedVersion: 2
-        x: 240
+        x: 2400
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: Roll_5
       rect:
         serializedVersion: 2
-        x: 300
+        x: 3000
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -182,12 +182,12 @@ TextureImporter:
       name: Roll_6
       rect:
         serializedVersion: 2
-        x: 360
+        x: 3600
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -196,12 +196,12 @@ TextureImporter:
       name: Roll_7
       rect:
         serializedVersion: 2
-        x: 420
+        x: 4200
         y: 0
-        width: 60
-        height: 32
-      alignment: 9
-      pivot: {x: 0.2675732, y: 0.5}
+        width: 600
+        height: 320
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 2e503fcc8dc573f409889dbe636ba259
-timeCreated: 1525613021
+guid: a844e16c561cc0247a37d486adf5e493
+timeCreated: 1528878935
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -48,7 +48,7 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: -1
-    aniso: -1
+    aniso: 1
     mipBias: -1
     wrapU: 1
     wrapV: 1
@@ -62,7 +62,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 50
+  spritePixelsToUnits: 500
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -108,8 +108,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -120,10 +120,10 @@ TextureImporter:
       name: Leg_1
       rect:
         serializedVersion: 2
-        x: 48
+        x: 480
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,10 +134,10 @@ TextureImporter:
       name: Leg_2
       rect:
         serializedVersion: 2
-        x: 96
+        x: 960
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -148,10 +148,10 @@ TextureImporter:
       name: Leg_3
       rect:
         serializedVersion: 2
-        x: 144
+        x: 1440
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,10 +162,10 @@ TextureImporter:
       name: Leg_4
       rect:
         serializedVersion: 2
-        x: 192
+        x: 1920
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,10 +176,10 @@ TextureImporter:
       name: Leg_5
       rect:
         serializedVersion: 2
-        x: 240
+        x: 2400
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -190,10 +190,10 @@ TextureImporter:
       name: Leg_6
       rect:
         serializedVersion: 2
-        x: 288
+        x: 2880
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -204,10 +204,10 @@ TextureImporter:
       name: Leg_7
       rect:
         serializedVersion: 2
-        x: 336
+        x: 3360
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -218,10 +218,10 @@ TextureImporter:
       name: Leg_8
       rect:
         serializedVersion: 2
-        x: 384
+        x: 3840
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -232,10 +232,10 @@ TextureImporter:
       name: Leg_9
       rect:
         serializedVersion: 2
-        x: 432
+        x: 4320
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -246,10 +246,10 @@ TextureImporter:
       name: Leg_10
       rect:
         serializedVersion: 2
-        x: 480
+        x: 4800
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -260,10 +260,10 @@ TextureImporter:
       name: Leg_11
       rect:
         serializedVersion: 2
-        x: 528
+        x: 5280
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -274,10 +274,10 @@ TextureImporter:
       name: Leg_12
       rect:
         serializedVersion: 2
-        x: 576
+        x: 5760
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -288,10 +288,10 @@ TextureImporter:
       name: Leg_13
       rect:
         serializedVersion: 2
-        x: 624
+        x: 6240
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -302,10 +302,10 @@ TextureImporter:
       name: Leg_14
       rect:
         serializedVersion: 2
-        x: 672
+        x: 6720
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -316,10 +316,10 @@ TextureImporter:
       name: Leg_15
       rect:
         serializedVersion: 2
-        x: 720
+        x: 7200
         y: 0
-        width: 48
-        height: 32
+        width: 480
+        height: 320
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
