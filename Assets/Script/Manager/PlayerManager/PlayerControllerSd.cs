@@ -2,12 +2,18 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class AudioInfo
+{
+	public string name;
+	public AudioClip clip;
+}
 
 public class PlayerControllerSd : MonoBehaviour
 {
-
-	public GameObject obj;
-
+	public List<AudioInfo> audioInfos;
 	public float speed = 30;
 	public Animator bodyAnim;
 	public Animator legAnim;
@@ -21,12 +27,22 @@ public class PlayerControllerSd : MonoBehaviour
 	Transform body;
 	float moveSpeedRate = 1;
 	float turnSpeedRate = 1;
+	AudioSource audioSource;
+	AudioSource legAudioSource;
+	Dictionary<string, AudioClip> d_AudioInfos = new Dictionary<string, AudioClip>();
 
 	void Awake()
 	{
 		rb = transform.GetComponent<Rigidbody>();
 		leg = transform.Find("Leg");
 		body = transform.Find("Body");
+		audioSource = transform.GetComponent<AudioSource>();
+		legAudioSource = leg.GetComponent<AudioSource>();
+		foreach (AudioInfo info in audioInfos) {
+			if (!d_AudioInfos.ContainsKey(info.name)) {
+				d_AudioInfos.Add(info.name, info.clip);
+			}
+		}
 	}
 
 	void Start()
@@ -55,9 +71,9 @@ public class PlayerControllerSd : MonoBehaviour
 	Vector3 faceDirection = Vector3.zero;
 	void Update()
 	{
-		if (moveDir != Vector2.zero) {
+		//if (moveDir != Vector2.zero) {
 			faceDirection = new Vector3(moveDir.x, 0, moveDir.y);
-		}
+		//}
 		// 改变Leg的朝向
 		Vector3 moveDir3D = new Vector3(moveDir.x, 0, moveDir.y);
 		leg.eulerAngles = new Vector3(-90, Utils.GetAnglePY(Vector3.forward, moveDir3D), -90);
@@ -222,19 +238,18 @@ public class PlayerControllerSd : MonoBehaviour
 	{
 		this.turnSpeedRate = turnSpeedRate;
 	}
-
+	
 	// 以左摇杆为指向翻滚，若左摇杆没触发，则向前翻滚。
 	public void RollByLStick(float time, float distance)
 	{
 		// 停止播放脚部动作
-		ShowWalkAnim(0);
+		StopWorking();
 		// 向左摇杆方向翻滚
 		Vector3 faceDirection = transform.forward;
 		if (moveDir != Vector2.zero) {
 			faceDirection = new Vector3(moveDir.x, 0, moveDir.y);
 		}
 		transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection), 0);
-		Vector3 tarPos = faceDirection.normalized * distance;
 		iTween.MoveBy(transform.gameObject, iTween.Hash(
 				"z", distance,
 				"time", time, "EaseType", "linear"
@@ -250,6 +265,34 @@ public class PlayerControllerSd : MonoBehaviour
 				"z", distance,
 				"time", time, "EaseType", "linear"
 			));
+	}
+
+	public void PlaySound(string name)
+	{
+		if (d_AudioInfos.ContainsKey(name)) {
+			audioSource.Stop();
+			AudioClip clip = d_AudioInfos[name];
+			audioSource.clip = clip;
+			audioSource.Play();
+		}
+	}
+
+	public void PlayWalkSound(string name)
+	{
+		if (d_AudioInfos.ContainsKey(name)) {
+			legAudioSource.Stop();
+			AudioClip clip = d_AudioInfos[name];
+			legAudioSource.clip = clip;
+			legAudioSource.Play();
+		}
+	}
+
+	public void FaceByL()
+	{
+		if (moveDir != Vector2.zero) {
+			Vector3 faceDirection = new Vector3(moveDir.x, 0, moveDir.y);
+			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection), 0);
+		}
 	}
 
 	void ResetHAS()

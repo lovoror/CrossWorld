@@ -52,4 +52,19 @@ public class BodyAnimSdEvents : MonoBehaviour {
 		float distance = (float)data["distance"];
 		I_Controller.MoveForward(time, distance);
 	}
+
+	void PlaySound(string name)
+	{
+		if (name == "Run1" || name == "Run2") {
+			I_Controller.PlayWalkSound(name);
+		}
+		else {
+			I_Controller.PlaySound(name);
+		}
+	}
+
+	void FaceByL()
+	{
+		I_Controller.FaceByL();
+	}
 }

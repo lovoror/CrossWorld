@@ -118,7 +118,6 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 			secondType = AttackSecondType.none;
 			preSecondType = AttackSecondType.none;
 			direction = Vector2.zero;
-			dragThreshold = 0;
 		}
 
 		public void OnTouchStart()
