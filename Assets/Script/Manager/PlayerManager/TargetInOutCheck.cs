@@ -36,6 +36,16 @@ public class TargetInOutCheck : MonoBehaviour {
 		}
 	}
 
+	void OnEnable()
+	{
+		InitData.NewEnemyEvent += new InitData.NewEnemyEventHandler(NewEnemyEventFunc);
+	}
+
+	void OnDisable()
+	{
+		InitData.NewEnemyEvent -= NewEnemyEventFunc;
+	}
+
 	void Start ()
 	{
 		
@@ -131,5 +141,12 @@ public class TargetInOutCheck : MonoBehaviour {
 			outRangeTargets.Remove(target);
 		}
 		return hasDeads;
+	}
+
+	void NewEnemyEventFunc(Transform enemy)
+	{
+		if (!outRangeTargets.Contains(enemy)) {
+			outRangeTargets.Add(enemy);
+		}
 	}
 }

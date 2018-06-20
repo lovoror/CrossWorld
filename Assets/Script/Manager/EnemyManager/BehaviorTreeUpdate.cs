@@ -40,7 +40,6 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		pathAgent = transform.GetComponent<Pathfinding.AIPathAgent>();
 		player = GameObject.FindGameObjectWithTag("Player");
 		behaviorTree.SetVariable("Player", (SharedGameObject)player);
-		behaviorTree.SetVariable("PatrolPoints", (SharedGameObject)patrolPoints);
 		leg = transform.Find("Leg");
 		legAnim = leg.GetComponent<Animator>();
 		I_Manager = transform.GetComponent<Manager>();
@@ -56,6 +55,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 
 	void Start ()
 	{
+		behaviorTree.SetVariable("PatrolPoints", (SharedGameObject)patrolPoints);
 		I_BaseData = I_Manager.I_BaseData;
 		bodyAnim = body.GetComponent<Animator>();
 		bodyRender = body.GetComponent<SpriteRenderer>();

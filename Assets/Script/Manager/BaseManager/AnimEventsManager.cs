@@ -15,11 +15,11 @@ public class AnimEventsManager : MonoBehaviour
 	public delegate void PlayReloadSoundEventHandler();
 	public event PlayReloadSoundEventHandler PlayReloadSoundEvent;
 
-	Manager I_Manager;
+	PlayerManager I_PlayerManager;
 
 	void Awake()
 	{
-		I_Manager = GetComponentInParent<Manager>();
+		I_PlayerManager = GetComponentInParent<PlayerManager>();
 	}
 
 	void Start()
@@ -35,7 +35,7 @@ public class AnimEventsManager : MonoBehaviour
 	// 近战武器左右攻击动画切换
 	public void ChangeAtkDir()
 	{
-		Transform curBody = I_Manager.I_DataManager.curBodyTransform;
+		Transform curBody = I_PlayerManager.I_DataManager.curBodyTransform;
 		float yScale = curBody.localScale.y;
 		curBody.localScale = new Vector3(1, -yScale, 1);
 	}
@@ -70,5 +70,10 @@ public class AnimEventsManager : MonoBehaviour
 		if (PlayReloadSoundEvent != null) {
 			PlayReloadSoundEvent();
 		}
+	}
+
+	public void ResetOnceAttack()
+	{
+		I_PlayerManager.I_PlayerController.ResetOnceAttack();
 	}
 }

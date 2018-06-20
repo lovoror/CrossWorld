@@ -5,6 +5,16 @@ using UnityEngine;
 public class AttackOB : Observer
 {
 	private static bool isRegisted = false;
+	protected static InitData I_InitData;
+	static AttackOB Instance;
+
+	public delegate void AddScoreEventHandler();
+	public static event AddScoreEventHandler AddScoreEvent;
+
+	protected new void Awake()
+	{
+		Instance = this;
+	}
 	protected new void OnEnable()
 	{
 		base.OnEnable();
@@ -21,6 +31,7 @@ public class AttackOB : Observer
 
 	protected new void Start(){
 		base.Start();
+		I_InitData = transform.GetComponent<InitData>();
 	}
 
 	/*--------------------- HurtEvent ---------------------*/
@@ -39,19 +50,54 @@ public class AttackOB : Observer
 			atkWeaponName = attackerData.curWeaponName;
 		}
 		float damage = Constant.GetBaseDamage(atkWeaponName);
+		if (atkWeaponName == WeaponNameType.Sniper) {
+			damage *= (attackerData.curWeaponLevel - 1) * 0.5f + 1;
+			print("Level:" + attackerData.curWeaponLevel);
+		}
 		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
 			bool isDead = GamerHurt(suffer, damage);
 			var sufferData = Utils.GetBaseData(suffer);
 			if (isDead) {
+				sufferData.isDead = true;
+				if (!sufferData.isPlayer) {
+					NewEnemy(suffer);
+					AddScore(suffer);
+				}
 				if (DeadNotifyEvent != null) {
 					DeadNotifyEvent(attacker, suffer, attacker.GetComponent<Manager>().GetCurWeaponName());
 				}
-				sufferData.isDead = true;
 			}
 			// 武器能量改变
 			WeaponEnergyChangeDeal(attacker, suffers, damage);
 		}
+	}
+
+	protected static void NewEnemy(Transform dead)
+	{
+		BaseData deadData = Utils.GetBaseData(dead);
+		if (!deadData.isPlayer) {
+			string name = dead.name.Substring(10, 1);
+			Instance.StartCoroutine("NewEnemyCoroutine", name);
+		}
+	}
+
+	IEnumerator NewEnemyCoroutine(string type)
+	{
+		yield return new WaitForSeconds(3);
+		int enemyType = int.Parse(type);
+		I_InitData.NewEnemy(enemyType);
+	}
+
+	static void AddScore(Transform dead)
+	{
+		BaseData deadData = Utils.GetBaseData(dead);
+		if (!deadData.isPlayer) {
+			GlobalData.Instance.AddScore(10);
+			if (AddScoreEvent != null) {
+				AddScoreEvent();
+			}
+		}	
 	}
 
 		/*----------- Observer -> Messenger -----------*/
@@ -76,7 +122,7 @@ public class AttackOB : Observer
 	/*------------ WeaponEnergyChangeEvent -------------*/
 	//public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target);
 	//public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
-	private static float increaseRate = 0.6f;
+	private static float increaseRate = 0.2f;
 	private static float decreaseRate = -0.6f;
 	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers, float damage)
 	{

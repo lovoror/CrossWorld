@@ -13,8 +13,11 @@ public enum AttackType
 public class MoboController : MonoBehaviour
 {
 	public GameObject BtnFocus;
+	Transform ResultPanel;
 	GameObject FocusBtns;
 	AttackButton ButtonA;
+	Text ScoreText;
+	Text MaxText;
 	LeftStick StickL;
 	Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
 	PlayerData I_PlayerData;
@@ -40,6 +43,14 @@ public class MoboController : MonoBehaviour
 		StickL = GetComponentInChildren<LeftStick>();
 		I_PlayerData = PlayerData.Instance;
 		FocusBtns = GameObject.Find("FocusBtns");
+		ScoreText = transform.Find("ScoreTxt").GetComponent<Text>();
+		MaxText = transform.Find("MaxScoreTxt").GetComponent<Text>();
+		ResultPanel = transform.Find("ResultPanel");
+	}
+
+	void Start()
+	{
+		
 	}
 
 	void OnEnable()
@@ -50,6 +61,8 @@ public class MoboController : MonoBehaviour
 		AttackButton.UIAttackDownEvent += new AttackButton.UIAttackDownEventHandler(UIAttackDownEventFunc);
 		// FocusTargetsChangeEvent
 		PlayerMessenger.FocusTargetsChangeEvent += new PlayerMessenger.FocusTargetsChangeEventHandler(FocusTargetsChangeEventFunc);
+		// DeadNotifyEvent
+		AttackOB.DeadNotifyEvent += new AttackOB.DeadNotifyEventHandler(DeadNotifyEventFunc);
 	}
 
 	void OnDisable()
@@ -57,6 +70,7 @@ public class MoboController : MonoBehaviour
 		AttackButton.UIAttackUpEvent -= UIAttackUpEventFunc;
 		AttackButton.UIAttackDownEvent -= UIAttackDownEventFunc;
 		PlayerMessenger.FocusTargetsChangeEvent -= FocusTargetsChangeEventFunc;
+		AttackOB.DeadNotifyEvent -= DeadNotifyEventFunc;
 	}
 
 	Vector2 last_bodyDirection = Vector2.zero;
@@ -149,6 +163,17 @@ public class MoboController : MonoBehaviour
 		}
 	}
 	/*------------------ FocusTargetsChangeEvent -------------------*/
+
+	/*---------------------- DeadNotifyEvent ----------------------*/
+	void DeadNotifyEventFunc(Transform killer, Transform dead, WeaponNameType weapon)
+	{
+		if (PlayerData.Instance.isDead) {
+			ResultPanel.gameObject.SetActive(true);
+			ScoreText.enabled = false;
+			MaxText.enabled = false;
+		}
+	}
+	/*---------------------- DeadNotifyEvent ----------------------*/
 
 	public void OnClick_Func_R(string str_WeaponName)
 	{

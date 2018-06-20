@@ -88,7 +88,7 @@ public class PlayerData : BaseData
 		base.Init();
 		if (player) {
 			this.target = player;
-			isPlayer = false;
+			isPlayer = true;
 			Transform leg = null;
 			leg = player.Find("Leg");
 			legTransform = leg;

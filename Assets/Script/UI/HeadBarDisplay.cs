@@ -6,8 +6,9 @@ public class HeadBarDisplay : MonoBehaviour {
 
 	public Transform headBar;
 	public Vector3 offset = new Vector3(0, 0, 6);
-	[HideInInspector]
-	protected static HeadBarDisplay m_instance = null;
+
+	static Transform s_HeadBar;
+	static Vector3 s_offset;
 
 	public class Bar
 	{
@@ -104,7 +105,8 @@ public class HeadBarDisplay : MonoBehaviour {
 
 	void Awake()
 	{
-
+		s_HeadBar = headBar;
+		s_offset = offset;
 	}
 
 	void OnEnable()
@@ -129,7 +131,7 @@ public class HeadBarDisplay : MonoBehaviour {
 		}
 	}
 
-	void AddToBarPool(Transform key, Bar bar)
+	static void AddToBarPool(Transform key, Bar bar)
 	{
 		if (d_BarPool.ContainsKey(key)) {
 			d_BarPool[key] = bar;
@@ -146,9 +148,16 @@ public class HeadBarDisplay : MonoBehaviour {
 		}
 	}
 
+	public static void AddEnemyBar(Transform enemy)
+	{
+		Bar enemyBar = new Bar(enemy, s_HeadBar, s_offset);
+		AddToBarPool(enemy, enemyBar);
+	}
+
 	public static void StageEnd()
 	{
 		d_BarPool.Clear();
-		m_instance = null;
+		s_HeadBar = null;
+		s_offset = Vector3.zero;
 	}
 }

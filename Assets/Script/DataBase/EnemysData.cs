@@ -16,6 +16,12 @@ public class EnemysData
 	}
 
 	public Dictionary<Transform, EnemyData> d_EnemysData = new Dictionary<Transform, EnemyData>();
+	public int count
+	{
+		get{
+			return d_EnemysData.Count;
+		}
+	}
 	public Transform[] enemyTransforms
 	{
 		get

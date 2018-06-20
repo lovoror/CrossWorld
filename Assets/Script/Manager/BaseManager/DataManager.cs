@@ -68,13 +68,13 @@ public class DataManager : MonoBehaviour
 	}
 	protected void Awake()
 	{
-		selfData = Utils.GetBaseData(transform);
-		maxHealth = selfData.maxHealth;
-		I_Manager = transform.GetComponent<Manager>();
+
 	}
 
 	protected void Start () {
-
+		selfData = Utils.GetBaseData(transform);
+		maxHealth = selfData.maxHealth;
+		I_Manager = transform.GetComponent<Manager>();
 	}
 	
 	void Update () {

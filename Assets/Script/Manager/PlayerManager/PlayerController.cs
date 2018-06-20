@@ -143,7 +143,7 @@ public class PlayerController : Controller
 						attackType = AimAttackType.aming;
 					}
 					else {
-						if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+						if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary && leftBullets > 0) {
 							attackType = AimAttackType.attacking;
 							ShowAttackAnim(true);
 						}
@@ -192,9 +192,11 @@ public class PlayerController : Controller
 			if (focusTarget) {
 				if (curWeaponType == WeaponType.autoDistant) {
 					if (attackType != AimAttackType.none) {
-						// 攻击
-						attackType = AimAttackType.attacking;
-						ShowAttackAnim(true);
+						if (leftBullets > 0) {
+							// 攻击
+							attackType = AimAttackType.attacking;
+							ShowAttackAnim(true);
+						}
 					}
 				}
 			}
@@ -210,7 +212,7 @@ public class PlayerController : Controller
 					if (attackType == AimAttackType.aming) {
 						trueAttackBoundary *= atkBoundaryRate;
 					}
-					if (faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary) {
+					if (faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary && leftBullets > 0) {
 						// 攻击
 						attackType = AimAttackType.attacking;
 						ShowAttackAnim(true);
@@ -284,7 +286,9 @@ public class PlayerController : Controller
 			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
 			(curWeaponType == WeaponType.singleLoader && (focusTarget != null || (attackType != AimAttackType.none && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))))) {
 			// 抬手后单次射击
-			AttackOnce();
+			if (leftBullets > 0) {
+				AttackOnce();
+			}
 		}
 		// 狙击枪朝Enemy或Wall开枪后，镜头延迟归位
 		if (curWeaponType == WeaponType.singleLoader && curAimTarget != null) {
@@ -390,6 +394,11 @@ public class PlayerController : Controller
 	{
 	}
 	/*--------------- OnReloadEndEvent -----------------*/
+
+	public void ResetOnceAttack()
+	{
+		bodyAnim.ResetTrigger("OnceAttack");
+	}
 
 	bool HasEnemyInRange(ref Transform target, ref Vector3 hitPosition)
 	{

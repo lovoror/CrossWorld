@@ -34,7 +34,6 @@ public class Manager : MonoBehaviour
 	protected void Awake()
 	{
 		self = Utils.GetOwner(transform, ownerTags);
-		I_BaseData = Utils.GetBaseData(self);
 		I_AnimEventsManager = transform.GetComponentInChildren<AnimEventsManager>();
 		I_Messenger = self.GetComponent<Messenger>();
 		I_DataManager = self.GetComponent<DataManager>();
@@ -44,7 +43,7 @@ public class Manager : MonoBehaviour
 
 	protected void Start()
 	{
-
+		I_BaseData = Utils.GetBaseData(self);
 	}
 	
 

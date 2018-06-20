@@ -217,6 +217,9 @@
     <Reference Include="UnityEngine.Purchasing">
       <HintPath>Library\UnityAssemblies\UnityEngine.Purchasing.dll</HintPath>
     </Reference>
+    <Reference Include="LitJson">
+      <HintPath>Assets\Plugins\LitJson.dll</HintPath>
+    </Reference>
     <Reference Include="Pathfinding.ClipperLib">
       <HintPath>Assets\Plugins\AstarPathfindingProject\Plugins\Clipper\Pathfinding.ClipperLib.dll</HintPath>
     </Reference>
@@ -228,9 +231,6 @@
     </Reference>
     <Reference Include="BehaviorDesignerRuntime">
       <HintPath>Assets\Plugins\Behavior Designer\Runtime\BehaviorDesignerRuntime.dll</HintPath>
-    </Reference>
-    <Reference Include="LitJson">
-      <HintPath>Assets\Plugins\LitJson.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +247,7 @@
     <Compile Include="Assets\Script\DataBase\BaseData.cs" />
     <Compile Include="Assets\Script\DataBase\EnemyData.cs" />
     <Compile Include="Assets\Script\DataBase\EnemysData.cs" />
+    <Compile Include="Assets\Script\DataBase\GlobalData.cs" />
     <Compile Include="Assets\Script\DataBase\InitData.cs" />
     <Compile Include="Assets\Script\DataBase\PlayerData.cs" />
     <Compile Include="Assets\Script\Effect\BulletController.cs" />
@@ -304,6 +305,7 @@
     <Compile Include="Assets\Script\StageMachine\LevelTestStage.cs" />
     <Compile Include="Assets\Script\UI\BulletNumberUpdate.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
+    <Compile Include="Assets\Script\UI\MaxScoreTxt.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButtonSd.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackStick.cs" />
@@ -316,6 +318,8 @@
     <Compile Include="Assets\Script\UI\MoboController\MoveCamera.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
     <Compile Include="Assets\Script\UI\UiDebugTxt.cs" />
+    <Compile Include="Assets\Script\UI\UiResultPanel.cs" />
+    <Compile Include="Assets\Script\UI\UiScoreTxt.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Atlases\Fonts\LuckiestGuy\LICENSE.txt" />

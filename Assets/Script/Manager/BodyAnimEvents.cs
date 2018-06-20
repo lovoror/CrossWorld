@@ -46,4 +46,9 @@ public class BodyAnimEvents : MonoBehaviour {
 	{
 		I_AnimEventsManager.PlayReloadSound();
 	}
+
+	void ResetOnceAttack()
+	{
+		I_AnimEventsManager.ResetOnceAttack();
+	}
 }

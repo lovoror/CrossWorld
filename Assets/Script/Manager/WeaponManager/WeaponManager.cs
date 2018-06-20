@@ -28,11 +28,11 @@ public class WeaponManager : MonoBehaviour {
 		if (self) {
 			I_Manager = self.GetComponent<Manager>();
 		}
-		I_BaseData = I_Manager.I_BaseData;
 		I_AnimEventsManager = I_Manager.I_AnimEventsManager;
 	}
 
 	protected void Start () {
+		I_BaseData = I_Manager.I_BaseData;
 		attackAudioSource = transform.GetComponent<AudioSource>();
 	}
 

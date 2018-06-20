@@ -36,6 +36,7 @@ public class LevelTestStage : Singleton<LevelTestStage>, IGameStageBase
 		HeadBarDisplay.StageEnd();
 		PlayerData.Instance.StageEnd();
 		EnemysData.Instance.StageEnd();
+		GlobalData.Instance.StageEnd();
 		int enemyCollider = LayerMask.NameToLayer("Enemy");
 		int playerCollider = LayerMask.NameToLayer("Player");
 		Physics.IgnoreLayerCollision(playerCollider, enemyCollider, false);

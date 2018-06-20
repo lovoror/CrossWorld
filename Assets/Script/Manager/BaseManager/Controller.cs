@@ -133,7 +133,7 @@ public class Controller : MonoBehaviour {
 
 	protected void AttackOnce()
 	{
-		bodyAnim.SetBool("OnceAttack", true);
+		bodyAnim.SetTrigger("OnceAttack");
 	}
 
 	protected void ShowDeadAnim(bool show)
