@@ -6,7 +6,6 @@ public class DistantWeaponManager : WeaponManager {
 
 	public Transform bullet;
 	public float bulletSpeed = 100;
-	public bool canPenetrate = false;
 	public Transform muzzle;
 
 	MyDelegate.vfv ReloadCallback = null;
@@ -81,6 +80,11 @@ public class DistantWeaponManager : WeaponManager {
 		Vector3 firePos = muzzle.position;
 		Transform I_Bullet = Instantiate(bullet, firePos, body.rotation);
 		BulletController I_BulletController = I_Bullet.GetComponent<BulletController>();
+		bool canPenetrate = false;
+		BaseData shooterData = Utils.GetBaseData(shooter);
+		if (shooterData.curWeaponName == WeaponNameType.Sniper && shooterData.curWeaponLevel >= 2) {
+			canPenetrate = true;
+		}
 		I_BulletController.Init(shooter, damage, bulletSpeed, canPenetrate);
 	}
 }

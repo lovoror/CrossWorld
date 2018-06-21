@@ -47,9 +47,9 @@ public class Constant
 
 	public readonly static Dictionary<WeaponNameType, List<float>> MAX_WEAPON_ENERGY = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
-		{WeaponNameType.Machinegun, new List<float>(){0, 100, 200, 300, 350}},
-		{WeaponNameType.Knife, new List<float>(){0, 150, 300, 450, 500}},
-		{WeaponNameType.Sniper, new List<float>(){0, 100, 600, 900, 1100}},
+		{WeaponNameType.Machinegun, new List<float>(){0, 200, 300, 450, 600}},
+		{WeaponNameType.Knife, new List<float>(){0, 200, 300, 450, 600}},
+		{WeaponNameType.Sniper, new List<float>(){0, 200, 300, 400, 500}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
@@ -63,7 +63,7 @@ public class Constant
 		{ WeaponNameType.Knife, 150 },
 		{ WeaponNameType.M16, 45 },
 		{ WeaponNameType.Machinegun, 50 },
-		{ WeaponNameType.Sniper, 100 },
+		{ WeaponNameType.Sniper, 150 },
 	};
 
 	// 远程武器瞄准的辅助距离

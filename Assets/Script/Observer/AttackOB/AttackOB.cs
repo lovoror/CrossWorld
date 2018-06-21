@@ -52,7 +52,6 @@ public class AttackOB : Observer
 		float damage = Constant.GetBaseDamage(atkWeaponName);
 		if (atkWeaponName == WeaponNameType.Sniper) {
 			damage *= (attackerData.curWeaponLevel - 1) * 0.5f + 1;
-			print("Level:" + attackerData.curWeaponLevel);
 		}
 		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
@@ -123,7 +122,7 @@ public class AttackOB : Observer
 	//public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target);
 	//public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
 	private static float increaseRate = 0.2f;
-	private static float decreaseRate = -0.6f;
+	private static float decreaseRate = -3f;
 	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers, float damage)
 	{
 		ChangeEnergy(shooter, increaseRate * damage);
