@@ -177,4 +177,15 @@ public class Utils {
 			return DirectionType8.Up;
 		}
 	}
+
+	public static float GetWeaponDamageRate(WeaponNameType weaponName)
+	{
+		if (Constant.WEAPON_DAMAGE_RATE.ContainsKey(weaponName)) {
+			int level = PlayerData.Instance.curWeaponLevel;
+			if (Constant.WEAPON_DAMAGE_RATE[weaponName].Count >= level) {
+				return Constant.WEAPON_DAMAGE_RATE[weaponName][level - 1];
+			}
+		}
+		return -1;
+	}
 }

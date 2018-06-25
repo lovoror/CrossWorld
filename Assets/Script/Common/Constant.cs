@@ -9,7 +9,7 @@ public enum WeaponType
 
 public enum WeaponNameType
 {
-	unknown, M16, Knife, Machinegun, Sniper
+	unknown, M16, Knife, Machinegun, Sniper, Shotgun
 }
 
 public enum DirectionType8
@@ -48,6 +48,7 @@ public class Constant
 	public readonly static Dictionary<WeaponNameType, List<float>> MAX_WEAPON_ENERGY = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
 		{WeaponNameType.Machinegun, new List<float>(){0, 150, 300, 450, 600}},
+		{WeaponNameType.Shotgun, new List<float>(){0, 150, 300, 450, 600}},
 		{WeaponNameType.Knife, new List<float>(){0, 150, 300, 450, 600}},
 		{WeaponNameType.Sniper, new List<float>(){0, 150, 300, 400, 450}},
 	};
@@ -55,14 +56,28 @@ public class Constant
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
+		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
 	};
 
+	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_DAMAGE_RATE = new Dictionary<WeaponNameType, List<float>>() {
+		{WeaponNameType.M16, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
+		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
+	};
+
+	public readonly static Dictionary<WeaponNameType, List<int>> BULLET_NUMBER = new Dictionary<WeaponNameType, List<int>>() {
+		{WeaponNameType.Shotgun, new List<int>(){6, 9, 12, 12}},
+	};
+
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.Knife, 150 },
-		{ WeaponNameType.M16, 45 },
+		{ WeaponNameType.Knife, 130 },
+		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
+		{ WeaponNameType.Shotgun, 25 },
 		{ WeaponNameType.Sniper, 150 },
 	};
 

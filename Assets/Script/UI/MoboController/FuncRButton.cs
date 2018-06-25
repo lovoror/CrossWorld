@@ -4,10 +4,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+[System.Serializable]
+public class ImgDictionary
+{
+	public WeaponNameType weaponName;
+	public Sprite image;
+}
+
 public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
+	public delegate void PlayerChangeWeaponEventHandler(Transform player, WeaponNameType weaponName);
+	public static event PlayerChangeWeaponEventHandler PlayerChangeWeaponEvent;
+
+	public delegate void PlayerReloadEventHandler(Transform player);
+	public static event PlayerReloadEventHandler PlayerReloadEvent;
+
 	public List<WeaponNameType> weapons;
-	Dictionary<string, WeaponNameType> d_Weapons;
+	public List<ImgDictionary> weaponImages;
+	public Image I_Image;
+	public Text I_BulletNumber;
+	public WeaponNameType curWeaponNameOnBtn;  // 当前Btn上所展示的武器
+	Dictionary<string, WeaponNameType> d_Weapons;  // 上下左右操作对应的武器
+	Dictionary<WeaponNameType, Sprite> d_WeaponImages;  // 各种武器所对应的Image
 	WeaponNameType curWeaponName
 	{
 		get
@@ -22,22 +40,18 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 			return Observer.GetPlayer();
 		}
 	}
+	PlayerData I_PlayerData;
 
-	public WeaponNameType weaponName;
-
-	public delegate void PlayerChangeWeaponEventHandler(Transform player, WeaponNameType weaponName);
-	public static event PlayerChangeWeaponEventHandler PlayerChangeWeaponEvent;
-
-	public delegate void PlayerReloadEventHandler(Transform player);
-	public static event PlayerReloadEventHandler PlayerReloadEvent;
 
 	void Awake()
 	{
-
+		I_PlayerData = PlayerData.Instance;
 	}
 
 	void Start()
 	{
+		d_Weapons = new Dictionary<string, WeaponNameType>();
+		d_WeaponImages = new Dictionary<WeaponNameType, Sprite>();
 		for (int i = 0; i < weapons.Count && i < 4; ++i) {
 			string key;
 			switch (i) {
@@ -51,27 +65,46 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 				d_Weapons.Add(key, weapons[i]);
 			}
 		}
+		foreach (var a in weaponImages) {
+			if (!d_WeaponImages.ContainsKey(a.weaponName)) {
+				d_WeaponImages.Add(a.weaponName, a.image);
+			}
+		}
+
+		if (d_Weapons.ContainsValue(curWeaponName)) {
+			curWeaponNameOnBtn = curWeaponName;
+			SetUi(curWeaponNameOnBtn);
+		}
 	}
 
-	public FuncRButton(WeaponNameType weaponName)
+	void Update()
 	{
-		this.weaponName = weaponName;
+		UpdateBulletNumber();
 	}
 
-	//public void OnClick_Func_R(string str_WeaponName)
-	//{
-	//	if (Observer.IsPlayerDead()) return;
-	//	WeaponNameType weaponName = (WeaponNameType)System.Enum.Parse(typeof(WeaponNameType), str_WeaponName, true);
-	//	FuncRButton func;
-	//	if (FuncRButtons.ContainsKey(weaponName)) {
-	//		func = FuncRButtons[weaponName];
-	//	}
-	//	else {
-	//		func = new FuncRButton(weaponName);
-	//		FuncRButtons[weaponName] = func;
-	//	}
-	//	func.OnClick();
-	//}
+	void SetUi(WeaponNameType weaponName)
+	{
+		// 设置图像
+		if (d_WeaponImages.ContainsKey(weaponName)) {
+			I_Image.sprite = d_WeaponImages[curWeaponNameOnBtn];
+		}
+		// 设置子弹数是否可见
+		WeaponType weaponType = Utils.GetWeaponTypeByName(weaponName);
+		I_BulletNumber.gameObject.SetActive(weaponType != WeaponType.melee);
+	}
+
+	void UpdateBulletNumber()
+	{
+		if (curWeaponName == curWeaponNameOnBtn) {
+			int magazineSize = 0;
+			if (Constant.MagazineSize.ContainsKey(curWeaponNameOnBtn)) {
+				magazineSize = Constant.MagazineSize[curWeaponNameOnBtn];
+			}
+			int bullet = I_PlayerData.GetLeftBulletsByName(curWeaponNameOnBtn);
+			I_BulletNumber.text = bullet + "/" + magazineSize;
+		}
+	}
+
 	public void OnPointerDown(PointerEventData data)
 	{
 
@@ -81,13 +114,13 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
 	}
 
-	float min = 30;
+	float min = 20;
 	public void OnPointerUp(PointerEventData data)
 	{
 		bool isDraged = false;
 		WeaponNameType nextWeaponName = WeaponNameType.unknown;
 		float dx = data.position.x - data.pressPosition.x;
-		float dy = data.position.x - data.pressPosition.x;
+		float dy = data.position.y - data.pressPosition.y;
 		if (Mathf.Abs(dy) > Mathf.Abs(dx)) {
 			if (dy < -min) {
 				nextWeaponName = d_Weapons["down"];
@@ -110,12 +143,12 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		}
 
 		if (isDraged) {
-			if (nextWeaponName != curWeaponName) {
+			if (nextWeaponName != WeaponNameType.unknown && nextWeaponName != curWeaponName) {
 				ChangeWeapon(nextWeaponName);
 			}
 		}
 		else {
-			ReloadWeapon();
+			OnClick();
 		}
 	}
 
@@ -124,6 +157,9 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		if (PlayerChangeWeaponEvent != null) {
 			PlayerChangeWeaponEvent(player, weaponName);
 		}
+		if (weaponName == curWeaponNameOnBtn) return;
+		curWeaponNameOnBtn = weaponName;
+		SetUi(weaponName);
 	}
 
 	void ReloadWeapon()
@@ -136,9 +172,8 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	public void OnClick()
 	{
 		WeaponNameType curWeaponName = Observer.GetPlayerCurWeaponName();
-		
-		if (weaponName == curWeaponName) {
-			WeaponType weaponType = Utils.GetWeaponTypeByName(weaponName);
+		if (curWeaponNameOnBtn == curWeaponName) {
+			WeaponType weaponType = Utils.GetWeaponTypeByName(curWeaponNameOnBtn);
 			if (weaponType == WeaponType.autoDistant || weaponType == WeaponType.singleLoader) {
 				if (PlayerReloadEvent != null) {
 					PlayerReloadEvent(player);
@@ -147,7 +182,7 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		}
 		else {
 			if (PlayerChangeWeaponEvent != null) {
-				PlayerChangeWeaponEvent(player, weaponName);
+				PlayerChangeWeaponEvent(player, curWeaponNameOnBtn);
 			}
 		}
 	}

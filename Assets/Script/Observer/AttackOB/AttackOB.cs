@@ -50,8 +50,9 @@ public class AttackOB : Observer
 			atkWeaponName = attackerData.curWeaponName;
 		}
 		float damage = Constant.GetBaseDamage(atkWeaponName);
-		if (atkWeaponName == WeaponNameType.Sniper) {
-			damage *= (attackerData.curWeaponLevel - 1) * 0.5f + 1;
+		float damageRate = Utils.GetWeaponDamageRate(atkWeaponName);
+		if (damageRate >= 0) {
+			damage *= damageRate;
 		}
 		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
