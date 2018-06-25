@@ -6,6 +6,8 @@ using UnityEngine;
 public class FollowTarget : MonoBehaviour {
 	public float followSpeed = 8.0f;
 	public float aimSpeed = 4.0f;   // 开启/关闭CONSTANT_SPEED，参考值分别为:20/2
+	public float aimSpeedRateAccelerate = 1.5f; // aimSpeedRate的恢复速度
+	float aimSpeedRate = 1f;  // aimSpeed的缩减程度。
 	public float maxAimTime = 0.8f; // 开启CONSTANT_SPEED时有效，单次镜头移动的最长时间
 	public float scaleSpeed = 2f;   // 关闭CONSTANT_SPEED时有效
 	public Vector2 offset = Vector2.zero;
@@ -100,7 +102,8 @@ public class FollowTarget : MonoBehaviour {
 		if (v.sqrMagnitude < boundary * boundary) {
 			speedAdjust = boundary / v.magnitude;
 		}
-		curOffset = Vector3.Lerp(curOffset, offset3D, Time.fixedDeltaTime * (aimSpeed / 10) * speedAdjust);  // 当前的offset点
+		float trueAimSpeed = aimSpeed * aimSpeedRate;
+		curOffset = Vector3.Lerp(curOffset, offset3D, Time.fixedDeltaTime * (trueAimSpeed / 10) * speedAdjust);  // 当前的offset点
 		// 跟随curOffset点
 		transform.position = Vector3.Lerp(transform.position, follow.position + curOffset, Time.fixedDeltaTime * followSpeed);
 
@@ -111,8 +114,9 @@ public class FollowTarget : MonoBehaviour {
 	}
 
 	float maxX = 53.33f, maxY = 30;
-	public void SetAimPos(Vector2 aimPos)
+	public void SetAimPos(Vector2 aimPos, float aimSpeedRate = 1)
 	{
+		this.aimSpeedRate = aimSpeedRate;
 		this.aimPos = aimPos;
 		isPosAming = true;
 		if (aimPos == new Vector2(-1000, -1000)) {
@@ -128,8 +132,9 @@ public class FollowTarget : MonoBehaviour {
 		sizeScale = sizeScale < 1 ? 1 : sizeScale;
 	}
 
-	public void SetAimDirection(Vector2 direction)
+	public void SetAimDirection(Vector2 direction, float aimSpeedRate = 1)
 	{
+		this.aimSpeedRate = aimSpeedRate;
 		if (aimPos == new Vector2(-1000, -1000)) {
 			isPosAming = false;
 			float degree = Utils.GetAnglePY(new Vector3(direction.x, 0, direction.y), Vector3.right);

@@ -15,6 +15,13 @@ public class PlayerController : Controller
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向
+	float aimSpeedRateAccelerate
+	{
+		get
+		{
+			return I_FollowTarget.aimSpeedRateAccelerate;
+		}
+	}
 	Transform focusTarget = null;  // 当前锁定的目标
 	Transform curAimTarget = null;
 	Vector3 aimHitPoint = new Vector3(-1000, -1000, -1000);
@@ -507,17 +514,35 @@ public class PlayerController : Controller
 	}
 
 	// 需要在SetAimTriangle之后
+	// 在瞄准离开curAimTarget之后的smoothTime时间内，镜头需要缓动。
+	float aimSpeedRate = 0;  // AimSpeed衰减程度
+	Transform preAimTarget = null; // 前一次瞄准的对象（不考虑focusTarget的情况）。
 	void SetCamera()
 	{
 		if (focusTarget) {
 			Vector2 targetPos2D = new Vector2(focusTarget.position.x, focusTarget.position.z);
 			I_FollowTarget.SetAimPos(targetPos2D);
+			preAimTarget = null;
+			aimSpeedRate = 1;  // 恢复瞄准速度
 		}
 		else {
 			if (curAimTarget != null) {
+				if (preAimTarget == null) {
+					// 之前没有瞄准对象，则更新preAimTarget为当前对象
+					preAimTarget = curAimTarget;
+				}
+				else {
+					// 第一次发现preAimTarget不再是瞄准对象的时候，镜头开始缓动。
+					if (preAimTarget != curAimTarget) {
+						preAimTarget = curAimTarget;
+						aimSpeedRate = 0;
+					}
+				}
 				// 设置Camera的aimPos
 				Vector2 aimPos = new Vector2(curAimTarget.position.x, curAimTarget.position.z);
-				I_FollowTarget.SetAimPos(aimPos);
+				//aimSpeedRate = Mathf.Lerp(aimSpeedRate, 1, aimSpeedRateAccelerate * Time.deltaTime);
+				aimSpeedRate = aimSpeedRate >= 1 ? 1 : aimSpeedRate + aimSpeedRateAccelerate * Time.deltaTime;
+				I_FollowTarget.SetAimPos(aimPos, aimSpeedRate);
 			}
 			//else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
 			//	// 瞄准墙体
@@ -525,18 +550,25 @@ public class PlayerController : Controller
 			//	I_FollowTarget.SetAimPos(aimPos);
 			//}
 			else {
+				if (preAimTarget != null) {
+					// 上一次有瞄准对象，当前没有瞄准对象，镜头开始缓动。
+					preAimTarget = null;
+					aimSpeedRate = 0;
+				}
+				//aimSpeedRate = Mathf.Lerp(aimSpeedRate, 1, aimSpeedRateSmooth * Time.deltaTime);
+				aimSpeedRate = aimSpeedRate >= 1 ? 1 : aimSpeedRate + aimSpeedRateAccelerate * Time.deltaTime;
 				I_FollowTarget.Reset();
 				if (curWeaponType == WeaponType.autoDistant) {
 					if (attackType == AimAttackType.aming || attackType == AimAttackType.attacking) {
 						// autoDistant武器不允许根据BtnA的滑动距离改变Camera的offset
 						// 以免划出attackBoundary触发攻击，造成误操作
-						I_FollowTarget.SetAimDirection(faceDirection.normalized / 1.5f);
+						I_FollowTarget.SetAimDirection(faceDirection.normalized / 1.5f, aimSpeedRate);
 					}
 				}
 				else if (curWeaponType == WeaponType.singleLoader) {
 					if (attackType != AimAttackType.none) {
 						// singleLoader可以通过BtnA的滑动距离改变Camera的offset
-						I_FollowTarget.SetAimDirection(faceDirection / 1.5f);
+						I_FollowTarget.SetAimDirection(faceDirection / 1.5f, aimSpeedRate);
 					}
 				}
 			}

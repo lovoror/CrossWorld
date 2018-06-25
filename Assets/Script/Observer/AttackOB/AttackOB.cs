@@ -122,7 +122,7 @@ public class AttackOB : Observer
 	//public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target);
 	//public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
 	private static float increaseRate = 0.2f;
-	private static float decreaseRate = -3f;
+	private static float decreaseRate = -2.5f;
 	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers, float damage)
 	{
 		ChangeEnergy(shooter, increaseRate * damage);

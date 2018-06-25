@@ -175,21 +175,6 @@ public class MoboController : MonoBehaviour
 	}
 	/*---------------------- DeadNotifyEvent ----------------------*/
 
-	public void OnClick_Func_R(string str_WeaponName)
-	{
-		if (Observer.IsPlayerDead()) return;
-		WeaponNameType weaponName = (WeaponNameType)System.Enum.Parse(typeof(WeaponNameType), str_WeaponName, true);
-		FuncRButton func;
-		if (FuncRButtons.ContainsKey(weaponName)) {
-			func = FuncRButtons[weaponName];
-		}
-		else {
-			func = new FuncRButton(weaponName);
-			FuncRButtons[weaponName] = func;
-		}
-		func.OnClick();
-	}
-
 	public void Restart()
 	{
 		GameStageMachine.Instance.ChangeStage(GameStage.LOGIN);
