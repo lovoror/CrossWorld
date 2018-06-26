@@ -9,6 +9,14 @@ public class WeaponManager : MonoBehaviour {
 	public WeaponNameType weaponName { get; set; }
 	[HideInInspector]
 	public WeaponType weaponType;
+	[HideInInspector]
+	public int curWeaponLevel
+	{
+		get
+		{
+			return I_BaseData.curWeaponLevel;
+		}
+	}
 
 	protected Manager I_Manager;  // attacker的Manager管理类
 	protected AnimEventsManager I_AnimEventsManager { get; set; }
@@ -116,4 +124,9 @@ public class WeaponManager : MonoBehaviour {
 		
 	}
 	/*---------------- KillerNotifyEvent ------------------*/
+
+	protected int GetWeaponLevel(WeaponNameType weaponName)
+	{
+		return I_BaseData.GetWeaponLevel(weaponName);
+	}
 }

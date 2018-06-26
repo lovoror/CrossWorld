@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Controller : MonoBehaviour {
+	public delegate void ShowRangeTriangleEventHandler(WeaponNameType weaponName, bool show);
+	public ShowRangeTriangleEventHandler ShowRangeTriangleEvent;
+
 	[HideInInspector]
 	public Manager I_Manager;
 	protected BaseData I_BaseData

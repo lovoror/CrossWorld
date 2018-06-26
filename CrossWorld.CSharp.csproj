@@ -282,10 +282,13 @@
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerManager.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerMessenger.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\PlayerStateDisplay.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\RangeTriangle\RangeAimController.cs" />
+    <Compile Include="Assets\Script\Manager\PlayerManager\RangeTriangle\RangeMeshTriangle.cs" />
     <Compile Include="Assets\Script\Manager\PlayerManager\TargetInOutCheck.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\M16.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\Machinegun.cs" />
+    <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\Shotgun.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\DistantWeapons\Sniper.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeaponManager.cs" />
     <Compile Include="Assets\Script\Manager\WeaponManager\MeleeWeapons\Knife.cs" />

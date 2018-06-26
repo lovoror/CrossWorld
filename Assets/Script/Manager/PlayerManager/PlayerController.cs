@@ -226,6 +226,7 @@ public class PlayerController : Controller
 					}
 				}
 			}
+			SetRangeAngle();
 			SetAimTriangle();
 			SetCamera();
 #endif
@@ -453,10 +454,21 @@ public class PlayerController : Controller
 		return false;
 	}
 
-	void SetAimTriangleAndCamera()
+	// Shotgun范围三角
+	void SetRangeAngle()
 	{
-		SetAimTriangle();
-		SetCamera();
+		if (curWeaponName == WeaponNameType.Shotgun &&
+			(attackType == AimAttackType.attacking || 
+			attackType == AimAttackType.aming)) {
+			if (ShowRangeTriangleEvent != null) {
+				ShowRangeTriangleEvent(WeaponNameType.Shotgun, true);
+			}
+		}
+		else {
+			if (ShowRangeTriangleEvent != null) {
+				ShowRangeTriangleEvent(WeaponNameType.Shotgun, false);
+			}
+		}
 	}
 
 	// 设置瞄准三角

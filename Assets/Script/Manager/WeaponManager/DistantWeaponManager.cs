@@ -75,16 +75,12 @@ public class DistantWeaponManager : WeaponManager {
 		I_Manager.I_Controller.ShowReloadAnim();
 	}
 
-	void CreateBullet(Transform shooter, WeaponNameType weaponName)
+	protected virtual void CreateBullet(Transform shooter, WeaponNameType weaponName)
 	{
 		Vector3 firePos = muzzle.position;
 		Transform I_Bullet = Instantiate(bullet, firePos, body.rotation);
 		BulletController I_BulletController = I_Bullet.GetComponent<BulletController>();
-		bool canPenetrate = false;
-		BaseData shooterData = Utils.GetBaseData(shooter);
-		if (shooterData.curWeaponName == WeaponNameType.Sniper && shooterData.curWeaponLevel >= 2) {
-			canPenetrate = true;
-		}
+		bool canPenetrate = Utils.CanBulletPenetrate(weaponName, GetWeaponLevel(weaponName));
 		I_BulletController.Init(shooter, damage, bulletSpeed, canPenetrate);
 	}
 }

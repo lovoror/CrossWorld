@@ -69,8 +69,16 @@ public class Constant
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 	};
 
+	public readonly static Dictionary<WeaponNameType, int> BULLET_PENETRATE_LEVEL = new Dictionary<WeaponNameType, int>() {
+		{ WeaponNameType.M16, 999 },
+		{ WeaponNameType.Machinegun, 999 },
+		{ WeaponNameType.Shotgun, 3 },
+		{ WeaponNameType.Sniper, 2 },
+	};
+
+	// 散弹枪单次射击的子弹数
 	public readonly static Dictionary<WeaponNameType, List<int>> BULLET_NUMBER = new Dictionary<WeaponNameType, List<int>>() {
-		{WeaponNameType.Shotgun, new List<int>(){6, 9, 12, 12}},
+		{WeaponNameType.Shotgun, new List<int>(){9, 14, 18, 18}},
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
@@ -86,6 +94,7 @@ public class Constant
 		{ WeaponNameType.M16, 5 },
 		{ WeaponNameType.Machinegun, 5 },
 		{ WeaponNameType.Sniper, 3 },
+		{ WeaponNameType.Shotgun, 5 },
 	};
 
 	// 远程武器瞄准的最远距离
@@ -93,6 +102,7 @@ public class Constant
 		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Sniper, 90 },
+		{ WeaponNameType.Shotgun, 50 },
 	};
 
 	// 远程武器弹夹容量
@@ -100,6 +110,7 @@ public class Constant
 		{ WeaponNameType.M16, 30 },
 		{ WeaponNameType.Machinegun, 30 },
 		{ WeaponNameType.Sniper, 6 },
+		{ WeaponNameType.Shotgun, 6 },
 	};
 
 	public static float GetBaseDamage(WeaponNameType weaponName)

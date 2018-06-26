@@ -100,7 +100,7 @@ public class Utils {
 		else if (weaponName == WeaponNameType.Knife) {
 			return WeaponType.melee;
 		}
-		else if (weaponName == WeaponNameType.Sniper) {
+		else if (weaponName == WeaponNameType.Sniper || weaponName == WeaponNameType.Shotgun) {
 			return WeaponType.singleLoader;
 		}
 		else {
@@ -187,5 +187,15 @@ public class Utils {
 			}
 		}
 		return -1;
+	}
+
+	public static bool CanBulletPenetrate(WeaponNameType weaponName, int weaponLevel)
+	{
+		bool canPenetrate = false;
+		if (Constant.BULLET_PENETRATE_LEVEL.ContainsKey(weaponName)) {
+			int penetrateLevel = Constant.BULLET_PENETRATE_LEVEL[weaponName];
+			canPenetrate = weaponLevel >= penetrateLevel;
+		}
+		return canPenetrate;
 	}
 }
