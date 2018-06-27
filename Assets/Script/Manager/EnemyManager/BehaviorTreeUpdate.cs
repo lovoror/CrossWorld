@@ -4,6 +4,9 @@ using UnityEngine;
 using BehaviorDesigner.Runtime;
 
 public class BehaviorTreeUpdate : MonoBehaviour {
+	public delegate void EnemyAlertStateEventHandler(Transform enemy, bool isAlert);
+	public static event EnemyAlertStateEventHandler EnemyAlertStateEvent;
+
 	public BehaviorTree behaviorTree;
 	public GameObject patrolPoints;
 
@@ -27,6 +30,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	SpriteRenderer bodyRender;
 	bool isAttacking = false;
 	bool isDead = false;
+	bool curAlertState = false;
 	float attackSpeedRate
 	{
 		get
@@ -60,6 +64,10 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		bodyAnim = body.GetComponent<Animator>();
 		bodyRender = body.GetComponent<SpriteRenderer>();
 		baseSpeed = (float)behaviorTree.GetVariable("RunSpeed").GetValue();
+		// 初始化AlertState
+		if (EnemyAlertStateEvent != null) {
+			EnemyAlertStateEvent(transform, false);
+		}
 	}
 
 	float curTime = 0;
@@ -83,6 +91,11 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 				Physics.IgnoreCollision(playerCollider, selfCollider);
 				bodyRender.sortingLayerName = "Default";
 				firstDead = false;
+				// 重置Alert
+				if (EnemyAlertStateEvent != null) {
+					curAlertState = false;
+					EnemyAlertStateEvent(transform, false);
+				}
 			}
 			return;
 		}
@@ -107,6 +120,15 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		
 			bodyAnim.SetFloat("Speed", curSpeed.Value / baseSpeed.Value);
 			legAnim.SetFloat("Speed", curSpeed.Value / baseSpeed.Value);
+		}
+
+		// Alert状态变化时进行通知
+		bool alert = (bool)behaviorTree.GetVariable("IsAlert").GetValue();
+		if (alert != curAlertState) {
+			curAlertState = alert;
+			if (EnemyAlertStateEvent != null) {
+				EnemyAlertStateEvent(transform, curAlertState);
+			}
 		}
 	}
 }

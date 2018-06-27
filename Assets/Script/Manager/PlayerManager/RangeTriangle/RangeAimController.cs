@@ -5,11 +5,7 @@ using UnityEngine;
 public class RangeAimController : MonoBehaviour
 {
 	bool isVisible = true;
-
 	RangeMeshTriangle I_MeshT;
-
-	GameObject[] children;
-
 	void Awake()
 	{
 		I_MeshT = GetComponentInChildren<RangeMeshTriangle>();

@@ -253,6 +253,7 @@
     <Compile Include="Assets\Script\Effect\BulletController.cs" />
     <Compile Include="Assets\Script\GameMain.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\AnimEventsManager.cs" />
+    <Compile Include="Assets\Script\Manager\BaseManager\BirthPointManager.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Controller.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\DataManager.cs" />
     <Compile Include="Assets\Script\Manager\BaseManager\Manager.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="Assets\Script\Observer\AttackOB\AttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\DistantAttackOB.cs" />
     <Compile Include="Assets\Script\Observer\AttackOB\MeleeAttackOB.cs" />
+    <Compile Include="Assets\Script\Observer\BGM\BGMManager.cs" />
     <Compile Include="Assets\Script\Observer\init.cs" />
     <Compile Include="Assets\Script\Observer\Observer.cs" />
     <Compile Include="Assets\Script\Skill\SkillArea.cs" />
@@ -320,6 +322,7 @@
     <Compile Include="Assets\Script\UI\MoboController\MoboControllerSd.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoveCamera.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
+    <Compile Include="Assets\Script\UI\Spark.cs" />
     <Compile Include="Assets\Script\UI\UiDebugTxt.cs" />
     <Compile Include="Assets\Script\UI\UiResultPanel.cs" />
     <Compile Include="Assets\Script\UI\UiScoreTxt.cs" />

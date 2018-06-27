@@ -334,6 +334,8 @@ public class PlayerController : Controller
 			Physics.IgnoreLayerCollision(playerCollider, enemyCollider);
 			bodyRender.sortingLayerName = "Default";
 			I_AimController.SetVisible(false);
+			RangeAimController I_RangeAimController = transform.GetComponentInChildren<RangeAimController>();
+			I_RangeAimController.SetVisible(false);
 			if (rb) {
 				rb.velocity = Vector3.zero;
 				rb.angularVelocity = Vector3.zero;

@@ -72,7 +72,7 @@ public class Constant
 	public readonly static Dictionary<WeaponNameType, int> BULLET_PENETRATE_LEVEL = new Dictionary<WeaponNameType, int>() {
 		{ WeaponNameType.M16, 999 },
 		{ WeaponNameType.Machinegun, 999 },
-		{ WeaponNameType.Shotgun, 3 },
+		{ WeaponNameType.Shotgun, 999 },
 		{ WeaponNameType.Sniper, 2 },
 	};
 

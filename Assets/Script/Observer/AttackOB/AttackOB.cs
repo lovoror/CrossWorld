@@ -11,7 +11,15 @@ public class AttackOB : Observer
 	public delegate void AddScoreEventHandler();
 	public static event AddScoreEventHandler AddScoreEvent;
 
-	protected new void Awake()
+	static int birthPointNum
+	{
+		get
+		{
+			return I_InitData.birthPoints.Count;
+		}
+	}
+
+	protected void Awake()
 	{
 		Instance = this;
 	}
@@ -23,7 +31,7 @@ public class AttackOB : Observer
 		isRegisted = true;
 	}
 
-	protected void OnDisable()
+	protected new void OnDisable()
 	{
 		base.OnDisable();
 		Messenger.HurtDeclarationEvent -= HurtDeclarationEventFunc;
@@ -77,16 +85,23 @@ public class AttackOB : Observer
 	{
 		BaseData deadData = Utils.GetBaseData(dead);
 		if (!deadData.isPlayer) {
-			string name = dead.name.Substring(10, 1);
-			Instance.StartCoroutine("NewEnemyCoroutine", name);
+			string args = dead.name.Substring(10, 1);
+			int index = Mathf.RoundToInt(Random.Range(-0.49f, birthPointNum - 1 + 0.49f));
+			args = args + "-" + index;
+			Instance.StartCoroutine("NewEnemyCoroutine", args);
+			// 显示重生点标记
+			BirthPointManager.ShowBirthPoint(index, true);
 		}
 	}
 
-	IEnumerator NewEnemyCoroutine(string type)
+	IEnumerator NewEnemyCoroutine(string args)
 	{
 		yield return new WaitForSeconds(3);
-		int enemyType = int.Parse(type);
-		I_InitData.NewEnemy(enemyType);
+
+		string[] sArray = args.Split('-');
+		int enemyType = int.Parse(sArray[0]);
+		int index = int.Parse(sArray[1]);
+		I_InitData.NewEnemy(enemyType, index);
 	}
 
 	static void AddScore(Transform dead)

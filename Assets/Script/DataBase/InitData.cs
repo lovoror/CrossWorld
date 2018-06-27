@@ -36,8 +36,11 @@ public class InitData : MonoBehaviour {
 	public Transform birthPoint;
 	public List<Transform> birthPoints;
 
+	Dictionary<string, float> enemyHealth;
+
 	void Awake()
 	{
+		enemyHealth = new Dictionary<string, float>();
 		InitPlayerData();
 		InitEnemysData();
 		InitGlobalData();
@@ -45,6 +48,10 @@ public class InitData : MonoBehaviour {
 			birthPoints.Add(point);
 		}
 		Random.InitState((int)Time.time);
+	}
+
+	void Start()
+	{
 	}
 
 	void InitGlobalData()
@@ -79,14 +86,17 @@ public class InitData : MonoBehaviour {
 				if (info.weapon.gameObject.activeSelf) curWeaponName = info.weaponName;
 			}
 			EnemysData.Instance.AddEnemyData(enemyData.enemy, curWeaponName, enemyData.enemyMaxHealth, d_EnemyWeapons, d_EnemyBodys);
+			if (!enemyHealth.ContainsKey(enemyData.enemy.name)) {
+				enemyHealth.Add(enemyData.enemy.name, enemyData.enemyMaxHealth);
+			}
 		}
 		EnemysData.Instance.OnInitEnd();
 	}
 
-	public void NewEnemy(int enemyType) {
+	public void NewEnemy(int enemyType, int index) {
 		Transform instance = Instantiate(enemyPrefab.gameObject).transform;
 		instance.parent = GameObject.Find("Enemys").transform;
-		instance.position = birthPoints[Mathf.RoundToInt(Random.Range(0, birthPoints.Count))].position;
+		instance.position = birthPoints[index].position;
 		instance.name = "Colombian-" + enemyType;
 		Dictionary<WeaponNameType, Transform> d_EnemyWeapons = new Dictionary<WeaponNameType, Transform>();
 		Dictionary<WeaponNameType, Transform> d_EnemyBodys = new Dictionary<WeaponNameType, Transform>();
@@ -95,8 +105,17 @@ public class InitData : MonoBehaviour {
 		d_EnemyWeapons.Add(WeaponNameType.Knife, knife);
 		d_EnemyBodys.Add(WeaponNameType.Knife, body);
 		instance.GetComponent<BehaviorTreeUpdate>().patrolPoints = GameObject.Find("PatrolPoint-" + enemyType);
-		EnemysData.Instance.AddEnemyData(instance, WeaponNameType.Knife, 150, d_EnemyWeapons, d_EnemyBodys);
+		float health = -1;
+		if (enemyHealth.ContainsKey(instance.name)) {
+			health = enemyHealth[instance.name];
+		}
+		else {
+			Debug.LogError("enemyHealth[" + instance.name + "] is not exist.");
+		}
+		EnemysData.Instance.AddEnemyData(instance, WeaponNameType.Knife, health, d_EnemyWeapons, d_EnemyBodys);
 		HeadBarDisplay.AddEnemyBar(instance);
+		// 隐藏重生点标记
+		BirthPointManager.ShowBirthPoint(index, false);
 		if (NewEnemyEvent != null) {
 			NewEnemyEvent(instance);
 		}
