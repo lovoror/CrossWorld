@@ -323,7 +323,9 @@
     <Compile Include="Assets\Script\UI\MoboController\MoveCamera.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
     <Compile Include="Assets\Script\UI\Spark.cs" />
+    <Compile Include="Assets\Script\UI\SparkHealthRestore.cs" />
     <Compile Include="Assets\Script\UI\UiDebugTxt.cs" />
+    <Compile Include="Assets\Script\UI\UiHealthRestore.cs" />
     <Compile Include="Assets\Script\UI\UiResultPanel.cs" />
     <Compile Include="Assets\Script\UI\UiScoreTxt.cs" />
   </ItemGroup>

@@ -17,7 +17,7 @@ public class MeshTriangle: MonoBehaviour
 		// 获取GameObject的MeshRenderer组件
 		meshRender = GetComponent<MeshRenderer>();
 		meshRender.sortingLayerName = "Default";
-		meshRender.sortingOrder = 1;
+		meshRender.sortingOrder = 32760;
 		// 并新建一个mesh给它
 		mesh = new Mesh();
 		filter.mesh = mesh;

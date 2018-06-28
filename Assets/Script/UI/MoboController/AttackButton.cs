@@ -50,8 +50,12 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 	void Awake()
 	{
-		Image image = GetComponent<Image>();
 		//image.alphaHitTestMinimumThreshold = 0.08f;
+	}
+
+	void Start()
+	{
+		Image image = GetComponent<Image>();
 		buttonRadious = image.rectTransform.sizeDelta[0] / 2;
 		dragThreshold *= buttonRadious;
 
@@ -90,7 +94,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 		// 显示背景
 		Color c = bgImage.color;
 		bgImage.color = new Color(c.r, c.g, c.b, 1);
-		AStickBg.position = data.pressPosition + new Vector2(bgSize.x / 2, 0) - new Vector2(0, bgSize.y / 2);
+		AStickBg.position = data.pressPosition/* + new Vector2(bgSize.x / 2, 0) - new Vector2(0, bgSize.y / 2)*/;
 		stickImage.color = new Color(0.31f, 0.89f, 0.94f, 1);
 
 		if (touchId < 0) {
@@ -108,7 +112,7 @@ public class AttackButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 		Color c = bgImage.color;
 		bgImage.color = new Color(c.r, c.g, c.b, 0);
 		AStickBg.position = orgPosition;
-		AStick.position = orgPosition - new Vector2(AStickBg.sizeDelta.x / 2, 0) + new Vector2(0, AStickBg.sizeDelta.y / 2);
+		AStick.position = orgPosition/* - new Vector2(AStickBg.sizeDelta.x / 2, 0) + new Vector2(0, AStickBg.sizeDelta.y / 2)*/;
 		stickImage.color = new Color(1, 1, 1, 0.8f);
 		// 检测是否是click
 		if (!isHolding) {

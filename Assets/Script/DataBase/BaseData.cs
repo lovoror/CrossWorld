@@ -131,6 +131,13 @@ public class BaseData
 			}
 		}
 	}
+
+	public void AddHealth(float delta)
+	{
+		if (delta <= 0) return;
+		curHealth = Mathf.Clamp(curHealth + delta, 0, maxHealth);
+	}
+
 	public float GetWeaponEnergy(WeaponNameType weaponName)
 	{
 		float energy = -1;

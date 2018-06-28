@@ -198,4 +198,15 @@ public class Utils {
 		}
 		return canPenetrate;
 	}
+
+	public static float GetWeaponStrengthRestoreRate(WeaponNameType weaponName, int weaponLevel)
+	{
+		float rate = 0;
+		if (Constant.WEAPON_STRENGTH_RESTORE_RATE.ContainsKey(weaponName)) {
+			if (Constant.WEAPON_STRENGTH_RESTORE_RATE[weaponName].Count >= weaponLevel) {
+				rate = Constant.WEAPON_STRENGTH_RESTORE_RATE[weaponName][weaponLevel - 1];
+			}
+		}
+		return rate;
+	}
 }

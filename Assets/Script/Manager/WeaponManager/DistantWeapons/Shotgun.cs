@@ -40,13 +40,24 @@ public class Shotgun : DistantWeaponManager
 		Vector3 firePos = muzzle.position;
 		Vector3 bodyAngle = body.rotation.eulerAngles;
 		bool canPenetrate = Utils.CanBulletPenetrate(weaponName, GetWeaponLevel(weaponName));
-		for (int i = 0; i < bulletNumber; ++i) {
-			float deltaAngle = Random.Range(-scatteringAngle / 2, scatteringAngle / 2);
-			Quaternion quaternion = Quaternion.Euler(new Vector3(bodyAngle.x, bodyAngle.y + deltaAngle, bodyAngle.z));
-			Transform I_Bullet = Instantiate(bullet, firePos, quaternion);
-			BulletController I_BulletController = I_Bullet.GetComponent<BulletController>();
-			I_BulletController.Init(shooter, 0, bulletSpeed, canPenetrate);
+		// 在中心扇形产生一定子弹数
+		int centerBulletNum = Mathf.RoundToInt(bulletNumber / 4);
+		for (int i = 0; i < centerBulletNum; ++i) {
+			CreateOneBullet(shooter, bodyAngle, firePos, -scatteringAngle / 8, scatteringAngle / 4, canPenetrate);
 		}
+		// 剩余的子弹在全区域随机分布
+		for (int i = 0; i < bulletNumber - centerBulletNum; ++i) {
+			CreateOneBullet(shooter, bodyAngle, firePos, -scatteringAngle / 2, scatteringAngle / 2, canPenetrate);
+		}
+	}
+
+	void CreateOneBullet(Transform shooter, Vector3 bodyAngle, Vector3 firePos, float startAngle, float deltaAngle, bool canPenetrate)
+	{
+		float randomAngle = Random.Range(startAngle, startAngle + deltaAngle);
+		Quaternion quaternion = Quaternion.Euler(new Vector3(bodyAngle.x, bodyAngle.y + randomAngle, bodyAngle.z));
+		Transform I_Bullet = Instantiate(bullet, firePos, quaternion);
+		BulletController I_BulletController = I_Bullet.GetComponent<BulletController>();
+		I_BulletController.Init(shooter, 0, bulletSpeed, canPenetrate);
 	}
 
 	int GetOneShootBulletNumber()

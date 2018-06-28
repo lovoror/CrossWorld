@@ -11,6 +11,9 @@ public class AttackOB : Observer
 	public delegate void AddScoreEventHandler();
 	public static event AddScoreEventHandler AddScoreEvent;
 
+	public delegate void AddHealthEventHandler(Transform player, float health);
+	public static event AddHealthEventHandler AddHealthEvent;
+
 	static int birthPointNum
 	{
 		get
@@ -64,8 +67,9 @@ public class AttackOB : Observer
 		}
 		if (damage < 0) return;
 		foreach (Transform suffer in suffers) {
-			bool isDead = GamerHurt(suffer, damage);
 			var sufferData = Utils.GetBaseData(suffer);
+			float trueDamage = Mathf.Min(damage, sufferData.curHealth);
+			bool isDead = GamerHurt(suffer, damage);
 			if (isDead) {
 				sufferData.isDead = true;
 				if (!sufferData.isPlayer) {
@@ -78,6 +82,8 @@ public class AttackOB : Observer
 			}
 			// 武器能量改变
 			WeaponEnergyChangeDeal(attacker, suffers, damage);
+			// Player生命回复
+			PlayerHealthRestoreDeal(attacker, trueDamage);
 		}
 	}
 
@@ -137,14 +143,28 @@ public class AttackOB : Observer
 	/*------------ WeaponEnergyChangeEvent -------------*/
 	//public delegate void WeaponEnergyChangeNotifyEventHandler(Transform target);
 	//public static event WeaponEnergyChangeNotifyEventHandler WeaponEnergyChangeNotifyEvent;
-	private static float increaseRate = 0.2f;
-	private static float decreaseRate = -2.5f;
 	protected static void WeaponEnergyChangeDeal(Transform shooter, List<Transform> suffers, float damage)
 	{
+		float increaseRate = Constant.increaseRate;
+		float decreaseRate = Constant.decreaseRate;
 		ChangeEnergy(shooter, increaseRate * damage);
-
 		foreach (Transform suffer in suffers) {
 			ChangeEnergy(suffer, decreaseRate * damage);
+		}
+	}
+
+	// Player生命回复
+	protected static void PlayerHealthRestoreDeal(Transform attacker, float damage)
+	{
+		Transform player = GetPlayer();
+		if (attacker != player) return;
+		BaseData data = Utils.GetBaseData(player);
+		float rate = Utils.GetWeaponStrengthRestoreRate(data.curWeaponName, data.curWeaponLevel);
+		if (rate <= 0) return;
+		data.AddHealth(damage * rate);
+		// 下发通知
+		if (AddHealthEvent != null) {
+			AddHealthEvent(player, damage * rate);
 		}
 	}
 

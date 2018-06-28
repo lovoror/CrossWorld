@@ -56,8 +56,8 @@ public class Constant
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
-		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
-		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
+		{WeaponNameType.Shotgun, new List<float>(){1.2f, 1.5f, 1.8f, 1.8f}},
+		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
 	};
 
@@ -67,6 +67,15 @@ public class Constant
 		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
+	};
+
+	// 造成伤害后加血
+	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_STRENGTH_RESTORE_RATE = new Dictionary<WeaponNameType, List<float>>() {
+		{WeaponNameType.M16, new List<float>(){0f, 0f, 0.05f, 0.05f}},
+		{WeaponNameType.Machinegun, new List<float>(){0f, 0f, 0.05f, 0.05f}},
+		{WeaponNameType.Shotgun, new List<float>(){0f, 0f, 0.05f, 0.05f}},
+		{WeaponNameType.Knife, new List<float>(){0f, 0f, 0.05f, 0.05f}},
+		{WeaponNameType.Sniper, new List<float>(){0f, 0f, 0.07f, 0.08f}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, int> BULLET_PENETRATE_LEVEL = new Dictionary<WeaponNameType, int>() {
@@ -82,7 +91,7 @@ public class Constant
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.Knife, 130 },
+		{ WeaponNameType.Knife, 150 },
 		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Shotgun, 25 },
@@ -112,6 +121,10 @@ public class Constant
 		{ WeaponNameType.Sniper, 6 },
 		{ WeaponNameType.Shotgun, 6 },
 	};
+
+	// 武器能量增减与伤害的比值
+	public static float increaseRate = 0.2f;
+	public static float decreaseRate = -1.5f;
 
 	public static float GetBaseDamage(WeaponNameType weaponName)
 	{

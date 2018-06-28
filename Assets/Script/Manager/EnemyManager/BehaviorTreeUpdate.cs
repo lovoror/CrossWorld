@@ -31,6 +31,8 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	bool isAttacking = false;
 	bool isDead = false;
 	bool curAlertState = false;
+	static int sortingOrder = 1;
+
 	float attackSpeedRate
 	{
 		get
@@ -80,9 +82,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		if (isDead) {
 			if (firstDead) {
 				legAnim.SetBool("Dead", true);
-				Random rnd = new Random();
-				Random.InitState((int)System.DateTime.Now.Ticks);
-				int deadState = Mathf.FloorToInt(Random.value * 8);
+				int deadState = Mathf.RoundToInt(Random.Range(0.49f, 7.49f));
 				bodyAnim.SetInteger("DeadState", deadState);
 				bodyAnim.SetBool("Dead", true);
 				this.enabled = false;
@@ -90,6 +90,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 				Collider playerCollider = player.transform.GetComponent<Collider>();
 				Physics.IgnoreCollision(playerCollider, selfCollider);
 				bodyRender.sortingLayerName = "Default";
+				bodyRender.sortingOrder = sortingOrder++;
 				firstDead = false;
 				// 重置Alert
 				if (EnemyAlertStateEvent != null) {

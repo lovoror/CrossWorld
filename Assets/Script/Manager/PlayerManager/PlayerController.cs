@@ -172,6 +172,10 @@ public class PlayerController : Controller
 	{
 		if (canControl) {
 			Vector3 trueMoveDir = moveDir;
+			if (trueMoveDir != Vector3.zero && inDelayInit) {
+				// 在延迟归位过程中，移动Player，则退出延迟归位。
+				DelayInitAimTarget();
+			}
 #if KEYBOARD_CONTROL
 			// 人物转向
 			Vector3 mouseV = mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position;
@@ -216,8 +220,14 @@ public class PlayerController : Controller
 				}
 				else if (curWeaponType == WeaponType.autoDistant) {
 					float trueAttackBoundary = attackBoundary;
-					if (attackType == AimAttackType.aming) {
-						trueAttackBoundary *= atkBoundaryRate;
+					if (curAimTarget != null) {
+						// 如果当前有瞄准对象，则降低激发条件
+						trueAttackBoundary *= 0.6f;
+					}
+					else {
+						if (attackType == AimAttackType.aming ) {
+							trueAttackBoundary *= atkBoundaryRate;
+						}
 					}
 					if (faceDirection.sqrMagnitude > trueAttackBoundary * trueAttackBoundary && leftBullets > 0) {
 						// 攻击
@@ -286,6 +296,7 @@ public class PlayerController : Controller
 	/*--------------------- AttackDownEvent ---------------------*/
 
 	/*--------------------- AttackUpEvent ---------------------*/
+	bool inDelayInit = false;  // 是否出在单发枪延迟归位过程中
 	void AttackUpEventFunc(float deltaTime)
 	{
 		ShowAttackAnim(false);
@@ -298,9 +309,10 @@ public class PlayerController : Controller
 				AttackOnce();
 			}
 		}
-		// 狙击枪朝Enemy或Wall开枪后，镜头延迟归位
+		// 单发枪朝Enemy开枪后，镜头延迟归位
 		if (curWeaponType == WeaponType.singleLoader && curAimTarget != null) {
 			Invoke("DelayInitAimTarget", 0.5f);
+			inDelayInit = true;
 		}
 		else {
 			//aimHitPoint = new Vector3(-1000, -1000, -1000);
@@ -316,6 +328,7 @@ public class PlayerController : Controller
 	void DelayInitAimTarget()
 	{
 		curAimTarget = null;
+		inDelayInit = false;
 	}
 	/*--------------------- AttackDownEvent ---------------------*/
 
@@ -333,9 +346,12 @@ public class PlayerController : Controller
 			int playerCollider = LayerMask.NameToLayer("Player");
 			Physics.IgnoreLayerCollision(playerCollider, enemyCollider);
 			bodyRender.sortingLayerName = "Default";
+			bodyRender.sortingOrder = 32766;
 			I_AimController.SetVisible(false);
 			RangeAimController I_RangeAimController = transform.GetComponentInChildren<RangeAimController>();
-			I_RangeAimController.SetVisible(false);
+			if (I_RangeAimController != null) {
+				I_RangeAimController.SetVisible(false);
+			}
 			if (rb) {
 				rb.velocity = Vector3.zero;
 				rb.angularVelocity = Vector3.zero;

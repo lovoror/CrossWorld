@@ -44,8 +44,10 @@ public class InitData : MonoBehaviour {
 		InitPlayerData();
 		InitEnemysData();
 		InitGlobalData();
-		foreach (Transform point in birthPoint) {
-			birthPoints.Add(point);
+		if (birthPoint != null) {
+			foreach (Transform point in birthPoint) {
+				birthPoints.Add(point);
+			}
 		}
 		Random.InitState((int)Time.time);
 	}

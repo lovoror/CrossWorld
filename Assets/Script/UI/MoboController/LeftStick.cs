@@ -29,6 +29,10 @@ public class LeftStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 	void Awake()
 	{
 		bgImage = LStickBg.GetComponent<Image>();
+	}
+
+	void Start()
+	{
 		bgSize = LStickBg.sizeDelta;
 		stickSize = LStick.sizeDelta;
 		orgPosition = LStickBg.position;
@@ -39,14 +43,14 @@ public class LeftStick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 	{
 		Color c = bgImage.color;
 		bgImage.color = new Color(c.r, c.g, c.b, 1);
-		LStickBg.position = data.pressPosition - bgSize / 2;
+		LStickBg.position = data.pressPosition;
 	}
 	public void OnPointerUp(PointerEventData eventData)
 	{
 		Color c = bgImage.color;
 		bgImage.color = new Color(c.r, c.g, c.b, 0.5f);
 		LStickBg.position = orgPosition;
-		LStick.position = orgPosition + LStickBg.sizeDelta / 2;
+		LStick.position = orgPosition;
 		ChangeDirection(Vector2.zero);
 	}
 
