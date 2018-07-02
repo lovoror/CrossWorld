@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class EnemysData
 {
+	public delegate void EnemysDataInitEventHandler(Transform[] enemys);
+	public static event EnemysDataInitEventHandler EnemysDataInitEvent;
+
 	protected static EnemysData m_instance = null;
 	public static EnemysData Instance
 	{
@@ -31,10 +34,12 @@ public class EnemysData
 			return enemyTransforms;
 		}
 	}
-
+	int[] enemys = { 1, 2, 3 };
 	public void OnInitEnd()
 	{
-
+		if (EnemysDataInitEvent != null) {
+			EnemysDataInitEvent(enemyTransforms);
+		}
 	}
 
 	public void AddEnemyData(Transform enemy, WeaponNameType curWeaponName, float enemyMaxHealth, Dictionary<WeaponNameType, Transform> d_EnemyWeapons, Dictionary<WeaponNameType, Transform> d_EnemyBodys)

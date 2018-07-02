@@ -137,7 +137,7 @@ public class PlayerController : Controller
 		if (attackType != AimAttackType.none) {
 			btnATouchedTime += Time.deltaTime;
 			if (curWeaponType == WeaponType.singleLoader) {
-				if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary) {
+				if (faceDirection.sqrMagnitude >= 0.64 * attackBoundary * attackBoundary) {
 					attackType = AimAttackType.aming;
 				}
 				else {

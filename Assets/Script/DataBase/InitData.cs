@@ -40,6 +40,10 @@ public class InitData : MonoBehaviour {
 
 	void Awake()
 	{
+	}
+
+	void Start()
+	{
 		enemyHealth = new Dictionary<string, float>();
 		InitPlayerData();
 		InitEnemysData();
@@ -50,10 +54,6 @@ public class InitData : MonoBehaviour {
 			}
 		}
 		Random.InitState((int)Time.time);
-	}
-
-	void Start()
-	{
 	}
 
 	void InitGlobalData()

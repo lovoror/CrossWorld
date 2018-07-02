@@ -97,6 +97,8 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 					curAlertState = false;
 					EnemyAlertStateEvent(transform, false);
 				}
+				// 垃圾回收
+				Close();
 			}
 			return;
 		}
@@ -131,5 +133,22 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 				EnemyAlertStateEvent(transform, curAlertState);
 			}
 		}
+	}
+
+	// 死亡后垃圾回收
+	void Close()
+	{
+		Destroy(transform.GetComponent<EnemyDataManager>());
+		Destroy(transform.GetComponent<EnemyManager>());
+		Destroy(transform.GetComponent<EnemyMessenger>());
+		Destroy(transform.GetComponent<Pathfinding.AIPathAgent>());
+		Destroy(transform.GetComponent<Pathfinding.SimpleSmoothModifier>());
+		Destroy(transform.GetComponent<Pathfinding.FunnelModifier>());
+		Destroy(transform.GetComponent<Seeker>());
+		Destroy(transform.GetComponent<BehaviorTree>());
+		Destroy(transform.GetComponent<BehaviorTreeUpdate>());
+		Destroy(transform.GetComponent<SphereCollider>());
+		Destroy(transform.Find("Weapons").gameObject);
+		Destroy(transform.Find("Leg").gameObject);
 	}
 }

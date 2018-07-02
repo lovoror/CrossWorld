@@ -11,6 +11,9 @@ public class DataManager : MonoBehaviour
 	{
 		get
 		{
+			if (selfData == null) {
+				selfData = Utils.GetBaseData(transform);
+			}
 			return selfData.isDead;
 		}
 	}

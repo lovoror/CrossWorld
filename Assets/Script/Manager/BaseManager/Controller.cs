@@ -73,14 +73,13 @@ public class Controller : MonoBehaviour {
 	{
 		I_Manager = transform.GetComponent<Manager>();
 		self = transform;
-		bodyCollider = transform.GetComponent<SphereCollider>();
-		legAnim = leg.GetComponent<Animator>();
 		mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
 	}
 
 	protected void Start ()
 	{
-
+		bodyCollider = transform.GetComponent<SphereCollider>();
+		legAnim = leg.GetComponent<Animator>();
 	}
 
 	protected void OnEnable()

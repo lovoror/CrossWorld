@@ -72,10 +72,10 @@ public class Constant
 	// 造成伤害后加血
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_STRENGTH_RESTORE_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0f, 0f, 0.05f, 0.05f}},
-		{WeaponNameType.Machinegun, new List<float>(){0f, 0f, 0.05f, 0.05f}},
-		{WeaponNameType.Shotgun, new List<float>(){0f, 0f, 0.05f, 0.05f}},
-		{WeaponNameType.Knife, new List<float>(){0f, 0f, 0.05f, 0.05f}},
-		{WeaponNameType.Sniper, new List<float>(){0f, 0f, 0.07f, 0.08f}},
+		{WeaponNameType.Machinegun, new List<float>(){0f, 0f, 0.1f, 0.1f}},
+		{WeaponNameType.Shotgun, new List<float>(){0f, 0f, 0.1f, 0.1f}},
+		{WeaponNameType.Knife, new List<float>(){0f, 0f, 0.1f, 0.1f}},
+		{WeaponNameType.Sniper, new List<float>(){0f, 0f, 0.15f, 0.15f}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, int> BULLET_PENETRATE_LEVEL = new Dictionary<WeaponNameType, int>() {
@@ -111,7 +111,7 @@ public class Constant
 		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Sniper, 90 },
-		{ WeaponNameType.Shotgun, 50 },
+		{ WeaponNameType.Shotgun, 40 },
 	};
 
 	// 远程武器弹夹容量
@@ -124,7 +124,7 @@ public class Constant
 
 	// 武器能量增减与伤害的比值
 	public static float increaseRate = 0.2f;
-	public static float decreaseRate = -1.5f;
+	public static float decreaseRate = -1f;
 
 	public static float GetBaseDamage(WeaponNameType weaponName)
 	{

@@ -48,11 +48,11 @@ public class FollowTarget : MonoBehaviour {
 	Vector3 curOffset = Vector3.zero;
 	Vector3 tarOffset = Vector3.zero;   // 本次镜头移动的目标tarOffset点
 	Vector3 orgOffset = Vector3.zero;   // 本次镜头移动的出事Offset点
-	int curTimes = 0;     // 本次镜头移动的次数
-	float orgSizeScale = 1;   // 初始放缩比例
-	float tarSizeScale = 1;   // 本次镜头变换的目标Scale
-	float curSizeScale = 1;
-	float deltaScale = 0; // 每次Lerp的递增比例
+	//int curTimes = 0;     // 本次镜头移动的次数
+	//float orgSizeScale = 1;   // 初始放缩比例
+	//float tarSizeScale = 1;   // 本次镜头变换的目标Scale
+	//float curSizeScale = 1;
+	//float deltaScale = 0; // 每次Lerp的递增比例
 	public float boundary = 16;
 	void FixedUpdate()
 	{
@@ -113,7 +113,7 @@ public class FollowTarget : MonoBehaviour {
 #endif
 	}
 
-	float maxX = 53.33f, maxY = 30;
+	public float maxX = 53.33f, maxY = 30;
 	public void SetAimPos(Vector2 aimPos, float aimSpeedRate = 1)
 	{
 		this.aimSpeedRate = aimSpeedRate;
@@ -125,7 +125,9 @@ public class FollowTarget : MonoBehaviour {
 			return;
 		}
 		Vector2 direction = aimPos - followPos;
-		offset = direction / 2;
+		//offset = direction / 2;
+		offset = Vector2.Lerp(followPos, aimPos, 12f / 30f);
+		offset -= followPos; 
 		float dX = Mathf.Abs(direction.x);
 		float dY = Mathf.Abs(direction.y);
 		sizeScale = Mathf.Max(dX / maxX, dY / maxY);

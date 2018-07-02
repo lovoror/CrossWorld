@@ -131,6 +131,7 @@ public class Utils {
 
 	public static DirectionType4 GetDirection4(Vector2 direction)
 	{
+		if (direction == Vector2.zero) return DirectionType4.none;
 		float angle = Utils.GetAnglePZ2D(new Vector2(1, 0), direction);
 		if (45 <= angle && angle < 135) {
 			return DirectionType4.Up;
@@ -148,33 +149,31 @@ public class Utils {
 
 	public static DirectionType8 GetDirection8(Vector2 direction)
 	{
+		if (direction == Vector2.zero) return DirectionType8.none;
 		float angle = Utils.GetAnglePZ2D(new Vector2(1, 0), direction);
 		if (angle >= 22.5 && angle < 67.5) {
 			return DirectionType8.UpRight;
 		}
 		else if (angle >= 67.5 && angle < 112.5) {
-			return DirectionType8.Right;
+			return DirectionType8.Up;
 		}
 		else if (angle >= 112.5 && angle < 157.5) {
-			return DirectionType8.DownRight;
-		}
-		else if (angle >= 112.5 && angle < 157.5) {
-			return DirectionType8.DownRight;
+			return DirectionType8.UpLeft;
 		}
 		else if (angle >= 157.5 && angle < 202.5) {
-			return DirectionType8.Down;
+			return DirectionType8.Left;
 		}
 		else if (angle >= 202.5 && angle < 247.5) {
 			return DirectionType8.DownLeft;
 		}
 		else if (angle >= 247.5 && angle < 292.5) {
-			return DirectionType8.Left;
+			return DirectionType8.Down;
 		}
 		else if (angle >= 292.5 && angle < 337.5) {
-			return DirectionType8.UpLeft;
+			return DirectionType8.DownRight;
 		}
 		else {
-			return DirectionType8.Up;
+			return DirectionType8.Right;
 		}
 	}
 

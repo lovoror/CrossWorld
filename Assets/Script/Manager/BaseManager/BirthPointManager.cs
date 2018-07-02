@@ -9,11 +9,12 @@ public class BirthPointManager : MonoBehaviour
 	void Start ()
 	{
 		alertPoints = new Transform[transform.childCount];
+		int index = 0;
 		foreach(Transform point in transform){
-			int index = int.Parse(point.name.Substring(5)) - 1;
+			//int index = int.Parse(point.name.Substring(5)) - 1;
 			//Transform alertPoint = point.Find("Alert");
 			//alertPoints[index] = alertPoint;
-			alertPoints[index] = point;
+			alertPoints[index++] = point;
 		}
 	}
 

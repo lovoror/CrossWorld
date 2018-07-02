@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class HeadBarDisplay : MonoBehaviour {
@@ -22,7 +23,7 @@ public class HeadBarDisplay : MonoBehaviour {
 		SpriteRenderer weaponEnergyBar { get; set; }   // 武器能量槽
 		Vector3 energyScale { get; set; }
 		BaseData tarData { get; set; }
-		float health
+		public float health
 		{
 			get
 			{
@@ -59,13 +60,18 @@ public class HeadBarDisplay : MonoBehaviour {
 			energyScale = weaponEnergyBar.transform.localScale;
 		}
 
+		public void Close()
+		{
+			Destroy(bar.gameObject);
+		}
+
 		public void Update()
 		{
-			if (!isVisible) return;
-			if (health == 0) {
-				SetBarVisible(false);
-				return;
-			}
+			//if (!isVisible) return;
+			//if (health == 0) {
+			//	SetBarVisible(false);
+			//	return;
+			//}
 			UpdatePosition();
 			UpdateHealthBar();
 			UpdateWeaponEnergyBar();
@@ -143,8 +149,21 @@ public class HeadBarDisplay : MonoBehaviour {
 
 	void Update()
 	{
-		foreach (Bar bar in d_BarPool.Values) {
-			bar.Update();
+		List<Transform> gcBar = new List<Transform>();
+		foreach (var kv in d_BarPool) {
+			Bar bar = kv.Value;
+			Transform key = kv.Key;
+			if (bar.health > 0) {
+				bar.Update();
+			}
+			else {
+				bar.Close();
+				gcBar.Add(key);
+			}
+		}
+		// 回收Bar
+		foreach (Transform t in gcBar) {
+			d_BarPool.Remove(t);
 		}
 	}
 

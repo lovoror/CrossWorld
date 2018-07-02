@@ -22,6 +22,10 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	public List<WeaponNameType> weapons;
 	public List<ImgDictionary> weaponImages;
 	public Image I_Image;
+	public Image I_ImageU;
+	public Image I_ImageD;
+	public Image I_ImageL;
+	public Image I_ImageR;
 	public Text I_BulletNumber;
 	public WeaponNameType curWeaponNameOnBtn;  // 当前Btn上所展示的武器
 	Dictionary<string, WeaponNameType> d_Weapons;  // 上下左右操作对应的武器
@@ -52,22 +56,33 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
 		d_Weapons = new Dictionary<string, WeaponNameType>();
 		d_WeaponImages = new Dictionary<WeaponNameType, Sprite>();
+		foreach (var a in weaponImages) {
+			if (!d_WeaponImages.ContainsKey(a.weaponName)) {
+				d_WeaponImages.Add(a.weaponName, a.image);
+			}
+		}
 		for (int i = 0; i < weapons.Count && i < 4; ++i) {
 			string key;
+			Image image = null;
 			switch (i) {
-				case 0: key = "up"; break;
-				case 1: key = "down"; break;
-				case 2: key = "left"; break;
-				case 3: key = "right"; break;
+				case 0: key = "up";
+					image = I_ImageU;
+					break;
+				case 1: key = "down";
+					image = I_ImageD;
+					break;
+				case 2: key = "left";
+					image = I_ImageL;
+					break;
+				case 3: key = "right";
+					image = I_ImageR;
+					break;
 				default: key = "null"; break;
 			}
 			if (key != "null" && !d_Weapons.ContainsKey(key)) {
 				d_Weapons.Add(key, weapons[i]);
-			}
-		}
-		foreach (var a in weaponImages) {
-			if (!d_WeaponImages.ContainsKey(a.weaponName)) {
-				d_WeaponImages.Add(a.weaponName, a.image);
+				// 设置上下左右武器图片
+				image.sprite = d_WeaponImages[weapons[i]];
 			}
 		}
 
