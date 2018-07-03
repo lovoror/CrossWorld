@@ -59,6 +59,16 @@ public class AnimEventsManager : MonoBehaviour
 		}
 	}
 
+	public void OnRollStart()
+	{
+		I_PlayerManager.I_PlayerController.OnRollStart();
+	}
+
+	public void OnRollEnd()
+	{
+		I_PlayerManager.I_PlayerController.OnRollEnd();
+	}
+
 	// Reload动画结束
 	public void OnReloadEnd()
 	{

@@ -37,6 +37,16 @@ public class BodyAnimEvents : MonoBehaviour {
 		I_AnimEventsManager.OnAttackEnd();
 	}
 
+	void OnRollStart()
+	{
+		I_AnimEventsManager.OnRollStart();
+	}
+
+	void OnRollEnd()
+	{
+		I_AnimEventsManager.OnRollEnd();
+	}
+
 	void OnReloadEnd()
 	{
 		I_AnimEventsManager.OnReloadEnd();

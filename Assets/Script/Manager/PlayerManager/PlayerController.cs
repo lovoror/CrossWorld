@@ -110,6 +110,8 @@ public class PlayerController : Controller
 		FuncRButton.PlayerReloadEvent += new FuncRButton.PlayerReloadEventHandler(PlayerReloadWeaponEventFunc);
 		// OnReloadEndEvent
 		I_Manager.I_AnimEventsManager.OnReloadEndEvent += new AnimEventsManager.OnReloadEndEventHandler(OnReloadEndEventFunc);
+		// RollEvent
+		SkillButton.RollEvent += new SkillButton.RollEventHandler(RollEventFunc);
 	}
 
 	protected new void OnDisable()
@@ -121,6 +123,7 @@ public class PlayerController : Controller
 		MoboController.AttackUpEvent -= AttackUpEventFunc;
 		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
 		FuncRButton.PlayerReloadEvent -= PlayerReloadWeaponEventFunc;
+		SkillButton.RollEvent -= RollEventFunc;
 	}
 
 	void Reset()
@@ -133,6 +136,7 @@ public class PlayerController : Controller
 	new void Update()
 	{
 		base.Update();
+		if (!canControl) return;
 		// 确定武器的攻击状态
 		if (attackType != AimAttackType.none) {
 			btnATouchedTime += Time.deltaTime;
@@ -260,7 +264,12 @@ public class PlayerController : Controller
 	/*--------------------- PlayerFaceEvent ---------------------*/
 	void PlayerFaceEventFunc(Vector2 direction)
 	{
-		stickLDirection = direction;
+		if (direction == Vector2.zero) {
+			stickLDirection = stickLDirection * 0.01f;
+		}
+		else {
+			stickLDirection = direction;
+		}
 	}
 	/*--------------------- PlayerFaceEvent ---------------------*/
 
@@ -300,7 +309,6 @@ public class PlayerController : Controller
 	void AttackUpEventFunc(float deltaTime)
 	{
 		ShowAttackAnim(false);
-		stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
 		if (curWeaponType == WeaponType.melee ||
 			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
 			(curWeaponType == WeaponType.singleLoader && (focusTarget != null || (attackType != AimAttackType.none && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))))) {
@@ -322,8 +330,8 @@ public class PlayerController : Controller
 		btnATouchedTime = 0;
 		isBtnADown = false;
 		// 防止下次按下攻击后直接射击
-		faceDirection = faceDirection.normalized * 0.0001f;
-		stickLDirection = stickLDirection.normalized * 0.0001f;
+		faceDirection = faceDirection * 0.01f;
+		stickLDirection = stickLDirection * 0.01f;
 	}
 	void DelayInitAimTarget()
 	{
@@ -420,6 +428,64 @@ public class PlayerController : Controller
 	{
 	}
 	/*--------------- OnReloadEndEvent -----------------*/
+
+	/*--------------- RollEvent -----------------*/
+	Vector2 rollDir = Vector2.zero;
+	//Vector2 preFaceDir = Vector2.zero;
+
+	void RollEventFunc(Vector2 dir)
+	{
+		rollDir = dir;
+		//canControl = false;
+		bodyAnim.SetTrigger("Roll");
+		legAnim.SetTrigger("Roll");
+	}
+
+	public void OnRollStart()
+	{
+		canControl = false;
+		curAimTarget = null;
+		// 隐藏瞄准三角
+		I_AimController.SetVisible(false);
+		// 取消enemyCollider与playerCollider的碰撞
+		int enemyCollider = LayerMask.NameToLayer("Enemy");
+		int playerCollider = LayerMask.NameToLayer("Player");
+		Physics.IgnoreLayerCollision(playerCollider, enemyCollider);
+		// 翻滚
+		Vector2 faceDir;
+		if (rollDir == Vector2.zero) {
+			faceDir = moveDir == Vector3.zero ? new Vector2(transform.forward.x, transform.forward.z) :
+				new Vector2(moveDir.x, moveDir.z);
+		}
+		else {
+			faceDir = new Vector2(rollDir.x, rollDir.y);
+		}
+		transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, new Vector3(faceDir.x, 0, faceDir.y)), 0);
+		rb.velocity = Vector3.zero;
+		iTween.MoveBy(transform.gameObject, iTween.Hash(
+				"z", 22,
+				"time", 0.44, "EaseType", "linear"
+			));
+	}
+
+	public void OnRollEnd() {
+		canControl = true;
+		rollDir = Vector2.zero;
+		// 改变Player朝向
+		faceDirection = stickLDirection;
+		// 重启enemyCollider与playerCollider的碰撞
+		if (!I_Manager.IsDead()) {
+			int enemyCollider = LayerMask.NameToLayer("Enemy");
+			int playerCollider = LayerMask.NameToLayer("Player");
+			Physics.IgnoreLayerCollision(playerCollider, enemyCollider, false);
+		}
+		// 是否需要Reload
+		int bullets = PlayerData.Instance.GetCurLeftBullets();
+		if (bullets <= 0) {
+			((DistantWeaponManager)I_Manager.I_WeaponManager).Reload();
+		}
+	}
+	/*--------------- RollEvent -----------------*/
 
 	public void ResetOnceAttack()
 	{

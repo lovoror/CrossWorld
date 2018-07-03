@@ -321,6 +321,7 @@
     <Compile Include="Assets\Script\UI\MoboController\MoboController.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoboControllerSd.cs" />
     <Compile Include="Assets\Script\UI\MoboController\MoveCamera.cs" />
+    <Compile Include="Assets\Script\UI\MoboController\SkillButton.cs" />
     <Compile Include="Assets\Script\UI\ScrollCircle.cs" />
     <Compile Include="Assets\Script\UI\Spark.cs" />
     <Compile Include="Assets\Script\UI\SparkHealthRestore.cs" />

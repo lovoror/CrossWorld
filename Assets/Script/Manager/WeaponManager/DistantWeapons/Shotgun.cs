@@ -47,7 +47,7 @@ public class Shotgun : DistantWeaponManager
 		}
 		// 剩余的子弹在全区域随机分布
 		for (int i = 0; i < bulletNumber - centerBulletNum; ++i) {
-			CreateOneBullet(shooter, bodyAngle, firePos, -scatteringAngle / 2, scatteringAngle / 2, canPenetrate);
+			CreateOneBullet(shooter, bodyAngle, firePos, -scatteringAngle / 2, scatteringAngle, canPenetrate);
 		}
 	}
 

@@ -87,7 +87,7 @@ public class Constant
 
 	// 散弹枪单次射击的子弹数
 	public readonly static Dictionary<WeaponNameType, List<int>> BULLET_NUMBER = new Dictionary<WeaponNameType, List<int>>() {
-		{WeaponNameType.Shotgun, new List<int>(){9, 14, 18, 18}},
+		{WeaponNameType.Shotgun, new List<int>(){12, 18, 23, 23}},
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {

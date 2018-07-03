@@ -87,7 +87,7 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		}
 
 		if (d_Weapons.ContainsValue(curWeaponName)) {
-			curWeaponNameOnBtn = curWeaponName;
+			//curWeaponNameOnBtn = curWeaponName;
 			SetUi(curWeaponNameOnBtn);
 		}
 	}
@@ -158,9 +158,9 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		}
 
 		if (isDraged) {
-			if (nextWeaponName != WeaponNameType.unknown && nextWeaponName != curWeaponName) {
+			//if (nextWeaponName != WeaponNameType.unknown && nextWeaponName != curWeaponName) {
 				ChangeWeapon(nextWeaponName);
-			}
+			//}
 		}
 		else {
 			OnClick();
