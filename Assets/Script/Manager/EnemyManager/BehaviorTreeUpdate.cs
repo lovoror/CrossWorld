@@ -91,6 +91,8 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 				Physics.IgnoreCollision(playerCollider, selfCollider);
 				bodyRender.sortingLayerName = "Default";
 				bodyRender.sortingOrder = sortingOrder++;
+				// 逐渐腐烂
+				ColorTo(body.gameObject, new Color(0, 1, 1), 30);
 				firstDead = false;
 				// 重置Alert
 				if (EnemyAlertStateEvent != null) {
@@ -98,7 +100,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 					EnemyAlertStateEvent(transform, false);
 				}
 				// 垃圾回收
-				Close();
+				StartCoroutine("DelayClose");
 			}
 			return;
 		}
@@ -136,8 +138,15 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	}
 
 	// 死亡后垃圾回收
-	void Close()
+	IEnumerator DelayClose()
 	{
+		yield return new WaitForSeconds(0.3f);
+
+		// 删除target点
+		GameObject target = GameObject.Find(transform.name + " target");
+		if (target != null) {
+			Destroy(target);
+		}
 		Destroy(transform.GetComponent<EnemyDataManager>());
 		Destroy(transform.GetComponent<EnemyManager>());
 		Destroy(transform.GetComponent<EnemyMessenger>());
@@ -150,5 +159,26 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		Destroy(transform.GetComponent<SphereCollider>());
 		Destroy(transform.Find("Weapons").gameObject);
 		Destroy(transform.Find("Leg").gameObject);
+		Transform bodys = transform.Find("Bodys");
+		Destroy(bodys.GetComponent<AnimEventsManager>());
+		Transform knife = bodys.Find("Knife");
+		Destroy(knife.GetComponent<BodyAnimEvents>());
+	}
+
+	void ColorTo(GameObject obj, Color c, float t)
+	{
+		//键值对儿的形式保存iTween所用到的参数  
+		Hashtable args = new Hashtable();
+
+		//颜色值
+		args.Add("color", c);
+		//动画的时间  
+		args.Add("time", t);
+
+		//这里是设置类型，iTween的类型又很多种，在源码中的枚举EaseType中  
+		args.Add("easeType", iTween.EaseType.linear);
+		//三个循环类型 none loop pingPong (一般 循环 来回)     
+		args.Add("loopType", "none");
+		iTween.ColorTo(obj, args);
 	}
 }

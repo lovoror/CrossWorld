@@ -11,7 +11,20 @@ public class BaseData
 	public float maxHealth { get; set; }
 	public bool isDead { get; set; }
 	public bool isPlayer { get; set; }
+	public float curStrength { get; set; }
 	public WeaponNameType curWeaponName = WeaponNameType.unknown;
+
+	public float GetCurStrength()
+	{
+		return curStrength;
+	}
+
+	public void ChangeCurStrength(float delta)
+	{
+		curStrength += delta;
+		curStrength = Mathf.Clamp(curStrength, 0, 100);
+	}
+
 	public WeaponType curWeaponType
 	{
 		get
@@ -105,6 +118,7 @@ public class BaseData
 	protected void Init()
 	{
 		isDead = false;
+		curStrength = 100;
 		foreach (WeaponNameType weaponName in Enum.GetValues(typeof(WeaponNameType))) {
 			if (weaponName != WeaponNameType.unknown) {
 				d_WeaponEnergy.Add(weaponName, 0);

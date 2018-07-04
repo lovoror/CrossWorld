@@ -11,6 +11,7 @@ public class PlayerController : Controller
 
 	protected bool canControl;
 	bool isBtnADown = false;
+	bool inRollState = false;  // 是否正在翻滚
 	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
@@ -136,6 +137,11 @@ public class PlayerController : Controller
 	new void Update()
 	{
 		base.Update();
+		// 增加耐力
+		if (!inRollState) {
+			float delta = Constant.strengthRestoreSpeed * Time.deltaTime;
+			I_BaseData.ChangeCurStrength(delta);
+		}
 		if (!canControl) return;
 		// 确定武器的攻击状态
 		if (attackType != AimAttackType.none) {
@@ -309,6 +315,10 @@ public class PlayerController : Controller
 	void AttackUpEventFunc(float deltaTime)
 	{
 		ShowAttackAnim(false);
+		// RollState状态下不要重置方向
+		if (!inRollState) {
+			stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
+		}
 		if (curWeaponType == WeaponType.melee ||
 			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
 			(curWeaponType == WeaponType.singleLoader && (focusTarget != null || (attackType != AimAttackType.none && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))))) {
@@ -330,8 +340,10 @@ public class PlayerController : Controller
 		btnATouchedTime = 0;
 		isBtnADown = false;
 		// 防止下次按下攻击后直接射击
-		faceDirection = faceDirection * 0.01f;
-		stickLDirection = stickLDirection * 0.01f;
+		if (!inRollState) {
+			faceDirection = faceDirection * 0.01f;
+			stickLDirection = stickLDirection * 0.01f;
+		}
 	}
 	void DelayInitAimTarget()
 	{
@@ -435,8 +447,8 @@ public class PlayerController : Controller
 
 	void RollEventFunc(Vector2 dir)
 	{
+		if (I_BaseData.curStrength < Constant.minRollStrength) return;
 		rollDir = dir;
-		//canControl = false;
 		bodyAnim.SetTrigger("Roll");
 		legAnim.SetTrigger("Roll");
 	}
@@ -445,6 +457,9 @@ public class PlayerController : Controller
 	{
 		canControl = false;
 		curAimTarget = null;
+		inRollState = true;
+		// 耐力扣除
+		I_BaseData.ChangeCurStrength(-30);
 		// 隐藏瞄准三角
 		I_AimController.SetVisible(false);
 		// 取消enemyCollider与playerCollider的碰撞
@@ -471,6 +486,7 @@ public class PlayerController : Controller
 	public void OnRollEnd() {
 		canControl = true;
 		rollDir = Vector2.zero;
+		inRollState = false;
 		// 改变Player朝向
 		faceDirection = stickLDirection;
 		// 重启enemyCollider与playerCollider的碰撞

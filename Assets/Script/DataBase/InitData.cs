@@ -35,6 +35,8 @@ public class InitData : MonoBehaviour {
 	public List<EnemyInitData> enemysData;
 	public Transform birthPoint;
 	public List<Transform> birthPoints;
+	public GameObject hideObj1;
+	public GameObject hideObj2;
 
 	Dictionary<string, float> enemyHealth;
 
@@ -114,12 +116,31 @@ public class InitData : MonoBehaviour {
 		else {
 			Debug.LogError("enemyHealth[" + instance.name + "] is not exist.");
 		}
+		int killedNum = GlobalData.Instance.GetKilledNum();
+		health += killedNum * Constant.additionRate;
+		health = Mathf.Min(health, Constant.maxEnemyHealth);
 		EnemysData.Instance.AddEnemyData(instance, WeaponNameType.Knife, health, d_EnemyWeapons, d_EnemyBodys);
 		HeadBarDisplay.AddEnemyBar(instance);
 		// 隐藏重生点标记
 		BirthPointManager.ShowBirthPoint(index, false);
 		if (NewEnemyEvent != null) {
 			NewEnemyEvent(instance);
+		}
+	}
+
+	public void AddEnemy(int enemyType, int index)
+	{
+		if (enemyType == 4) {
+			hideObj1.transform.position = birthPoints[index].position;
+			hideObj1.SetActive(true);
+			// 隐藏重生点标记
+			BirthPointManager.ShowBirthPoint(index, false);
+		}
+		else if (enemyType == 5) {
+			hideObj2.transform.position = birthPoints[index].position;
+			hideObj2.SetActive(true);
+			// 隐藏重生点标记
+			BirthPointManager.ShowBirthPoint(index, false);
 		}
 	}
 }

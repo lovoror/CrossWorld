@@ -63,7 +63,7 @@ public class Constant
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_DAMAGE_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
-		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
+		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
@@ -91,11 +91,11 @@ public class Constant
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.Knife, 150 },
+		{ WeaponNameType.Knife, 160 },
 		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Shotgun, 25 },
-		{ WeaponNameType.Sniper, 150 },
+		{ WeaponNameType.Sniper, 160 },
 	};
 
 	// 远程武器瞄准的辅助距离
@@ -125,6 +125,17 @@ public class Constant
 	// 武器能量增减与伤害的比值
 	public static float increaseRate = 0.2f;
 	public static float decreaseRate = -1f;
+
+	// 敌人强弱控制
+	public static float additionRate = 1;
+	public static float maxEnemyHealth = 300;
+	public static int firstAdd = 50;  // 第一次增加敌人，对应的杀敌数
+	public static int secondAdd = 100;  // 第二次增加敌人，对应的杀敌数
+
+	// Player耐力
+	public static float minRollStrength = 15;  // 翻滚需要的最小耐力
+	public static float rollStrength = 30;     // 每次翻滚所需要的耐力
+	public static float strengthRestoreSpeed = 10;  // 每秒恢复的耐力值
 
 	public static float GetBaseDamage(WeaponNameType weaponName)
 	{

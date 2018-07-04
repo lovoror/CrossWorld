@@ -73,8 +73,8 @@ public class AttackOB : Observer
 			if (isDead) {
 				sufferData.isDead = true;
 				if (!sufferData.isPlayer) {
+					SetGlobalInfo(suffer);
 					NewEnemy(suffer);
-					AddScore(suffer);
 				}
 				if (DeadNotifyEvent != null) {
 					DeadNotifyEvent(attacker, suffer, attacker.GetComponent<Manager>().GetCurWeaponName());
@@ -97,6 +97,28 @@ public class AttackOB : Observer
 			Instance.StartCoroutine("NewEnemyCoroutine", args);
 			// 显示重生点标记
 			BirthPointManager.ShowBirthPoint(index, true);
+			// 一定杀敌数后添加敌人
+			int killedNum = GlobalData.Instance.GetKilledNum();
+			if (killedNum == Constant.firstAdd) {
+				int subIndex = Mathf.RoundToInt(Random.Range(-0.49f, birthPointNum - 1 + 0.49f));
+				while (subIndex == index) {
+					subIndex = Mathf.RoundToInt(Random.Range(-0.49f, birthPointNum - 1 + 0.49f));
+				}
+				string subArgs = "4-" + subIndex;
+				Instance.StartCoroutine("AddEnemyCoroutine", subArgs);
+				// 显示重生点标记
+				BirthPointManager.ShowBirthPoint(subIndex, true);
+			}
+			if (killedNum == Constant.secondAdd) {
+				int subIndex = Mathf.RoundToInt(Random.Range(-0.49f, birthPointNum - 1 + 0.49f));
+				while (subIndex == index) {
+					subIndex = Mathf.RoundToInt(Random.Range(-0.49f, birthPointNum - 1 + 0.49f));
+				}
+				string subArgs = "5-" + subIndex;
+				Instance.StartCoroutine("AddEnemyCoroutine", subArgs);
+				// 显示重生点标记
+				BirthPointManager.ShowBirthPoint(subIndex, true);
+			}
 		}
 	}
 
@@ -110,11 +132,23 @@ public class AttackOB : Observer
 		I_InitData.NewEnemy(enemyType, index);
 	}
 
-	static void AddScore(Transform dead)
+	IEnumerator AddEnemyCoroutine(string args)
+	{
+		yield return new WaitForSeconds(3);
+
+		string[] sArray = args.Split('-');
+		int enemyType = int.Parse(sArray[0]);
+		int index = int.Parse(sArray[1]);
+		I_InitData.AddEnemy(enemyType, index);
+	}
+
+
+	static void SetGlobalInfo(Transform dead)
 	{
 		BaseData deadData = Utils.GetBaseData(dead);
 		if (!deadData.isPlayer) {
 			GlobalData.Instance.AddScore(10);
+			GlobalData.Instance.AddKilledEnemy(1);
 			if (AddScoreEvent != null) {
 				AddScoreEvent();
 			}

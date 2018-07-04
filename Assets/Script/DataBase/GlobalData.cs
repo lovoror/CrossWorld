@@ -15,6 +15,7 @@ public class GlobalData {
 	}
 
 	public int curScore;
+	int killedEnemy;
 
 	GlobalData()
 	{
@@ -24,6 +25,17 @@ public class GlobalData {
 	public void Init()
 	{
 		curScore = 0;
+		killedEnemy = 0;
+	}
+
+	public void AddKilledEnemy(int num = 0)
+	{
+		killedEnemy += num;
+	}
+
+	public int GetKilledNum()
+	{
+		return killedEnemy;
 	}
 
 	public void AddScore(int delta)

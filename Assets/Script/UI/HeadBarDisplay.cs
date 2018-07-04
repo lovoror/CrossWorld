@@ -16,12 +16,15 @@ public class HeadBarDisplay : MonoBehaviour {
 		public Transform bar { get; set; }   // bar对象
 		public Transform target { get; set; }  // 跟随的对象
 		public bool isVisible { get; set; }
+		bool isStrengthBarVisible { get; set; }
 		Vector3 offset;
 		SpriteRenderer healthBar { get; set; }
 		Vector3 healthScale { get; set; }
 		SpriteRenderer healthBarOutline { get; set; }
 		SpriteRenderer weaponEnergyBar { get; set; }   // 武器能量槽
 		Vector3 energyScale { get; set; }
+		SpriteRenderer strengthBar { get; set; }   // 武器能量槽
+		Vector3 strengthScale { get; set; }
 		BaseData tarData { get; set; }
 		public float health
 		{
@@ -45,6 +48,15 @@ public class HeadBarDisplay : MonoBehaviour {
 				return tarData.curWeaponLeftEnergyPercent;
 			}
 		}
+
+		float strength
+		{
+			get
+			{
+				return tarData.curStrength;
+			}
+		}
+
 		public Bar(Transform target, Transform headBar, Vector3 offset)
 		{
 			this.bar = Instantiate(headBar, -1000 * Vector3.right, Quaternion.Euler(90, 0, 0));
@@ -58,6 +70,8 @@ public class HeadBarDisplay : MonoBehaviour {
 			healthBarOutline = bar.Find("HealthOutline").GetComponent<SpriteRenderer>();
 			weaponEnergyBar = bar.Find("WeaponEngrgyBar").GetComponent<SpriteRenderer>();
 			energyScale = weaponEnergyBar.transform.localScale;
+			strengthBar = bar.Find("StrengthBar").GetComponent<SpriteRenderer>();
+			strengthScale = strengthBar.transform.localScale;
 		}
 
 		public void Close()
@@ -67,19 +81,22 @@ public class HeadBarDisplay : MonoBehaviour {
 
 		public void Update()
 		{
-			//if (!isVisible) return;
-			//if (health == 0) {
-			//	SetBarVisible(false);
-			//	return;
-			//}
 			UpdatePosition();
 			UpdateHealthBar();
 			UpdateWeaponEnergyBar();
+			UpdateStrengthBar();
 		}
 
 		void UpdatePosition()
 		{
 			bar.position = target.position + offset;
+		}
+
+		void UpdateStrengthBar()
+		{
+			if (!isStrengthBarVisible) return;
+			strengthBar.transform.localScale = new Vector3(strengthScale.x * strength / 100f, strengthScale.y, strengthScale.z);
+
 		}
 
 		void UpdateHealthBar()
@@ -98,10 +115,27 @@ public class HeadBarDisplay : MonoBehaviour {
 			weaponEnergyBar.transform.localScale = new Vector3(energyScale.x * energyPercent / 100, energyScale.y, energyScale.z);
 		}
 
+		public void SetStrengthBarVisible(bool visible)
+		{
+			isStrengthBarVisible = visible;
+			if (visible) {
+				healthScale = new Vector3(1, 0.671f, 1);
+				healthBar.transform.localScale = healthScale;
+				healthBar.transform.localPosition = new Vector3(-0.471f, 0, 0);
+			}
+			else {
+				healthScale = new Vector3(1, 0.88f, 1);
+				healthBar.transform.localScale = healthScale;
+				healthBar.transform.localPosition = new Vector3(-0.471f, 0.019f, 0);
+			}
+			strengthBar.enabled = visible;
+		}
+
 		public void SetBarVisible(bool show)
 		{
 			isVisible = show;
 			healthBar.enabled = show;
+			strengthBar.enabled = show;
 			weaponEnergyBar.enabled = show;
 			healthBarOutline.enabled = show;
 		}
@@ -129,6 +163,7 @@ public class HeadBarDisplay : MonoBehaviour {
 	{
 		Transform player = PlayerData.Instance.target;
 		Bar playerBar = new Bar(player, headBar, offset);
+		playerBar.SetStrengthBarVisible(true);
 		AddToBarPool(player, playerBar);
 
 		foreach (Transform enemy in EnemysData.Instance.enemyTransforms) {
