@@ -458,6 +458,12 @@ public class PlayerController : Controller
 		canControl = false;
 		curAimTarget = null;
 		inRollState = true;
+		// 取消播放Reload音效
+		Transform weapon = I_BaseData.curWeaponTransform;
+		AudioSource audio = weapon.Find("SndReload").GetComponent<AudioSource>();
+		if (audio.clip.name == "sndReloadClip" && audio.isPlaying) {
+			audio.Stop();
+		}
 		// 耐力扣除
 		I_BaseData.ChangeCurStrength(-30);
 		// 隐藏瞄准三角
