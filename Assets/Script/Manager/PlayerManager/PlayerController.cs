@@ -271,7 +271,7 @@ public class PlayerController : Controller
 	void PlayerFaceEventFunc(Vector2 direction)
 	{
 		if (direction == Vector2.zero) {
-			stickLDirection = stickLDirection * 0.01f;
+			stickLDirection = stickLDirection.normalized * 0.01f;
 		}
 		else {
 			stickLDirection = direction;
@@ -341,8 +341,8 @@ public class PlayerController : Controller
 		isBtnADown = false;
 		// 防止下次按下攻击后直接射击
 		if (!inRollState) {
-			faceDirection = faceDirection * 0.01f;
-			stickLDirection = stickLDirection * 0.01f;
+			faceDirection = faceDirection.normalized * 0.01f;
+			stickLDirection = stickLDirection.normalized * 0.01f;
 		}
 	}
 	void DelayInitAimTarget()

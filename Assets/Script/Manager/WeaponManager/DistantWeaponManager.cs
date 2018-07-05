@@ -18,6 +18,22 @@ public class DistantWeaponManager : WeaponManager {
 	}
 	float damage = 10;  // 并无作用
 
+	protected Transform body
+	{
+		get
+		{
+			return I_BaseData.curBodyTransform;
+		}
+	}
+
+	protected Animator bodyAnim
+	{
+		get
+		{
+			return body.GetComponent<Animator>();
+		}
+	}
+
 	protected new void Awake()
 	{
 		
@@ -71,8 +87,11 @@ public class DistantWeaponManager : WeaponManager {
 
 	public void Reload(MyDelegate.vfv callback = null)
 	{
-		ReloadCallback = callback;
-		I_Manager.I_Controller.ShowReloadAnim();
+		bool reloading = bodyAnim.GetBool("Reload");
+		if (!reloading) {
+			ReloadCallback = callback;
+			I_Manager.I_Controller.ShowReloadAnim();
+		}
 	}
 
 	protected virtual void CreateBullet(Transform shooter, WeaponNameType weaponName)
