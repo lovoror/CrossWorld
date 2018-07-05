@@ -79,7 +79,7 @@ public class MoboController : MonoBehaviour
 	{
 		// 人物朝向
 		Vector2 bodyDirection = ButtonA.direction;
-		if (bodyDirection != Vector2.zero && bodyDirection != last_bodyDirection) {
+		if (bodyDirection != last_bodyDirection) {
 			last_bodyDirection = bodyDirection;
 			// 改变人物朝向
 			if (PlayerFaceEvent != null) {
@@ -92,14 +92,9 @@ public class MoboController : MonoBehaviour
 		if (moveDirection != last_moveDirection) {
 			last_moveDirection = moveDirection;
 			// 改变移动方向
-			//if (controlType == ControlType.modern) {
-				if (PlayerMoveEvent != null) {
-					PlayerMoveEvent(moveDirection);
-				}
-			//}
-			//else if (controlType == ControlType.ancient) {
-
-			//}
+			if (PlayerMoveEvent != null) {
+				PlayerMoveEvent(moveDirection);
+			}
 		}
 	}
 
