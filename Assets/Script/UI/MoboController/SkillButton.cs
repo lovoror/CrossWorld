@@ -38,7 +38,6 @@ public class SkillButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 	{
 		
 	}
-
 	public void OnPointerDown(PointerEventData data)
 	{
 		Image_Bg.color = new Color(c.r, c.g, c.b, 1);

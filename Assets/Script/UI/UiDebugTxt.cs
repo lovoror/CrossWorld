@@ -17,4 +17,15 @@ public class UiDebugTxt : MonoBehaviour {
 		context = info;
 		text.text = info;
 	}
+
+	public static void AddContext(string info)
+	{
+		context = context + "\n" + info;
+		text.text = context;
+	}
+
+	public static string GetContext()
+	{
+		return context;
+	}
 }

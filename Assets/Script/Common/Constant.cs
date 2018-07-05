@@ -57,14 +57,14 @@ public class Constant
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Shotgun, new List<float>(){1.2f, 1.5f, 1.8f, 1.8f}},
-		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_DAMAGE_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
-		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.8f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 	};
@@ -114,6 +114,22 @@ public class Constant
 		{ WeaponNameType.Shotgun, 40 },
 	};
 
+	// 远程武器单次攻击的辅助距离
+	public static Dictionary<WeaponNameType, float> OnceAttackAssistDist = new Dictionary<WeaponNameType, float>() {
+		{ WeaponNameType.M16, 5 },
+		{ WeaponNameType.Machinegun, 5 },
+		{ WeaponNameType.Sniper, 5 },
+		{ WeaponNameType.Shotgun, 5 },
+	};
+
+	// 远程武器单次攻击的最远辅助距离
+	public static Dictionary<WeaponNameType, float> OnceAttackMaxDist = new Dictionary<WeaponNameType, float>() {
+		{ WeaponNameType.M16, 60 },
+		{ WeaponNameType.Machinegun, 60 },
+		{ WeaponNameType.Sniper, 60 },
+		{ WeaponNameType.Shotgun, 60 },
+	};
+
 	// 远程武器弹夹容量
 	public static Dictionary<WeaponNameType, int> MagazineSize = new Dictionary<WeaponNameType, int>{
 		{ WeaponNameType.M16, 30 },
@@ -127,8 +143,8 @@ public class Constant
 	public static float decreaseRate = -1f;
 
 	// 敌人强弱控制
-	public static float additionRate = 1;
-	public static float maxEnemyHealth = 300;
+	public static float additionRate = 2;
+	public static float maxEnemyHealth = 500;
 	public static int firstAdd = 50;  // 第一次增加敌人，对应的杀敌数
 	public static int secondAdd = 100;  // 第二次增加敌人，对应的杀敌数
 

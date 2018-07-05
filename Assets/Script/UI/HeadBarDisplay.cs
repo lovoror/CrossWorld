@@ -79,12 +79,18 @@ public class HeadBarDisplay : MonoBehaviour {
 			Destroy(bar.gameObject);
 		}
 
+		float deltaTime = 0.1f;
+		float last_update_time = 0;
+
 		public void Update()
 		{
 			UpdatePosition();
-			UpdateHealthBar();
-			UpdateWeaponEnergyBar();
-			UpdateStrengthBar();
+			if (Time.time - last_update_time >= deltaTime) {
+				last_update_time = Time.time;
+				UpdateHealthBar();
+				UpdateWeaponEnergyBar();
+				UpdateStrengthBar();
+			}
 		}
 
 		void UpdatePosition()
@@ -96,7 +102,12 @@ public class HeadBarDisplay : MonoBehaviour {
 		{
 			if (!isStrengthBarVisible) return;
 			strengthBar.transform.localScale = new Vector3(strengthScale.x * strength / 100f, strengthScale.y, strengthScale.z);
-
+			if (strength < Constant.minRollStrength) {
+				strengthBar.material.color = Color.red;
+			}
+			else {
+				strengthBar.material.color = Color.yellow;
+			}
 		}
 
 		void UpdateHealthBar()

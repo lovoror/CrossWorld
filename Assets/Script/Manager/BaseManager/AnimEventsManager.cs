@@ -51,6 +51,12 @@ public class AnimEventsManager : MonoBehaviour
 		}
 	}
 
+	// 辅助射击
+	public void AdjustAttackDirection()
+	{
+		I_PlayerManager.I_PlayerController.AdjustAttackDirection();
+	}
+
 	// 攻击结束
 	public void OnAttackEnd()
 	{

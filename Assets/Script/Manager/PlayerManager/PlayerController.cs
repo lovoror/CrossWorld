@@ -75,7 +75,7 @@ public class PlayerController : Controller
 		none, unknown, aming, attacking  // 不瞄准不攻击（没有按住A键）,刚按下A键还没有确定是aim还是attack, 瞄准但不攻击, 攻击
 	}
 	AimAttackType attackType;
-	float aimAttackBoundaryTime = 0.2f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
+	float aimAttackBoundaryTime = 0.3f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
 
 	new void Awake()
 	{
@@ -319,14 +319,43 @@ public class PlayerController : Controller
 		if (!inRollState) {
 			stickLDirection = faceDirection;  // 抬手后需要朝当前faceDirection方向射击。
 		}
-		if (curWeaponType == WeaponType.melee ||
-			(curWeaponType == WeaponType.autoDistant && attackType == AimAttackType.unknown) ||
-			(curWeaponType == WeaponType.singleLoader && (focusTarget != null || (attackType != AimAttackType.none && (attackType == AimAttackType.aming || btnATouchedTime <= aimAttackBoundaryTime))))) {
-			// 抬手后单次射击
+
+		// 单次攻击
+		if (curWeaponType == WeaponType.melee) {
+			AttackOnce();
+		}
+		else if (curWeaponType == WeaponType.autoDistant) {
 			if (leftBullets > 0) {
-				AttackOnce();
+				if (focusTarget != null) {
+					AttackOnce();
+				}
+				else {
+					if (btnATouchedTime <= aimAttackBoundaryTime) {
+						// 瞬发需要辅助射击
+						AttackOnceAssist();
+						AttackOnce();
+					}
+				}
 			}
 		}
+		else if (curWeaponType == WeaponType.singleLoader) {
+			if (leftBullets > 0) {
+				if (focusTarget != null) {
+					AttackOnce();
+				}
+				else {
+					if (btnATouchedTime <= aimAttackBoundaryTime) {
+						// 瞬发需要辅助射击
+						AttackOnceAssist();
+						AttackOnce();
+					}
+					else if (attackType == AimAttackType.aming) {
+						AttackOnce();
+					}
+				}
+			}
+		}
+
 		// 单发枪朝Enemy开枪后，镜头延迟归位
 		if (curWeaponType == WeaponType.singleLoader && curAimTarget != null) {
 			Invoke("DelayInitAimTarget", 0.5f);
@@ -460,12 +489,15 @@ public class PlayerController : Controller
 		inRollState = true;
 		// 取消播放Reload音效
 		Transform weapon = I_BaseData.curWeaponTransform;
-		AudioSource audio = weapon.Find("SndReload").GetComponent<AudioSource>();
-		if (audio.clip.name == "sndReloadClip" && audio.isPlaying) {
-			audio.Stop();
+		Transform child = weapon.Find("SndReload");
+		if(child != null){
+			AudioSource audio = child.GetComponent<AudioSource>();
+			if (audio.clip.name == "sndReloadClip" && audio.isPlaying) {
+				audio.Stop();
+			}
 		}
 		// 耐力扣除
-		I_BaseData.ChangeCurStrength(-30);
+		I_BaseData.ChangeCurStrength(-Constant.rollStrength);
 		// 隐藏瞄准三角
 		I_AimController.SetVisible(false);
 		// 取消enemyCollider与playerCollider的碰撞
@@ -502,9 +534,11 @@ public class PlayerController : Controller
 			Physics.IgnoreLayerCollision(playerCollider, enemyCollider, false);
 		}
 		// 是否需要Reload
-		int bullets = PlayerData.Instance.GetCurLeftBullets();
-		if (bullets <= 0) {
-			((DistantWeaponManager)I_Manager.I_WeaponManager).Reload();
+		if (curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader) {
+			int bullets = PlayerData.Instance.GetCurLeftBullets();
+			if (bullets <= 0) {
+				((DistantWeaponManager)I_Manager.I_WeaponManager).Reload();
+			}
 		}
 	}
 	/*--------------- RollEvent -----------------*/
@@ -708,5 +742,55 @@ public class PlayerController : Controller
 	public Transform GetFocusTarget()
 	{
 		return focusTarget;
+	}
+
+	// 辅助瞄准，计算出相应结果，供之后调用的AdjustAttackDirection使用。
+	Transform attackOnceTarget = null;
+	void AttackOnceAssist()
+	{
+		attackOnceTarget = null;
+		float maxDist = 30;
+		if (Constant.OnceAttackMaxDist.ContainsKey(curWeaponName)) {
+			maxDist = Constant.OnceAttackMaxDist[curWeaponName];
+		}
+		LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
+		LayerMask wallLayerMask = LayerMask.GetMask("Wall");
+		Collider[] hitColliders = null;
+		hitColliders = Physics.OverlapSphere(transform.position, maxDist, enemyLayerMask);
+		// 检测是否被墙格挡 是否在瞄准范围内
+		if (hitColliders != null) {
+			foreach (Collider collider in hitColliders) {
+				Vector3 p2e = collider.transform.position - transform.position;
+				p2e.y = 0;
+				Vector3 forward = transform.forward;
+				float aimDist = 0.01f;
+				if (Constant.OnceAttackAssistDist.ContainsKey(curWeaponName)) {
+					aimDist = Constant.OnceAttackAssistDist[curWeaponName];
+				}
+				float a = p2e.magnitude, b = aimDist;
+				float aimDegree = b / Mathf.Sqrt(a * a + b * b) * Mathf.Rad2Deg;
+				float angle = Vector3.Angle(p2e, forward);
+				if (angle <= aimDegree) {
+					//RaycastHit hit;
+					bool isDead = collider.transform.GetComponent<Manager>().IsDead();
+					if (!isDead && !Physics.Linecast(transform.position, collider.transform.position, wallLayerMask)) {
+						attackOnceTarget = collider.transform;
+					}
+				}
+			}
+		}
+	}
+
+	public void AdjustAttackDirection()
+	{
+		if (attackOnceTarget != null) {
+			Vector3 p2e = attackOnceTarget.position - transform.position;
+			Vector2 p2e2D = new Vector2(p2e.x, p2e.z);
+			faceDirection = p2e2D;
+			stickLDirection = p2e2D.normalized * 0.01f;
+			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
+			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
+			attackOnceTarget = null;
+		}
 	}
 }

@@ -31,6 +31,12 @@ public class BodyAnimEvents : MonoBehaviour {
 		I_AnimEventsManager.OnAttack();
 	}
 
+	// 辅助射击
+	void AdjustAttackDirection()
+	{
+		I_AnimEventsManager.AdjustAttackDirection();
+	}
+
 	// 攻击结束
 	void OnAttackEnd()
 	{
