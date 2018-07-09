@@ -22,6 +22,11 @@ public enum DirectionType4
 	none, Up, Down, Left, Right
 }
 
+public enum Difficulty
+{
+	unknow, Hard, Normal, Easy
+}
+
 public class Constant
 {
 	public static class TAGS {
@@ -58,7 +63,7 @@ public class Constant
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Shotgun, new List<float>(){1.2f, 1.5f, 1.8f, 1.8f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
-		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.0f, 1.0f, 1.0f}},
+		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.4f, 1.8f, 1.8f}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_DAMAGE_RATE = new Dictionary<WeaponNameType, List<float>>() {
@@ -124,10 +129,10 @@ public class Constant
 
 	// 远程武器单次攻击的最远辅助距离
 	public static Dictionary<WeaponNameType, float> OnceAttackMaxDist = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.M16, 60 },
-		{ WeaponNameType.Machinegun, 60 },
-		{ WeaponNameType.Sniper, 60 },
-		{ WeaponNameType.Shotgun, 60 },
+		{ WeaponNameType.M16, 40 },
+		{ WeaponNameType.Machinegun, 40 },
+		{ WeaponNameType.Sniper, 45 },
+		{ WeaponNameType.Shotgun, 40 },
 	};
 
 	// 远程武器弹夹容量
@@ -152,6 +157,13 @@ public class Constant
 	public static float minRollStrength = 15;  // 翻滚需要的最小耐力
 	public static float rollStrength = 30;     // 每次翻滚所需要的耐力
 	public static float strengthRestoreSpeed = 10;  // 每秒恢复的耐力值
+
+	// 难度系数
+	public static Dictionary<Difficulty, float> DifficultyRate = new Dictionary<Difficulty, float> {
+		{Difficulty.Hard, 1.0f},
+		{Difficulty.Normal, 0.75f},
+		{Difficulty.Easy, 0.5f},
+	};
 
 	public static float GetBaseDamage(WeaponNameType weaponName)
 	{

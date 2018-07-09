@@ -75,7 +75,7 @@ public class PlayerController : Controller
 		none, unknown, aming, attacking  // 不瞄准不攻击（没有按住A键）,刚按下A键还没有确定是aim还是attack, 瞄准但不攻击, 攻击
 	}
 	AimAttackType attackType;
-	float aimAttackBoundaryTime = 0.3f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
+	float aimAttackBoundaryTime = 0.25f; // 当在aimAttackBoundaryTime内A的滑动距离超过attackBoundary则本次AimAttackType为attacking，否则为aming。
 
 	new void Awake()
 	{
@@ -160,7 +160,7 @@ public class PlayerController : Controller
 						attackType = AimAttackType.aming;
 					}
 					else {
-						if (faceDirection.sqrMagnitude >= attackBoundary * attackBoundary && leftBullets > 0) {
+						if (faceDirection.sqrMagnitude >= 1.21f * attackBoundary * attackBoundary && leftBullets > 0) {
 							attackType = AimAttackType.attacking;
 							ShowAttackAnim(true);
 						}
@@ -252,6 +252,8 @@ public class PlayerController : Controller
 #endif
 			// Move the player
 			rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir * speed, Time.fixedDeltaTime * moveSmooth);
+			// 始终以最快速度移动
+			//rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir.normalized * speed, Time.fixedDeltaTime * moveSmooth);
 			// 设置状态机
 			ShowWalkAnim(rb.velocity.magnitude / speed);
 			ChangeAttackSpeed();
@@ -330,7 +332,7 @@ public class PlayerController : Controller
 					AttackOnce();
 				}
 				else {
-					if (btnATouchedTime <= aimAttackBoundaryTime) {
+					if (btnATouchedTime <= aimAttackBoundaryTime && attackType == AimAttackType.unknown) {
 						// 瞬发需要辅助射击
 						AttackOnceAssist();
 						AttackOnce();
@@ -417,10 +419,18 @@ public class PlayerController : Controller
 	/*-------------------- AttackSpeedChangeEvent ---------------------*/
 
 	/*------------ PlayerChangeWeaponEvent --------------*/
+	WeaponNameType nextWeaponName = WeaponNameType.unknown;
 	void PlayerChangeWeaponEventFunc(Transform player, WeaponNameType weaponName)
 	{
-		PlayerData.Instance.curWeaponName = weaponName;
-		ChangeWeapon();
+		AnimatorStateInfo stateInfo = bodyAnim.GetCurrentAnimatorStateInfo(0);
+		if (!stateInfo.IsName("Base.Roll")) {
+			PlayerData.Instance.curWeaponName = weaponName;
+			ChangeWeapon();
+		}
+		else {
+			// 记录下所要切换的武器，在RollEnd时进行切换
+			nextWeaponName = weaponName;
+		}
 	}
 	public void ChangeWeapon()
 	{
@@ -476,7 +486,7 @@ public class PlayerController : Controller
 
 	void RollEventFunc(Vector2 dir)
 	{
-		if (I_BaseData.curStrength < Constant.minRollStrength) return;
+		if (I_BaseData.curStrength < Constant.minRollStrength * GlobalData.Instance.diffRate) return;
 		rollDir = dir;
 		bodyAnim.SetTrigger("Roll");
 		legAnim.SetTrigger("Roll");
@@ -497,7 +507,7 @@ public class PlayerController : Controller
 			}
 		}
 		// 耐力扣除
-		I_BaseData.ChangeCurStrength(-Constant.rollStrength);
+		I_BaseData.ChangeCurStrength(-Constant.rollStrength * GlobalData.Instance.diffRate);
 		// 隐藏瞄准三角
 		I_AimController.SetVisible(false);
 		// 取消enemyCollider与playerCollider的碰撞
@@ -533,6 +543,12 @@ public class PlayerController : Controller
 			int playerCollider = LayerMask.NameToLayer("Player");
 			Physics.IgnoreLayerCollision(playerCollider, enemyCollider, false);
 		}
+		// 是否需要切换武器
+		if (nextWeaponName != WeaponNameType.unknown) {
+			PlayerData.Instance.curWeaponName = nextWeaponName;
+			nextWeaponName = WeaponNameType.unknown;
+			ChangeWeapon();
+		}
 		// 是否需要Reload
 		if (curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader) {
 			int bullets = PlayerData.Instance.GetCurLeftBullets();
@@ -561,13 +577,26 @@ public class PlayerController : Controller
 		hitColliders = Physics.OverlapSphere(player.position, maxDist, enemyLayerMask);
 		// 检测是否被墙格挡 是否在瞄准范围内
 		if (hitColliders != null) {
+			// 从近到远排序
+			if (hitColliders.Length > 1) {
+				for (int i = 0; i < hitColliders.Length; i++) {
+					for (int j = i + 1; j < hitColliders.Length; j++) {
+						if ((hitColliders[i].transform.position - player.position).sqrMagnitude >
+							(hitColliders[j].transform.position - player.position).sqrMagnitude) {
+							Collider temp = hitColliders[i];
+							hitColliders[i] = hitColliders[j];
+							hitColliders[j] = temp;
+						}
+					}
+				}
+			}
 			foreach (Collider collider in hitColliders) {
 				Vector3 p2e = collider.transform.position - player.position;
 				p2e.y = 0;
 				Vector3 sLD3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
 				float aimDist = 0.01f;
 				if (Constant.AimAssistDist.ContainsKey(curWeaponName)) {
-					aimDist = Constant.AimAssistDist[curWeaponName];
+					aimDist = Constant.AimAssistDist[curWeaponName] / GlobalData.Instance.diffRate;
 				}
 				float a = p2e.magnitude, b = aimDist;
 				float aimDegree = b / Mathf.Sqrt(a * a + b * b) * Mathf.Rad2Deg;
@@ -593,6 +622,7 @@ public class PlayerController : Controller
 		target = null;
 		return false;
 	}
+
 
 	// Shotgun范围三角
 	void SetRangeAngle()
@@ -765,7 +795,7 @@ public class PlayerController : Controller
 				Vector3 forward = transform.forward;
 				float aimDist = 0.01f;
 				if (Constant.OnceAttackAssistDist.ContainsKey(curWeaponName)) {
-					aimDist = Constant.OnceAttackAssistDist[curWeaponName];
+					aimDist = Constant.OnceAttackAssistDist[curWeaponName] / GlobalData.Instance.diffRate;
 				}
 				float a = p2e.magnitude, b = aimDist;
 				float aimDegree = b / Mathf.Sqrt(a * a + b * b) * Mathf.Rad2Deg;
@@ -786,8 +816,7 @@ public class PlayerController : Controller
 		if (attackOnceTarget != null) {
 			Vector3 p2e = attackOnceTarget.position - transform.position;
 			Vector2 p2e2D = new Vector2(p2e.x, p2e.z);
-			faceDirection = p2e2D;
-			stickLDirection = p2e2D.normalized * 0.01f;
+			faceDirection = stickLDirection = p2e2D.normalized * 0.01f;
 			Vector3 faceDirection3D = new Vector3(faceDirection.x, 0, faceDirection.y);
 			transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection3D), 0);
 			attackOnceTarget = null;

@@ -10,8 +10,8 @@ public class UiResultPanel : MonoBehaviour {
 	void OnEnable()
 	{
 		int max = 0;
-		if (PlayerPrefs.HasKey("MaxScore")) {
-			max = PlayerPrefs.GetInt("MaxScore");
+		if (PlayerPrefs.HasKey("MaxScore" + GlobalData.difficulty)) {
+			max = PlayerPrefs.GetInt("MaxScore" + GlobalData.difficulty);
 		}
 		txtMaxScore.text = "Max:" + max;
 		txtScore.text = "Score:" + GlobalData.Instance.curScore;

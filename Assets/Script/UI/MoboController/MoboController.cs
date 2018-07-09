@@ -14,10 +14,12 @@ public class MoboController : MonoBehaviour
 {
 	public GameObject BtnFocus;
 	Transform ResultPanel;
+	Transform DifficultyPanel;
 	GameObject FocusBtns;
 	AttackButton ButtonA;
 	Text ScoreText;
 	Text MaxText;
+	Text DifficultyText;
 	LeftStick StickL;
 	Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
 	PlayerData I_PlayerData;
@@ -45,7 +47,9 @@ public class MoboController : MonoBehaviour
 		FocusBtns = GameObject.Find("FocusBtns");
 		ScoreText = transform.Find("ScoreTxt").GetComponent<Text>();
 		MaxText = transform.Find("MaxScoreTxt").GetComponent<Text>();
+		DifficultyText = transform.Find("DifficultyTxt").GetComponent<Text>();
 		ResultPanel = transform.Find("ResultPanel");
+		DifficultyPanel = transform.Find("DifficultyPanel");
 	}
 
 	void Start()
@@ -163,12 +167,21 @@ public class MoboController : MonoBehaviour
 	void DeadNotifyEventFunc(Transform killer, Transform dead, WeaponNameType weapon)
 	{
 		if (PlayerData.Instance.isDead) {
+			DifficultyPanel.gameObject.SetActive(false);
 			ResultPanel.gameObject.SetActive(true);
 			ScoreText.enabled = false;
 			MaxText.enabled = false;
+			DifficultyText.enabled = false;
 		}
 	}
 	/*---------------------- DeadNotifyEvent ----------------------*/
+
+	public void OnClickDifficultyChooseBtn()
+	{
+		if (DifficultyPanel != null) {
+			DifficultyPanel.gameObject.SetActive(true);
+		}
+	}
 
 	public void Restart()
 	{

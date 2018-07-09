@@ -61,7 +61,13 @@ public class AttackOB : Observer
 			atkWeaponName = attackerData.curWeaponName;
 		}
 		float damage = Constant.GetBaseDamage(atkWeaponName);
-		float damageRate = Utils.GetWeaponDamageRate(atkWeaponName);
+		float damageRate = 0;
+		if (attacker == PlayerData.Instance.target) {
+			damageRate = Utils.GetWeaponDamageRate(atkWeaponName) / GlobalData.Instance.diffRate;
+		}
+		else {
+			damageRate = Utils.GetWeaponDamageRate(atkWeaponName);
+		}
 		if (damageRate >= 0) {
 			damage *= damageRate;
 		}

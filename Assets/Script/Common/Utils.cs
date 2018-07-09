@@ -208,4 +208,24 @@ public class Utils {
 		}
 		return rate;
 	}
+
+	public static void PrintStateName(AnimatorStateInfo stateInfo)
+	{
+		if (stateInfo.IsName("Base.Idle")) {
+			MonoBehaviour.print("Idle");
+		}
+		else if (stateInfo.IsName("Base.Walk")) {
+			MonoBehaviour.print("Walk");
+		}
+		else if (stateInfo.IsName("Base.Attack")) {
+			MonoBehaviour.print("Attack");
+		}
+		else if (stateInfo.IsName("Base.Reload")) {
+			MonoBehaviour.print("Reload");
+
+		}
+		else if (stateInfo.IsName("Base.Roll")) {
+			MonoBehaviour.print("Roll");
+		}
+	}
 }

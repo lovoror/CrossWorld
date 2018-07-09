@@ -102,7 +102,7 @@ public class HeadBarDisplay : MonoBehaviour {
 		{
 			if (!isStrengthBarVisible) return;
 			strengthBar.transform.localScale = new Vector3(strengthScale.x * strength / 100f, strengthScale.y, strengthScale.z);
-			if (strength < Constant.minRollStrength) {
+			if (strength < Constant.minRollStrength * GlobalData.Instance.diffRate) {
 				strengthBar.material.color = Color.red;
 			}
 			else {

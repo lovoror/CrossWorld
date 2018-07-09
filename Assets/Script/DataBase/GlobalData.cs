@@ -14,7 +14,9 @@ public class GlobalData {
 		}
 	}
 
-	public int curScore;
+	public static Difficulty difficulty = Difficulty.Hard;
+	public float diffRate { get; set; }
+	public int curScore { get; set; }
 	int killedEnemy;
 
 	GlobalData()
@@ -26,6 +28,12 @@ public class GlobalData {
 	{
 		curScore = 0;
 		killedEnemy = 0;
+		if (difficulty != null && Constant.DifficultyRate.ContainsKey(difficulty)) {
+			diffRate = Constant.DifficultyRate[difficulty];
+		}
+		else {
+			diffRate = 1;
+		}
 	}
 
 	public void AddKilledEnemy(int num = 0)

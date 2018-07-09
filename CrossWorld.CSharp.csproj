@@ -13,13 +13,11 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>2017.2.0f3</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -311,6 +309,7 @@
     <Compile Include="Assets\Script\StageMachine\GameStageMachine.cs" />
     <Compile Include="Assets\Script\StageMachine\LevelTestStage.cs" />
     <Compile Include="Assets\Script\UI\BulletNumberUpdate.cs" />
+    <Compile Include="Assets\Script\UI\DifficultyTxt.cs" />
     <Compile Include="Assets\Script\UI\HeadBarDisplay.cs" />
     <Compile Include="Assets\Script\UI\MaxScoreTxt.cs" />
     <Compile Include="Assets\Script\UI\MoboController\AttackButton.cs" />
@@ -329,6 +328,7 @@
     <Compile Include="Assets\Script\UI\SparkHealthRestore.cs" />
     <Compile Include="Assets\Script\UI\UiAlertDirection.cs" />
     <Compile Include="Assets\Script\UI\UiDebugTxt.cs" />
+    <Compile Include="Assets\Script\UI\UiDifficultyPanel.cs" />
     <Compile Include="Assets\Script\UI\UiHealthRestore.cs" />
     <Compile Include="Assets\Script\UI\UiResultPanel.cs" />
     <Compile Include="Assets\Script\UI\UiScoreTxt.cs" />
