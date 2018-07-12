@@ -15,6 +15,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	SharedFloat baseSpeed;
 	SharedFloat curSpeed;
 	BaseData I_BaseData;
+	Transform deadEnemys;
 	Transform body
 	{
 		get
@@ -49,6 +50,7 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		leg = transform.Find("Leg");
 		legAnim = leg.GetComponent<Animator>();
 		I_Manager = transform.GetComponent<Manager>();
+		deadEnemys = GameObject.Find("DeadEnemys").transform;
 	}
 
 	void OnEnable()
@@ -76,12 +78,14 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 	const float deltaTime = 0.3f;
 	Vector3? prePos;
 	bool firstDead = true;
-	void Update ()
+	void Update()
 	{
 		isDead = (bool)behaviorTree.GetVariable("IsDead").GetValue();
 		if (isDead) {
 			if (firstDead) {
 				legAnim.SetBool("Dead", true);
+				transform.parent = deadEnemys.transform;
+				DestroyOneEnemy();
 				int deadState = Mathf.RoundToInt(Random.Range(0.49f, 7.49f));
 				bodyAnim.SetInteger("DeadState", deadState);
 				bodyAnim.SetBool("Dead", true);
@@ -155,7 +159,6 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		Destroy(transform.GetComponent<Pathfinding.FunnelModifier>());
 		Destroy(transform.GetComponent<Seeker>());
 		Destroy(transform.GetComponent<BehaviorTree>());
-		Destroy(transform.GetComponent<BehaviorTreeUpdate>());
 		Destroy(transform.GetComponent<SphereCollider>());
 		Destroy(transform.Find("Weapons").gameObject);
 		Destroy(transform.Find("Leg").gameObject);
@@ -179,6 +182,76 @@ public class BehaviorTreeUpdate : MonoBehaviour {
 		args.Add("easeType", iTween.EaseType.linear);
 		//三个循环类型 none loop pingPong (一般 循环 来回)     
 		args.Add("loopType", "none");
+		// 结束回调函数
+		args.Add("oncomplete", "AnimationEnd");
+		args.Add("oncompletetarget", gameObject);
 		iTween.ColorTo(obj, args);
 	}
+
+	int maxEnemyCount = 150;
+	void AnimationEnd()
+	{
+		StaticBatchingUtility.Combine(deadEnemys.gameObject);
+		Destroy(transform.GetComponent<BehaviorTreeUpdate>());
+	}
+
+	void DestroyOneEnemy()
+	{
+		// 性能优化
+		if (deadEnemys.childCount > maxEnemyCount) {
+			Destroy(deadEnemys.GetChild(0).gameObject);
+		}
+	}
 }
+
+
+
+/*----------------------- iTween -----------------
+        //键值对儿的形式保存iTween所用到的参数  
+        Hashtable args = new Hashtable();
+ 
+        //颜色值
+        args.Add("color",new Color(0,0,0,0));
+        //单一色值
+        args.Add("r", 0);
+        args.Add("g", 0);
+        args.Add("b", 0);
+        args.Add("a", 0);
+        //是否包括子对象
+        args.Add("includechildren",true);
+        //当效果是应用在renderer(渲染器)组件上时,此参数确定具体应用到那个以命名颜色值上
+        args.Add("namedcolorvalue", iTween.NamedValueColor._Color);
+        
+        //动画的时间  
+        args.Add("time", 10f);
+        //延迟执行时间  
+        args.Add("delay", 0.1f);
+ 
+        //这里是设置类型，iTween的类型又很多种，在源码中的枚举EaseType中  
+        args.Add("easeType", iTween.EaseType.easeInOutExpo);
+        //三个循环类型 none loop pingPong (一般 循环 来回)     
+        //args.Add("loopType", "none");  
+        //args.Add("loopType", "loop");    
+        args.Add("loopType", iTween.LoopType.pingPong);
+ 
+        //处理动画中的事件。  
+        //开始发生动画时调用AnimationStart方法，5.0表示它的参数  
+        args.Add("onstart", "AnimationStart");
+        args.Add("onstartparams", 5.0f);
+        //设置接受方法的对象，默认是自身接受，这里也可以改成别的对象接受，  
+        //那么就得在接收对象的脚本中实现AnimationStart方法。  
+        args.Add("onstarttarget", gameObject);
+ 
+ 
+        //动画结束时调用，参数和上面类似  
+        args.Add("oncomplete", "AnimationEnd");
+        args.Add("oncompleteparams", "end");
+        args.Add("oncompletetarget", gameObject);
+ 
+        //动画中调用，参数和上面类似  
+        args.Add("onupdate", "AnimationUpdate");
+        args.Add("onupdatetarget", gameObject);
+        args.Add("onupdateparams", true);
+ 
+        iTween.ColorTo(btnBegin, args);
+ ----------------------- iTween -----------------*/
