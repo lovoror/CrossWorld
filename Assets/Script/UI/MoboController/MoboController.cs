@@ -23,6 +23,7 @@ public class MoboController : MonoBehaviour
 	LeftStick StickL;
 	Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
 	PlayerData I_PlayerData;
+	AudioSource audioInactive;
 	
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
@@ -50,6 +51,7 @@ public class MoboController : MonoBehaviour
 		DifficultyText = transform.Find("DifficultyTxt").GetComponent<Text>();
 		ResultPanel = transform.Find("ResultPanel");
 		DifficultyPanel = transform.Find("DifficultyPanel");
+		audioInactive = GetComponent<AudioSource>();
 	}
 
 	void Start()

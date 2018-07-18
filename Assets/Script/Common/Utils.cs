@@ -3,7 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Utils {
+public class Utils : MonoBehaviour {
+	AudioSource sndInActive;
+	static Utils Instance;
+
+	void Awake()
+	{
+		Instance = this;
+		sndInActive = transform.GetComponent<AudioSource>();
+	}
+
 	// 返回tag为tags之一的son或son的父物体
 	public static Transform GetOwner(Transform son, List<string> tags)
 	{
@@ -227,5 +236,10 @@ public class Utils {
 		else if (stateInfo.IsName("Base.Roll")) {
 			MonoBehaviour.print("Roll");
 		}
+	}
+
+	public static void PlayInActiveSnd()
+	{
+		Instance.sndInActive.Play();
 	}
 }

@@ -14,6 +14,8 @@ public class AnimEventsManager : MonoBehaviour
 	public event OnReloadEndEventHandler OnReloadEndEvent;
 	public delegate void PlayReloadSoundEventHandler();
 	public event PlayReloadSoundEventHandler PlayReloadSoundEvent;
+	public delegate void PlayReloadDoneSoundEventHandler();
+	public event PlayReloadDoneSoundEventHandler PlayReloadDoneSoundEvent;
 
 	PlayerManager I_PlayerManager;
 	Manager I_Manager;
@@ -87,6 +89,13 @@ public class AnimEventsManager : MonoBehaviour
 	{
 		if (PlayReloadSoundEvent != null) {
 			PlayReloadSoundEvent();
+		}
+	}
+
+	public void PlayReloadDoneSound()
+	{
+		if (PlayReloadDoneSoundEvent != null) {
+			PlayReloadDoneSoundEvent();
 		}
 	}
 

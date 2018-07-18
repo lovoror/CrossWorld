@@ -33,7 +33,7 @@ public class UiDifficultyPanel : MonoBehaviour {
 
 	public void OnOkBtnClick()
 	{
-		GlobalData.difficulty = selectedDifficulty;
+		GlobalData.SetDifficulty(selectedDifficulty);
 		Restart();
 	}
 

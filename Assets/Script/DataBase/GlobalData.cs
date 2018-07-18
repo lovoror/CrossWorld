@@ -28,12 +28,29 @@ public class GlobalData {
 	{
 		curScore = 0;
 		killedEnemy = 0;
+		difficulty = GetDifficulty();
 		if (difficulty != null && Constant.DifficultyRate.ContainsKey(difficulty)) {
 			diffRate = Constant.DifficultyRate[difficulty];
 		}
 		else {
 			diffRate = 1;
 		}
+	}
+
+	Difficulty GetDifficulty()
+	{
+		Difficulty difficulty = Difficulty.Hard;
+		if (PlayerPrefs.HasKey("Difficulty")) {
+			int i_dif = PlayerPrefs.GetInt("Difficulty");
+			difficulty = (Difficulty)i_dif;
+		}
+		return difficulty;
+	}
+
+	public static void SetDifficulty(Difficulty dift)
+	{
+		difficulty = dift;
+		PlayerPrefs.SetInt("Difficulty", (int)difficulty);
 	}
 
 	public void AddKilledEnemy(int num = 0)

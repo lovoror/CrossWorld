@@ -45,6 +45,20 @@ public class Controller : MonoBehaviour {
 			return null;
 		}
 	}
+
+	protected AudioSource reloadDoneAudio
+	{
+		get
+		{
+			Transform weapon = I_BaseData.curWeaponTransform;
+			if (weapon) {
+				Transform sndReload = weapon.Find("SndReloadEnd");
+				AudioSource audio = sndReload.GetComponent<AudioSource>();
+				return audio;
+			}
+			return null;
+		}
+	}
 	protected Animator legAnim;
 	protected Animator bodyAnim
 	{
@@ -86,6 +100,7 @@ public class Controller : MonoBehaviour {
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
 		I_Manager.I_AnimEventsManager.PlayReloadSoundEvent += new AnimEventsManager.PlayReloadSoundEventHandler(PlayReloadSoundEventFunc);
+		I_Manager.I_AnimEventsManager.PlayReloadDoneSoundEvent += new AnimEventsManager.PlayReloadDoneSoundEventHandler(PlayReloadDoneSoundEventFunc);
 	}
 
 	protected void OnDisable()
@@ -117,6 +132,13 @@ public class Controller : MonoBehaviour {
 	{
 		if (reloadAudio) {
 			reloadAudio.Play();
+		}
+	}
+
+	void PlayReloadDoneSoundEventFunc()
+	{
+		if (reloadDoneAudio) {
+			reloadDoneAudio.Play();
 		}
 	}
 	/*-------------------- PlayReloadSoundEvent ---------------------*/

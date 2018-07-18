@@ -130,7 +130,7 @@ public class AttackOB : Observer
 
 	IEnumerator NewEnemyCoroutine(string args)
 	{
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(3);
 
 		string[] sArray = args.Split('-');
 		int enemyType = int.Parse(sArray[0]);

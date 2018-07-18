@@ -172,7 +172,10 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		if (PlayerChangeWeaponEvent != null) {
 			PlayerChangeWeaponEvent(player, weaponName);
 		}
-		if (weaponName == curWeaponNameOnBtn) return;
+		if (weaponName == curWeaponNameOnBtn) {
+			Utils.PlayInActiveSnd();
+			return;
+		}
 		curWeaponNameOnBtn = weaponName;
 		SetUi(weaponName);
 	}
@@ -190,9 +193,22 @@ public class FuncRButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 		if (curWeaponNameOnBtn == curWeaponName) {
 			WeaponType weaponType = Utils.GetWeaponTypeByName(curWeaponNameOnBtn);
 			if (weaponType == WeaponType.autoDistant || weaponType == WeaponType.singleLoader) {
-				if (PlayerReloadEvent != null) {
-					PlayerReloadEvent(player);
+				int bullets = PlayerData.Instance.GetCurLeftBullets();
+				int magazineSize = 0;
+				if (Constant.MagazineSize.ContainsKey(curWeaponName)) {
+					magazineSize = Constant.MagazineSize[curWeaponName];
 				}
+				if (bullets < magazineSize) {					
+					if (PlayerReloadEvent != null) {
+						PlayerReloadEvent(player);
+					}
+				}
+				else {
+					Utils.PlayInActiveSnd();
+				}
+			}
+			else {
+				Utils.PlayInActiveSnd();
 			}
 		}
 		else {

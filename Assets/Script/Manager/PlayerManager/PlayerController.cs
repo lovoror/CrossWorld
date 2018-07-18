@@ -486,7 +486,10 @@ public class PlayerController : Controller
 
 	void RollEventFunc(Vector2 dir)
 	{
-		if (I_BaseData.curStrength < Constant.minRollStrength * GlobalData.Instance.diffRate) return;
+		if (I_BaseData.curStrength < Constant.minRollStrength * GlobalData.Instance.diffRate) {
+			Utils.PlayInActiveSnd();
+			return;
+		}
 		rollDir = dir;
 		bodyAnim.SetTrigger("Roll");
 		legAnim.SetTrigger("Roll");

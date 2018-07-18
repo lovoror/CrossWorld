@@ -52,10 +52,10 @@ public class Constant
 
 	public readonly static Dictionary<WeaponNameType, List<float>> MAX_WEAPON_ENERGY = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
-		{WeaponNameType.Machinegun, new List<float>(){0, 150, 300, 450, 600}},
-		{WeaponNameType.Shotgun, new List<float>(){0, 150, 300, 450, 600}},
-		{WeaponNameType.Knife, new List<float>(){0, 150, 300, 450, 600}},
-		{WeaponNameType.Sniper, new List<float>(){0, 150, 300, 400, 450}},
+		{WeaponNameType.Machinegun, new List<float>(){0, 150, 450, 800, 900}},
+		{WeaponNameType.Shotgun, new List<float>(){0, 150, 450, 800, 900}},
+		{WeaponNameType.Knife, new List<float>(){0, 150, 450, 800, 900}},
+		{WeaponNameType.Sniper, new List<float>(){0, 150, 450, 800, 900}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
