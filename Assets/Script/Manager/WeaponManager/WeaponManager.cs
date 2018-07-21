@@ -20,7 +20,8 @@ public class WeaponManager : MonoBehaviour {
 
 	protected Manager I_Manager;  // attacker的Manager管理类
 	protected AnimEventsManager I_AnimEventsManager { get; set; }
-	protected AudioSource attackAudioSource;  // 攻击音效
+	protected AudioSource attackAudioSource;      // 攻击音效
+	protected AudioSource attackDoneAudioSource;  // 攻击结束音效
 	protected BaseData I_BaseData { get; set; }
 	protected Transform body
 	{
@@ -42,6 +43,11 @@ public class WeaponManager : MonoBehaviour {
 	protected void Start () {
 		I_BaseData = I_Manager.I_BaseData;
 		attackAudioSource = transform.GetComponent<AudioSource>();
+
+		Transform sndAttackDone = transform.Find("SndAttackDone");
+		if (sndAttackDone != null) {
+			attackDoneAudioSource = sndAttackDone.GetComponent<AudioSource>();
+		}
 	}
 
 	protected void OnEnable()
@@ -82,9 +88,9 @@ public class WeaponManager : MonoBehaviour {
 		}
 	}
 
-	protected virtual void AttackEventFunc()
+	protected virtual void AttackEventFunc(float doneAttackSndTime = 0)
 	{
-		PlayAttackShound();
+		PlayAttackSound(doneAttackSndTime);
 	}
 
 	protected virtual void AttackEndEventFunc()
@@ -92,10 +98,20 @@ public class WeaponManager : MonoBehaviour {
 		
 	}
 
-	protected virtual void PlayAttackShound()
+	protected virtual void PlayAttackSound(float doneAttackSndTime)
 	{
 		attackAudioSource.Play();
+		if (doneAttackSndTime > 0) {
+			Invoke("PlayAttackDoneSound", doneAttackSndTime);
+		}
 	}
+
+	protected virtual void PlayAttackDoneSound()
+	{
+		attackDoneAudioSource.Play();
+	}
+
+
 
 	/*----------------- EnemyInATKRangeEvent ------------------*/
 	public delegate void EnemyInATKRangeEventHandler(Transform enemy, bool isInRange);

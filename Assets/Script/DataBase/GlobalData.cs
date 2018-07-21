@@ -15,7 +15,7 @@ public class GlobalData {
 	}
 
 	public static Difficulty difficulty = Difficulty.Hard;
-	public float diffRate { get; set; }
+	public static float diffRate { get; set; }
 	public int curScore { get; set; }
 	int killedEnemy;
 

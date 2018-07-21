@@ -5,17 +5,23 @@ using System.Collections;
 
 public class PlayerController : Controller
 {
+	public delegate void ScopeCameraDirectionEventHandler(Vector2 direction, Vector3? hitPoint, Transform target = null);
+	public static event ScopeCameraDirectionEventHandler ScopeCameraDirectionEvent;
+
 	public float speed = 3;
 	[Header("移动平滑度，越大越不平滑")]
 	public float moveSmooth = 10;
+	public Vector2 showScopeBoundary;  // 瞄点超出该范围则显示ScopeCamera
 
 	protected bool canControl;
 	bool isBtnADown = false;
 	bool inRollState = false;  // 是否正在翻滚
+	bool showScopeCamera = false; // 是否显示ScopeCamera
 	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	Vector3 moveDir; // 当前移动的方向
 	Vector3 moveDirPC; // WASD控制的移动方向
-	Vector2 faceDirection; // 当前面朝的方向
+	Vector2 faceDirection; // 当前面朝的方向 
+	GameObject uiScope;
 	float aimSpeedRateAccelerate
 	{
 		get
@@ -25,7 +31,7 @@ public class PlayerController : Controller
 	}
 	Transform focusTarget = null;  // 当前锁定的目标
 	Transform curAimTarget = null;
-	Vector3 aimHitPoint = new Vector3(-1000, -1000, -1000);
+	Vector3? aimHitPoint;
 	Vector2 stickLDirection { get; set; }
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
@@ -85,6 +91,7 @@ public class PlayerController : Controller
 		I_FollowTarget = GameObject.FindWithTag("MainCamera").transform.GetComponent<FollowTarget>();
 		attackType = AimAttackType.none;
 		rb = self.GetComponent<Rigidbody>();
+		uiScope = GameObject.Find("Scope");
 	}
 
 	new void Start()
@@ -124,6 +131,7 @@ public class PlayerController : Controller
 		MoboController.AttackUpEvent -= AttackUpEventFunc;
 		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
 		FuncRButton.PlayerReloadEvent -= PlayerReloadWeaponEventFunc;
+		I_Manager.I_AnimEventsManager.OnReloadEndEvent -= OnReloadEndEventFunc;
 		SkillButton.RollEvent -= RollEventFunc;
 	}
 
@@ -249,6 +257,7 @@ public class PlayerController : Controller
 			SetRangeAngle();
 			SetAimTriangle();
 			SetCamera();
+			SetScopeCamera();
 #endif
 			// Move the player
 			rb.velocity = Vector3.Lerp(rb.velocity, trueMoveDir * speed, Time.fixedDeltaTime * moveSmooth);
@@ -486,7 +495,7 @@ public class PlayerController : Controller
 
 	void RollEventFunc(Vector2 dir)
 	{
-		if (I_BaseData.curStrength < Constant.minRollStrength * GlobalData.Instance.diffRate) {
+		if (I_BaseData.curStrength < Constant.minRollStrength * GlobalData.diffRate) {
 			Utils.PlayInActiveSnd();
 			return;
 		}
@@ -510,7 +519,7 @@ public class PlayerController : Controller
 			}
 		}
 		// 耐力扣除
-		I_BaseData.ChangeCurStrength(-Constant.rollStrength * GlobalData.Instance.diffRate);
+		I_BaseData.ChangeCurStrength(-Constant.rollStrength * GlobalData.diffRate);
 		// 隐藏瞄准三角
 		I_AimController.SetVisible(false);
 		// 取消enemyCollider与playerCollider的碰撞
@@ -567,7 +576,7 @@ public class PlayerController : Controller
 		bodyAnim.ResetTrigger("OnceAttack");
 	}
 
-	bool HasEnemyInRange(ref Transform target, ref Vector3 hitPosition)
+	bool HasEnemyInRange(ref Transform target, ref Vector3? hitPosition)
 	{
 		float maxDist = 30;
 		if (Constant.AimMaxDist.ContainsKey(curWeaponName)) {
@@ -599,7 +608,7 @@ public class PlayerController : Controller
 				Vector3 sLD3D = new Vector3(stickLDirection.x, 0, stickLDirection.y);
 				float aimDist = 0.01f;
 				if (Constant.AimAssistDist.ContainsKey(curWeaponName)) {
-					aimDist = Constant.AimAssistDist[curWeaponName] / GlobalData.Instance.diffRate;
+					aimDist = Constant.AimAssistDist[curWeaponName] / GlobalData.diffRate;
 				}
 				float a = p2e.magnitude, b = aimDist;
 				float aimDegree = b / Mathf.Sqrt(a * a + b * b) * Mathf.Rad2Deg;
@@ -625,7 +634,6 @@ public class PlayerController : Controller
 		target = null;
 		return false;
 	}
-
 
 	// Shotgun范围三角
 	void SetRangeAngle()
@@ -659,7 +667,7 @@ public class PlayerController : Controller
 			}
 		}
 		else {
-			aimHitPoint = new Vector3(-1000, -1000, -1000);
+			aimHitPoint = null;
 			// 设置瞄准三角是否可见
 			if ((attackType == AimAttackType.attacking || attackType == AimAttackType.aming) &&
 				(curWeaponType == WeaponType.autoDistant || curWeaponType == WeaponType.singleLoader)) {
@@ -677,8 +685,8 @@ public class PlayerController : Controller
 					I_AimController.UpdateAim(distance / 10, degree);
 					faceDirection = p2e2D.normalized * stickLDirection.magnitude;
 				}
-				else if (aimHitPoint != new Vector3(-1000, -1000, -1000)) {
-					float distance = (transform.position - aimHitPoint).magnitude;
+				else if (aimHitPoint != null) {
+					float distance = (transform.position - aimHitPoint.Value).magnitude;
 					I_AimController.UpdateAim(distance / 10, 0);
 					faceDirection = stickLDirection;
 				}
@@ -753,10 +761,44 @@ public class PlayerController : Controller
 				else if (curWeaponType == WeaponType.singleLoader) {
 					if (attackType != AimAttackType.none) {
 						// singleLoader可以通过BtnA的滑动距离改变Camera的offset
-						I_FollowTarget.SetAimDirection(faceDirection / 1.5f, aimSpeedRate);
+						I_FollowTarget.SetAimDirection(faceDirection / 1f, aimSpeedRate);
 					}
 				}
 			}
+		}
+	}
+
+	void SetScopeCamera()
+	{
+		if (curWeaponName == WeaponNameType.Sniper && attackType == AimAttackType.aming) {
+			Vector3 po = transform.position;
+			Vector2? direction = null;
+			if (curAimTarget != null) {
+				Vector3 pt = curAimTarget.position;
+				direction = new Vector2(pt.x, pt.z) - new Vector2(po.x, po.z);
+			}
+			else if (aimHitPoint != null) {
+				direction = new Vector2(aimHitPoint.Value.x, aimHitPoint.Value.z) - new Vector2(po.x, po.z);
+			}
+
+			showScopeCamera = false;
+			if (direction == null) {
+				// 瞄准最远方向
+				showScopeCamera = true;
+			}
+			else if (Mathf.Abs(direction.Value.x) > showScopeBoundary.x ||
+				Mathf.Abs(direction.Value.y) > showScopeBoundary.y) {
+					showScopeCamera = true;
+			}
+
+			uiScope.SetActive(showScopeCamera);
+			if (showScopeCamera && ScopeCameraDirectionEvent != null) {
+				ScopeCameraDirectionEvent(faceDirection, aimHitPoint, curAimTarget);
+			}
+		}
+		else {
+			showScopeCamera = false;
+			uiScope.SetActive(showScopeCamera);
 		}
 	}
 
@@ -798,7 +840,7 @@ public class PlayerController : Controller
 				Vector3 forward = transform.forward;
 				float aimDist = 0.01f;
 				if (Constant.OnceAttackAssistDist.ContainsKey(curWeaponName)) {
-					aimDist = Constant.OnceAttackAssistDist[curWeaponName] / GlobalData.Instance.diffRate;
+					aimDist = Constant.OnceAttackAssistDist[curWeaponName] / GlobalData.diffRate;
 				}
 				float a = p2e.magnitude, b = aimDist;
 				float aimDegree = b / Mathf.Sqrt(a * a + b * b) * Mathf.Rad2Deg;

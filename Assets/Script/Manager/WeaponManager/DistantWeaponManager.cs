@@ -66,9 +66,9 @@ public class DistantWeaponManager : WeaponManager {
 	}
 	/************************* OnReloadEnd **************************/
 
-	protected override void AttackEventFunc()
+	protected override void AttackEventFunc(float doneAttackSndTime = 0)
 	{
-		base.AttackEventFunc();
+		base.AttackEventFunc(doneAttackSndTime);
 		if (leftBullets > 0) {
 			CreateBullet(self, I_Manager.GetCurWeaponName());
 			I_BaseData.ShootOneBullet();

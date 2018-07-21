@@ -63,7 +63,7 @@ public class AttackOB : Observer
 		float damage = Constant.GetBaseDamage(atkWeaponName);
 		float damageRate = 0;
 		if (attacker == PlayerData.Instance.target) {
-			damageRate = Utils.GetWeaponDamageRate(atkWeaponName) / GlobalData.Instance.diffRate;
+			damageRate = Utils.GetWeaponDamageRate(atkWeaponName) / GlobalData.diffRate;
 		}
 		else {
 			damageRate = Utils.GetWeaponDamageRate(atkWeaponName);
@@ -189,7 +189,12 @@ public class AttackOB : Observer
 		float decreaseRate = Constant.decreaseRate;
 		ChangeEnergy(shooter, increaseRate * damage);
 		foreach (Transform suffer in suffers) {
-			ChangeEnergy(suffer, decreaseRate * damage);
+			if (suffer == PlayerData.Instance.target) {
+				ChangeEnergy(suffer, decreaseRate * GlobalData.diffRate * damage);
+			}
+			else {
+				ChangeEnergy(suffer, decreaseRate * damage);
+			}
 		}
 	}
 

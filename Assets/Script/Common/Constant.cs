@@ -52,16 +52,16 @@ public class Constant
 
 	public readonly static Dictionary<WeaponNameType, List<float>> MAX_WEAPON_ENERGY = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
-		{WeaponNameType.Machinegun, new List<float>(){0, 150, 450, 800, 900}},
-		{WeaponNameType.Shotgun, new List<float>(){0, 150, 450, 800, 900}},
-		{WeaponNameType.Knife, new List<float>(){0, 150, 450, 800, 900}},
-		{WeaponNameType.Sniper, new List<float>(){0, 150, 450, 800, 900}},
+		{WeaponNameType.Machinegun, new List<float>(){0, 150, 450, 800, 810}},
+		{WeaponNameType.Shotgun, new List<float>(){0, 150, 450, 800, 810}},
+		{WeaponNameType.Knife, new List<float>(){0, 150, 450, 800, 810}},
+		{WeaponNameType.Sniper, new List<float>(){0, 150, 450, 800, 810}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
-		{WeaponNameType.Shotgun, new List<float>(){1.2f, 1.5f, 1.8f, 1.8f}},
+		{WeaponNameType.Shotgun, new List<float>(){1f, 1.4f, 1.8f, 1.8f}},
 		{WeaponNameType.Knife, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.4f, 1.8f, 1.8f}},
 	};
@@ -145,7 +145,7 @@ public class Constant
 
 	// 武器能量增减与伤害的比值
 	public static float increaseRate = 0.2f;
-	public static float decreaseRate = -1f;
+	public static float decreaseRate = -2.3f;
 
 	// 敌人强弱控制
 	public static float additionRate = 2;

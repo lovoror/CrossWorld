@@ -47,9 +47,9 @@ public class InitData : MonoBehaviour {
 	void Start()
 	{
 		enemyHealth = new Dictionary<string, float>();
+		InitGlobalData();
 		InitPlayerData();
 		InitEnemysData();
-		InitGlobalData();
 		if (birthPoint != null) {
 			foreach (Transform point in birthPoint) {
 				birthPoints.Add(point);
@@ -75,6 +75,8 @@ public class InitData : MonoBehaviour {
 				if (info.weapon.gameObject.activeSelf) curWeaponName = info.weaponName;
 			}
 		}
+		float diffRate = GlobalData.diffRate;
+		playerData.playerMaxHealth /= diffRate;
 		PlayerData.Instance.Init(playerData.player, curWeaponName, playerData.playerMaxHealth, d_PlayerWeapons, d_PlayerBodys);
 	}
 

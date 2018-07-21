@@ -6,7 +6,7 @@ using UnityEngine;
 public class AnimEventsManager : MonoBehaviour
 {
 	// 攻击事件：BodyAnimEvents -> WeaponManager
-	public delegate void AttackEventHandler();  // 通知WeaponManager武器攻击
+	public delegate void AttackEventHandler(float doneAttackSndTime);  // 通知WeaponManager武器攻击
 	public event AttackEventHandler AttackEvent;
 	public delegate void AttackEndEventHandler();  // 通知WeaponManager武器攻击结束
 	public event AttackEndEventHandler AttackEndEvent;
@@ -16,6 +16,8 @@ public class AnimEventsManager : MonoBehaviour
 	public event PlayReloadSoundEventHandler PlayReloadSoundEvent;
 	public delegate void PlayReloadDoneSoundEventHandler();
 	public event PlayReloadDoneSoundEventHandler PlayReloadDoneSoundEvent;
+	public delegate void PlayAttackDoneSoundEventHandler();
+	public event PlayAttackDoneSoundEventHandler PlayAttackDoneSoundEvent;
 
 	PlayerManager I_PlayerManager;
 	Manager I_Manager;
@@ -46,10 +48,10 @@ public class AnimEventsManager : MonoBehaviour
 
 	/*--------------- 帧动画响应函数 ---------------*/
 	// 武器攻击
-	public void OnAttack()
+	public void OnAttack(float doneAttackSndTime)
 	{
 		if (AttackEvent != null) {
-			AttackEvent();
+			AttackEvent(doneAttackSndTime);
 		}
 	}
 
@@ -96,6 +98,13 @@ public class AnimEventsManager : MonoBehaviour
 	{
 		if (PlayReloadDoneSoundEvent != null) {
 			PlayReloadDoneSoundEvent();
+		}
+	}
+
+	public void PlayAttackDoneSound()
+	{
+		if (PlayAttackDoneSoundEvent != null) {
+			PlayAttackDoneSoundEvent();
 		}
 	}
 

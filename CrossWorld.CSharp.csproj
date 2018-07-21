@@ -331,6 +331,7 @@
     <Compile Include="Assets\Script\UI\UiDifficultyPanel.cs" />
     <Compile Include="Assets\Script\UI\UiHealthRestore.cs" />
     <Compile Include="Assets\Script\UI\UiResultPanel.cs" />
+    <Compile Include="Assets\Script\UI\UiScopeControl.cs" />
     <Compile Include="Assets\Script\UI\UiScoreTxt.cs" />
   </ItemGroup>
   <ItemGroup>

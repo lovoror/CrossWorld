@@ -59,6 +59,7 @@ public class Controller : MonoBehaviour {
 			return null;
 		}
 	}
+
 	protected Animator legAnim;
 	protected Animator bodyAnim
 	{
@@ -107,6 +108,7 @@ public class Controller : MonoBehaviour {
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
 		I_Manager.I_AnimEventsManager.PlayReloadSoundEvent -= PlayReloadSoundEventFunc;
+		I_Manager.I_AnimEventsManager.PlayReloadDoneSoundEvent -= PlayReloadDoneSoundEventFunc;
 	}
 
 	protected void Update()
@@ -141,6 +143,8 @@ public class Controller : MonoBehaviour {
 			reloadDoneAudio.Play();
 		}
 	}
+
+
 	/*-------------------- PlayReloadSoundEvent ---------------------*/
 
 	/*------------------ 状态机 ------------------*/

@@ -73,12 +73,9 @@ public class Utils : MonoBehaviour {
 	}
 	public static float GetAnglePY2D(Vector2 from, Vector2 to)
 	{
-		float angle = Vector2.Angle(from, to);
-		Vector2 normal = Vector3.Cross(from, to);
-		if (normal.y < 0) {
-			angle = 360 - angle;
-		}
-		return angle;
+		Vector3 from3 = new Vector3(from.x, 0, from.y);
+		Vector3 to3 = new Vector3(to.x, 0, to.y);
+		return GetAnglePY(from3, to3);
 	}
 
 	// 以Z轴正方向为参考，获得一个0-360度的夹角

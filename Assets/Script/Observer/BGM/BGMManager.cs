@@ -33,7 +33,7 @@ public class BGMManager : MonoBehaviour {
 
 	void OnDisable()
 	{
-
+		BehaviorTreeUpdate.EnemyAlertStateEvent -= EnemyAlertStateEventFunc;
 	}
 
 	void Update()
