@@ -25,10 +25,9 @@ public class BodyAnimEvents : MonoBehaviour {
 	}
 
 	/*--------------- 帧动画响应函数 ---------------*/
-	// 武器攻击 doneAttackSndTime后开始播放AttackEndSnd
-	void OnAttack(float doneAttackSndTime)
+	void OnAttack()
 	{
-		I_AnimEventsManager.OnAttack(doneAttackSndTime);
+		I_AnimEventsManager.OnAttack();
 	}
 
 	// 辅助射击
@@ -46,7 +45,7 @@ public class BodyAnimEvents : MonoBehaviour {
 	// 攻击声音的后半段
 	void PlayAttackDoneSound()
 	{
-		//I_AnimEventsManager.PlayAttackDoneSound();
+		I_AnimEventsManager.PlayAttackDoneSound();
 	}
 
 	void OnRollStart()

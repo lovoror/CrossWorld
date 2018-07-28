@@ -6,7 +6,7 @@ using UnityEngine;
 public class AnimEventsManager : MonoBehaviour
 {
 	// 攻击事件：BodyAnimEvents -> WeaponManager
-	public delegate void AttackEventHandler(float doneAttackSndTime);  // 通知WeaponManager武器攻击
+	public delegate void AttackEventHandler();  // 通知WeaponManager武器攻击
 	public event AttackEventHandler AttackEvent;
 	public delegate void AttackEndEventHandler();  // 通知WeaponManager武器攻击结束
 	public event AttackEndEventHandler AttackEndEvent;
@@ -48,10 +48,10 @@ public class AnimEventsManager : MonoBehaviour
 
 	/*--------------- 帧动画响应函数 ---------------*/
 	// 武器攻击
-	public void OnAttack(float doneAttackSndTime)
+	public void OnAttack()
 	{
 		if (AttackEvent != null) {
-			AttackEvent(doneAttackSndTime);
+			AttackEvent();
 		}
 	}
 

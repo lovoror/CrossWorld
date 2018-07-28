@@ -54,6 +54,7 @@ public class WeaponManager : MonoBehaviour {
 	{
 		I_Manager.I_Messenger.DeadNotifyEvent += new Messenger.DeadNotifyEventHandler(DeadNotifyEventFunc);
 		I_AnimEventsManager.AttackEvent += new AnimEventsManager.AttackEventHandler(AttackEventFunc);
+		I_AnimEventsManager.PlayAttackDoneSoundEvent += new AnimEventsManager.PlayAttackDoneSoundEventHandler(PlayAttackDoneSoundEventFunc);
 		I_AnimEventsManager.AttackEndEvent += new AnimEventsManager.AttackEndEventHandler(AttackEndEventFunc);
 	}
 
@@ -62,6 +63,7 @@ public class WeaponManager : MonoBehaviour {
 		I_Manager.I_Messenger.DeadNotifyEvent -= DeadNotifyEventFunc;
 		I_AnimEventsManager.AttackEvent -= AttackEventFunc;
 		I_AnimEventsManager.AttackEndEvent -= AttackEndEventFunc;
+		I_AnimEventsManager.PlayAttackDoneSoundEvent -= PlayAttackDoneSoundEventFunc;
 	}
 
 	protected virtual void OnTriggerEnter(Collider other)
@@ -88,9 +90,9 @@ public class WeaponManager : MonoBehaviour {
 		}
 	}
 
-	protected virtual void AttackEventFunc(float doneAttackSndTime = 0)
+	protected virtual void AttackEventFunc()
 	{
-		PlayAttackSound(doneAttackSndTime);
+		PlayAttackSound();
 	}
 
 	protected virtual void AttackEndEventFunc()
@@ -98,15 +100,16 @@ public class WeaponManager : MonoBehaviour {
 		
 	}
 
-	protected virtual void PlayAttackSound(float doneAttackSndTime)
+	protected virtual void PlayAttackSound()
 	{
 		attackAudioSource.Play();
-		if (doneAttackSndTime > 0) {
-			Invoke("PlayAttackDoneSound", doneAttackSndTime);
-		}
+		//if (doneAttackSndTime > 0) {
+		//	float speed = I_BaseData.curWeaponSpeed;
+		//	Invoke("PlayAttackDoneSound", doneAttackSndTime / speed);
+		//}
 	}
 
-	protected virtual void PlayAttackDoneSound()
+	protected virtual void PlayAttackDoneSoundEventFunc()
 	{
 		attackDoneAudioSource.Play();
 	}

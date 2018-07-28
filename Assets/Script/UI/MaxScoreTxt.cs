@@ -18,9 +18,6 @@ public class MaxScoreTxt : MonoBehaviour {
 	void Awake()
 	{
 		text = GetComponent<Text>();
-		if (PlayerPrefs.HasKey("MaxScore" + GlobalData.difficulty)) {
-			maxScore = PlayerPrefs.GetInt("MaxScore" + GlobalData.difficulty);
-		}
 	}
 
 	void OnEnable()
@@ -35,6 +32,9 @@ public class MaxScoreTxt : MonoBehaviour {
 
 	void Start()
 	{
+		if (PlayerPrefs.HasKey("MaxScore" + GlobalData.difficulty)) {
+			maxScore = PlayerPrefs.GetInt("MaxScore" + GlobalData.difficulty);
+		}
 		text.text = "Max:" + maxScore;
 	}
 

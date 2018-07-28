@@ -20,7 +20,7 @@ public class Knife : MeleeWeaponManager
 		base.Start();
 	}
 
-	protected override void PlayAttackSound(float doneAttackSndTime = 0)
+	protected override void PlayAttackSound()
 	{
 		AudioClip clip;
 		if (HasEnemyInRange()) {

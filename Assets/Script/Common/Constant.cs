@@ -46,16 +46,16 @@ public class Constant
 		{1, COLOR.WHITE},
 		{2, COLOR.YELLOW},
 		{3, COLOR.RED},
-		{4, COLOR.PURPLE},
+		{4, COLOR.RED},
 
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> MAX_WEAPON_ENERGY = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){0, 100, 200, 300, 350}},
-		{WeaponNameType.Machinegun, new List<float>(){0, 150, 450, 800, 810}},
-		{WeaponNameType.Shotgun, new List<float>(){0, 150, 450, 800, 810}},
-		{WeaponNameType.Knife, new List<float>(){0, 150, 450, 800, 810}},
-		{WeaponNameType.Sniper, new List<float>(){0, 150, 450, 800, 810}},
+		{WeaponNameType.Machinegun, new List<float>(){0, 150, 450, 799, 800}},
+		{WeaponNameType.Shotgun, new List<float>(){0, 150, 450, 799, 800}},
+		{WeaponNameType.Knife, new List<float>(){0, 150, 450, 799, 800}},
+		{WeaponNameType.Sniper, new List<float>(){0, 150, 450, 799, 800}},
 	};
 
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_SPEED_RATE = new Dictionary<WeaponNameType, List<float>>() {
@@ -69,8 +69,8 @@ public class Constant
 	public readonly static Dictionary<WeaponNameType, List<float>> WEAPON_DAMAGE_RATE = new Dictionary<WeaponNameType, List<float>>() {
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
-		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.8f}},
-		{WeaponNameType.Knife, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
+		{WeaponNameType.Knife, new List<float>(){1.0f, 1.7f, 2.5f, 2.5f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 	};
 
@@ -96,7 +96,7 @@ public class Constant
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.Knife, 160 },
+		{ WeaponNameType.Knife, 200 },
 		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Shotgun, 25 },

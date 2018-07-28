@@ -36,7 +36,7 @@ public class MeleeWeaponManager : WeaponManager {
 
 	/*--------------------- AttackEvent ---------------------*/
 		/*------------ Self -> Manager ------------*/
-	protected override void AttackEventFunc(float doneAttackSndTime = 0)
+	protected override void AttackEventFunc()
 	{
 		if (I_Manager.IsDead()) return;
 		base.AttackEventFunc();
