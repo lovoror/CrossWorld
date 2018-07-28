@@ -9,7 +9,7 @@ public class UiHealthRestore : MonoBehaviour {
 
 	static GameObject root;
 	Transform player;
-	bool isActive;
+	//bool isActive;
 
 
 	void Awake()
@@ -23,7 +23,7 @@ public class UiHealthRestore : MonoBehaviour {
 		root.name = "HealthRestoreRoot";
 		DontDestroyOnLoad(root);
 		player = PlayerData.Instance.target;
-		isActive = false;
+		//isActive = false;
 	}
 
 	void OnEnable()

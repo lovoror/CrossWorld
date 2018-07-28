@@ -29,7 +29,7 @@ public class GlobalData {
 		curScore = 0;
 		killedEnemy = 0;
 		difficulty = GetDifficulty();
-		if (difficulty != null && Constant.DifficultyRate.ContainsKey(difficulty)) {
+		if (difficulty != Difficulty.unknow && Constant.DifficultyRate.ContainsKey(difficulty)) {
 			diffRate = Constant.DifficultyRate[difficulty];
 		}
 		else {

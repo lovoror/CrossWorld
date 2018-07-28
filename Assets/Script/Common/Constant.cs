@@ -70,7 +70,7 @@ public class Constant
 		{WeaponNameType.M16, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Machinegun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
 		{WeaponNameType.Shotgun, new List<float>(){1.0f, 1.2f, 1.5f, 1.5f}},
-		{WeaponNameType.Knife, new List<float>(){1.0f, 1.7f, 2.5f, 2.5f}},
+		{WeaponNameType.Knife, new List<float>(){1.0f, 2.0f, 3.2f, 3.2f}},
 		{WeaponNameType.Sniper, new List<float>(){1.0f, 1.5f, 2.0f, 2.0f}},
 	};
 
@@ -96,7 +96,7 @@ public class Constant
 	};
 
 	public static Dictionary<WeaponNameType, float> BaseDamage = new Dictionary<WeaponNameType, float>() {
-		{ WeaponNameType.Knife, 200 },
+		{ WeaponNameType.Knife, 160 },
 		{ WeaponNameType.M16, 50 },
 		{ WeaponNameType.Machinegun, 50 },
 		{ WeaponNameType.Shotgun, 25 },
@@ -157,6 +157,8 @@ public class Constant
 	public static float minRollStrength = 15;  // 翻滚需要的最小耐力
 	public static float rollStrength = 30;     // 每次翻滚所需要的耐力
 	public static float strengthRestoreSpeed = 10;  // 每秒恢复的耐力值
+	public static float minKnifeAttackStrength = 10; // Knife攻击需要的最小耐力
+	public static float knifeAttackStrength = 10; // 每次Knife攻击需要的耐力
 
 	// 难度系数
 	public static Dictionary<Difficulty, float> DifficultyRate = new Dictionary<Difficulty, float> {

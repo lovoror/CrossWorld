@@ -44,10 +44,7 @@ public class FollowTarget : MonoBehaviour {
 
 	}
 
-	Vector3 preFollowPos = new Vector3(-1000, -1000, -1000);
 	Vector3 curOffset = Vector3.zero;
-	Vector3 tarOffset = Vector3.zero;   // 本次镜头移动的目标tarOffset点
-	Vector3 orgOffset = Vector3.zero;   // 本次镜头移动的出事Offset点
 	//int curTimes = 0;     // 本次镜头移动的次数
 	//float orgSizeScale = 1;   // 初始放缩比例
 	//float tarSizeScale = 1;   // 本次镜头变换的目标Scale

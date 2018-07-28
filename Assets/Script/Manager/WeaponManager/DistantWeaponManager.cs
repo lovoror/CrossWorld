@@ -18,7 +18,7 @@ public class DistantWeaponManager : WeaponManager {
 	}
 	float damage = 10;  // 并无作用
 
-	protected Transform body
+	protected new Transform body
 	{
 		get
 		{

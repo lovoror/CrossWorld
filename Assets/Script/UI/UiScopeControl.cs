@@ -23,7 +23,7 @@ public class UiScopeControl : MonoBehaviour
 	float m_traceRate = 1f;  // 作用于viewAngle, 发现目标后临时增大viewAnele,使目标不易脱离追踪。
 	float dst2View;  // 可视半径 / 距离
 	float maxDistance;  // 狙击枪的最远瞄准距离
-	float scopeRadius;  // 瞄目镜半径 单位像素
+	//float scopeRadius;  // 瞄目镜半径 单位像素
 	float targetViewRadius;
 	Vector3? targetPoint = null;
 
@@ -36,7 +36,7 @@ public class UiScopeControl : MonoBehaviour
 	{
 		player = PlayerData.Instance.target;
 		maxDistance = Constant.AimMaxDist[WeaponNameType.Sniper];
-		scopeRadius = (transform as RectTransform).sizeDelta.x / 2;
+		//scopeRadius = (transform as RectTransform).sizeDelta.x / 2;
 		float angle1 = Mathf.Atan(boundary.height / boundary.width) * Mathf.Rad2Deg;
 		boundaryAngles[0] = angle1;
 		boundaryAngles[1] = 180f - angle1;
@@ -113,7 +113,6 @@ public class UiScopeControl : MonoBehaviour
 				// 左边
 				float T = Mathf.Tan(rad);
 				float C = Mathf.Abs(Mathf.Cos(rad));
-				float S = Mathf.Cos(rad);
 				x = boundary.x;
 				y = (x - boundary.center.x) * T + boundary.center.y;
 				// 偏移

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AimController : MonoBehaviour {
 
-	bool isVisible;
+	//bool isVisible;
 
 	MeshTriangle I_MeshT;
 	LineRenderer I_Line;
@@ -26,7 +26,7 @@ public class AimController : MonoBehaviour {
 
 	public void SetVisible(bool visible)
 	{
-		this.isVisible = visible;
+		//isVisible = visible;
 		foreach (Transform child in transform) {
 			child.gameObject.SetActive(visible);
 		}

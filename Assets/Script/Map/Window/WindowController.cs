@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class WindowController : MonoBehaviour {
 	Animator animator;
-	AudioSource audio;
+	AudioSource crashAudio;
 
 	bool isBroken = false;
 	void Awake()
 	{
 		animator = GetComponent<Animator>();
-		audio = GetComponent<AudioSource>();
+		crashAudio = GetComponent<AudioSource>();
 	}
 
 	void OnTriggerEnter(Collider other)
@@ -18,7 +18,7 @@ public class WindowController : MonoBehaviour {
 		if ( !isBroken && other.tag == "Bullet") {
 			isBroken = true;
 			animator.SetTrigger("IsBroken");
-			audio.Play();
+			crashAudio.Play();
 		}
 	}
 }

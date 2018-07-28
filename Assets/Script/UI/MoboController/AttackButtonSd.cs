@@ -35,7 +35,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		public static event FirstInstructHandler FirstInstructEvent;
 
 		public AttackFirstType firstType = AttackFirstType.none;
-		AttackFirstType preFirstType = AttackFirstType.none;
+		//AttackFirstType preFirstType = AttackFirstType.none;
 
 		public float minHoldTime = 0;
 		float touchStartTime = -1; // 本次触摸的开始时间
@@ -45,7 +45,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		public void Reset()
 		{
 			firstType = AttackFirstType.none;
-			preFirstType = AttackFirstType.none;
+			//preFirstType = AttackFirstType.none;
 			touchStartTime = -1;
 			isHold = false;
 			inTouch = false;
@@ -90,7 +90,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
 		public void SetFirstType(AttackFirstType type)
 		{
-			preFirstType = firstType;
+			//preFirstType = firstType;
 			firstType = type;
 		}
 
@@ -108,7 +108,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		public static event SecondInstructHandler SecondInstructEvent;
 
 		public AttackSecondType secondType = AttackSecondType.none;
-		AttackSecondType preSecondType = AttackSecondType.none;
+		//AttackSecondType preSecondType = AttackSecondType.none;
 
 		public float dragThreshold = 0;
 		Vector2 direction = Vector2.zero;
@@ -116,7 +116,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		public void Reset()
 		{
 			secondType = AttackSecondType.none;
-			preSecondType = AttackSecondType.none;
+			//preSecondType = AttackSecondType.none;
 			direction = Vector2.zero;
 		}
 
@@ -184,7 +184,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
 			if (tmpType != AttackSecondType.none) {
 				if (tmpType != secondType) {
-					preSecondType = secondType;
+					//preSecondType = secondType;
 					secondType = tmpType;
 					Notify();
 				}
@@ -193,7 +193,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
 		public void SetSecondType(AttackSecondType type)
 		{
-			preSecondType = secondType;
+			//preSecondType = secondType;
 			secondType = type;
 		}
 
@@ -210,18 +210,18 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		public AttackSdType attackType = AttackSdType.none;
 		public AttackFirstType firstType = AttackFirstType.none;
 		public AttackSecondType secondType = AttackSecondType.none;
-		AttackSdType preAttackType = AttackSdType.none;
-		AttackFirstType preFirstType = AttackFirstType.none;
-		AttackSecondType preSecondType = AttackSecondType.none;
+		//AttackSdType preAttackType = AttackSdType.none;
+		//AttackFirstType preFirstType = AttackFirstType.none;
+		//AttackSecondType preSecondType = AttackSecondType.none;
 
 		public void Reset()
 		{
 			attackType = AttackSdType.none;
 			firstType = AttackFirstType.none;
 			secondType = AttackSecondType.none;
-			preAttackType = AttackSdType.none;
-			preFirstType = AttackFirstType.none;
-			preSecondType = AttackSecondType.none;
+			//preAttackType = AttackSdType.none;
+			//preFirstType = AttackFirstType.none;
+			//preSecondType = AttackSecondType.none;
 		}
 
 		public void OnEnable()
@@ -245,7 +245,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		void FirstInstructFunc(AttackFirstType type)
 		{
 			if (type != AttackFirstType.none) {
-				preFirstType = firstType;
+				//preFirstType = firstType;
 				firstType = type;
 				DealAttackType();
 			}
@@ -254,7 +254,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		void SecondInstructFunc(AttackSecondType type)
 		{
 			if (type != AttackSecondType.none) {
-				preSecondType = secondType;
+				//preSecondType = secondType;
 				secondType = type;
 				DealAttackType();
 			}
@@ -264,7 +264,7 @@ public class AttackButtonSd : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 		{
 			AttackSdType tmpAttackType = GetAttackTypeByFirstAndSecond(firstType, secondType);
 			if (tmpAttackType != AttackSdType.none && tmpAttackType != attackType) {
-				preAttackType = attackType;
+				//preAttackType = attackType;
 				attackType = tmpAttackType;
 				Notify();
 			}

@@ -21,9 +21,9 @@ public class MoboController : MonoBehaviour
 	Text MaxText;
 	Text DifficultyText;
 	LeftStick StickL;
-	Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
+	//Dictionary<WeaponNameType, FuncRButton> FuncRButtons = new Dictionary<WeaponNameType, FuncRButton>();
 	PlayerData I_PlayerData;
-	AudioSource audioInactive;
+	//AudioSource audioInactive;
 	
 	public delegate void PlayerMoveEventHandler(Vector2 dir);
 	public static event PlayerMoveEventHandler PlayerMoveEvent;
@@ -51,7 +51,7 @@ public class MoboController : MonoBehaviour
 		DifficultyText = transform.Find("DifficultyTxt").GetComponent<Text>();
 		ResultPanel = transform.Find("ResultPanel");
 		DifficultyPanel = transform.Find("DifficultyPanel");
-		audioInactive = GetComponent<AudioSource>();
+		//audioInactive = GetComponent<AudioSource>();
 	}
 
 	void Start()

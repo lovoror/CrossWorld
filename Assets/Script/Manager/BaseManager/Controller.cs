@@ -167,7 +167,6 @@ public class Controller : MonoBehaviour {
 	protected void ShowDeadAnim(bool show)
 	{
 		legAnim.SetBool("Dead", show);
-		Random rnd = new Random();
 		Random.InitState((int)System.DateTime.Now.Ticks);
 		int deadState = Mathf.FloorToInt(Random.value * 8);
 		bodyAnim.SetInteger("DeadState", deadState);

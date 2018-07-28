@@ -19,7 +19,7 @@ public class PlayerController : Controller
 	bool showScopeCamera = false; // 是否显示ScopeCamera
 	float btnATouchedTime = 0;  // ButtonA按下的时间。
 	Vector3 moveDir; // 当前移动的方向
-	Vector3 moveDirPC; // WASD控制的移动方向
+	//Vector3 moveDirPC; // WASD控制的移动方向
 	Vector2 faceDirection; // 当前面朝的方向 
 	GameObject uiScope;
 	float aimSpeedRateAccelerate
@@ -29,12 +29,14 @@ public class PlayerController : Controller
 			return I_FollowTarget.aimSpeedRateAccelerate;
 		}
 	}
+	MeleeWeaponManager I_KnifeManager;
 	Transform focusTarget = null;  // 当前锁定的目标
 	Transform curAimTarget = null;
 	Vector3? aimHitPoint;
 	Vector2 stickLDirection { get; set; }
 	float attackBoundary = 0.8f;  // 远程武器 开枪/转向 的边界距离
 	float atkBoundaryRate = 1.7f;  // aming 状态下的attackBoundary增加系数
+	bool knifeAttacking = false;  // Knife是否正在攻击
 	int leftBullets
 	{
 		get
@@ -50,7 +52,7 @@ public class PlayerController : Controller
 			return body.GetComponent<SpriteRenderer>();
 		}
 	}
-	PlayerManager I_PlayerManager;
+	//PlayerManager I_PlayerManager;
 	AimController I_AimController;
 	FollowTarget I_FollowTarget;
 	new WeaponNameType curWeaponName
@@ -86,9 +88,10 @@ public class PlayerController : Controller
 	new void Awake()
 	{
 		base.Awake();
-		I_PlayerManager = transform.GetComponent<PlayerManager>();
+		//I_PlayerManager = transform.GetComponent<PlayerManager>();
 		I_AimController = transform.GetComponentInChildren<AimController>();
 		I_FollowTarget = GameObject.FindWithTag("MainCamera").transform.GetComponent<FollowTarget>();
+		I_KnifeManager = transform.Find("Weapons").Find("Knife").GetComponent<MeleeWeaponManager>();
 		attackType = AimAttackType.none;
 		rb = self.GetComponent<Rigidbody>();
 		uiScope = GameObject.Find("Scope");
@@ -118,6 +121,8 @@ public class PlayerController : Controller
 		FuncRButton.PlayerReloadEvent += new FuncRButton.PlayerReloadEventHandler(PlayerReloadWeaponEventFunc);
 		// OnReloadEndEvent
 		I_Manager.I_AnimEventsManager.OnReloadEndEvent += new AnimEventsManager.OnReloadEndEventHandler(OnReloadEndEventFunc);
+		// AttackEndEvent
+		I_Manager.I_AnimEventsManager.AttackEndEvent += new AnimEventsManager.AttackEndEventHandler(AttackEndEventFunc);
 		// RollEvent
 		SkillButton.RollEvent += new SkillButton.RollEventHandler(RollEventFunc);
 	}
@@ -132,6 +137,7 @@ public class PlayerController : Controller
 		FuncRButton.PlayerChangeWeaponEvent -= PlayerChangeWeaponEventFunc;
 		FuncRButton.PlayerReloadEvent -= PlayerReloadWeaponEventFunc;
 		I_Manager.I_AnimEventsManager.OnReloadEndEvent -= OnReloadEndEventFunc;
+		I_Manager.I_AnimEventsManager.AttackEndEvent -= AttackEndEventFunc;
 		SkillButton.RollEvent -= RollEventFunc;
 	}
 
@@ -146,7 +152,7 @@ public class PlayerController : Controller
 	{
 		base.Update();
 		// 增加耐力
-		if (!inRollState) {
+		if (!inRollState && !knifeAttacking) {
 			float delta = Constant.strengthRestoreSpeed * Time.deltaTime;
 			I_BaseData.ChangeCurStrength(delta);
 		}
@@ -176,13 +182,23 @@ public class PlayerController : Controller
 				}
 			}
 			else if (curWeaponType == WeaponType.melee) {
-
+				// 开启Knife攻击状态
+				if (I_BaseData.curStrength > Constant.minKnifeAttackStrength * GlobalData.diffRate) {
+					if (attackType == AimAttackType.aming) {
+						bool hasEnemy = I_KnifeManager.GetEnemyInRange().Count > 0;
+						if (hasEnemy || faceDirection.sqrMagnitude >= 1.21f * attackBoundary * attackBoundary) {
+							attackType = AimAttackType.attacking;
+							ShowAttackAnim(true);
+							knifeAttacking = true;
+						}
+					}
+				}
 			}
 		}
 #if UNITY_EDITOR
-		float x = Input.GetAxisRaw("Horizontal");
-		float y = Input.GetAxisRaw("Vertical");
-		moveDirPC = new Vector3(x, 0, y).normalized;
+		//float x = Input.GetAxisRaw("Horizontal");
+		//float y = Input.GetAxisRaw("Vertical");
+		//moveDirPC = new Vector3(x, 0, y).normalized;
 #endif
 	}
 
@@ -307,8 +323,7 @@ public class PlayerController : Controller
 			}
 		}
 		else if (curWeaponType == WeaponType.melee) {
-			attackType = AimAttackType.attacking;
-			ShowAttackAnim(true);
+			attackType = AimAttackType.aming;
 			btnATouchedTime = 0;
 		}
 	}
@@ -333,7 +348,10 @@ public class PlayerController : Controller
 
 		// 单次攻击
 		if (curWeaponType == WeaponType.melee) {
-			AttackOnce();
+			if (attackType != AimAttackType.attacking && I_BaseData.curStrength >= Constant.minKnifeAttackStrength * GlobalData.diffRate) {
+				AttackOnce();
+			}
+			knifeAttacking = false;
 		}
 		else if (curWeaponType == WeaponType.autoDistant) {
 			if (leftBullets > 0) {
@@ -486,8 +504,33 @@ public class PlayerController : Controller
 	/*--------------- OnReloadEndEvent -----------------*/
 	void OnReloadEndEventFunc()
 	{
+
 	}
 	/*--------------- OnReloadEndEvent -----------------*/
+
+	/*--------------- AttackEndEvent -----------------*/
+	void AttackEndEventFunc()
+	{
+		if (curWeaponName == WeaponNameType.Knife) {
+			if (attackType == AimAttackType.attacking) {
+				if (I_BaseData.curStrength > Constant.minKnifeAttackStrength * GlobalData.diffRate) {
+					knifeAttacking = true;
+				}
+				else {
+					// 关闭Knife攻击状态
+					if (isBtnADown) {
+						attackType = AimAttackType.aming;
+					}
+					else {
+						attackType = AimAttackType.none;
+					}
+					knifeAttacking = false;
+					ShowAttackAnim(false);
+				}
+			}
+		}
+	}
+	/*--------------- AttackEndEvent -----------------*/
 
 	/*--------------- RollEvent -----------------*/
 	Vector2 rollDir = Vector2.zero;
@@ -570,6 +613,11 @@ public class PlayerController : Controller
 		}
 	}
 	/*--------------- RollEvent -----------------*/
+
+	public void MeleeCostStrength()
+	{
+		I_BaseData.ChangeCurStrength(-Constant.knifeAttackStrength * GlobalData.diffRate);
+	}
 
 	public void ResetOnceAttack()
 	{

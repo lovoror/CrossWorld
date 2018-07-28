@@ -50,7 +50,7 @@ public class MeleeWeaponManager : WeaponManager {
 
 
 	// 获得攻击范围内的敌人
-	protected List<Transform> GetEnemyInRange()
+	public List<Transform> GetEnemyInRange()
 	{
 		List<Transform> targetsFound = new List<Transform>();
 		Collider[] hitColliders = null;

@@ -48,6 +48,12 @@ public class BodyAnimEvents : MonoBehaviour {
 		I_AnimEventsManager.PlayAttackDoneSound();
 	}
 
+	// 近战武器消耗耐力
+	void MeleeCostStrength()
+	{
+		I_AnimEventsManager.MeleeCostStrength();
+	}
+
 	void OnRollStart()
 	{
 		I_AnimEventsManager.OnRollStart();

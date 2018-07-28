@@ -23,14 +23,14 @@ public class FocusButton : MonoBehaviour {
 	FocusButtons I_FocusButtons;
 	PlayerData I_PlayerData;
 	MoboController I_MoboController;
-	Image imgTarget;
+	//Image imgTarget;
 	Image imgFocus;
 
 	void Awake()
 	{
 		Transform imgTargetTransform = transform.Find("ImgTarget");
 		if (imgTargetTransform) {
-			imgTarget = imgTargetTransform.GetComponent<Image>();
+			//imgTarget = imgTargetTransform.GetComponent<Image>();
 		}
 		Transform imgFocusTransform = transform.Find("ImgFocus");
 		if (imgFocusTransform) {

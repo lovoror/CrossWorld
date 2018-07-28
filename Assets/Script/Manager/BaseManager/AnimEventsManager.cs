@@ -74,6 +74,12 @@ public class AnimEventsManager : MonoBehaviour
 		I_PlayerManager.I_PlayerController.OnRollStart();
 	}
 
+	public void MeleeCostStrength()
+	{
+		I_PlayerManager.I_PlayerController.MeleeCostStrength();
+	}
+	
+
 	public void OnRollEnd()
 	{
 		I_PlayerManager.I_PlayerController.OnRollEnd();

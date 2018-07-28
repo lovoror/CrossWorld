@@ -34,8 +34,7 @@ public class EnemysData
 			return enemyTransforms;
 		}
 	}
-	int[] enemys = { 1, 2, 3 };
-	public void OnInitEnd()
+	public void OnInitEnd() 
 	{
 		if (EnemysDataInitEvent != null) {
 			EnemysDataInitEvent(enemyTransforms);

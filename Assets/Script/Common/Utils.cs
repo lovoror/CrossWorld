@@ -183,10 +183,10 @@ public class Utils : MonoBehaviour {
 		}
 	}
 
-	public static float GetWeaponDamageRate(WeaponNameType weaponName)
+	public static float GetWeaponDamageRate(Transform gamer, WeaponNameType weaponName)
 	{
 		if (Constant.WEAPON_DAMAGE_RATE.ContainsKey(weaponName)) {
-			int level = PlayerData.Instance.curWeaponLevel;
+			int level = Utils.GetBaseData(gamer).curWeaponLevel;
 			if (Constant.WEAPON_DAMAGE_RATE[weaponName].Count >= level) {
 				return Constant.WEAPON_DAMAGE_RATE[weaponName][level - 1];
 			}

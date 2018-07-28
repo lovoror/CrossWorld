@@ -22,7 +22,7 @@ public class UiAlertDirection : MonoBehaviour
 	public float alertDist = 105;
 	public Color c;
 	float alertDistSq;
-	bool playerIsDead;
+	//bool playerIsDead;
 
 	Dictionary<string, SpriteRenderer> d_Triangles;
 	Transform player;
@@ -53,7 +53,7 @@ public class UiAlertDirection : MonoBehaviour
 
 	void Start ()
 	{
-		playerIsDead = false;
+		//playerIsDead = false;
 		alertDistSq = alertDist * alertDist;
 		player = PlayerData.Instance.target;
 		alertEnemys = new List<Transform>();
@@ -208,7 +208,7 @@ public class UiAlertDirection : MonoBehaviour
 	void DeadNotifyEventFunc(Transform killer, Transform dead, WeaponNameType weapon)
 	{
 		if (dead == player) {
-			playerIsDead = true;
+			//playerIsDead = true;
 			transform.gameObject.SetActive(false);
 		}
 		if (enemysInfo.ContainsKey(dead)) {

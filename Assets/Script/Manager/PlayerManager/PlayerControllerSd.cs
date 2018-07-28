@@ -24,7 +24,7 @@ public class PlayerControllerSd : MonoBehaviour
 	Vector2 moveDir; // 当前移动的方向
 	Rigidbody rb;
 	Transform leg;
-	Transform body;
+	//Transform body;
 	float moveSpeedRate = 1;
 	float turnSpeedRate = 1;
 	AudioSource audioSource;
@@ -35,7 +35,7 @@ public class PlayerControllerSd : MonoBehaviour
 	{
 		rb = transform.GetComponent<Rigidbody>();
 		leg = transform.Find("Leg");
-		body = transform.Find("Body");
+		//body = transform.Find("Body");
 		audioSource = transform.GetComponent<AudioSource>();
 		legAudioSource = leg.GetComponent<AudioSource>();
 		foreach (AudioInfo info in audioInfos) {
@@ -260,7 +260,6 @@ public class PlayerControllerSd : MonoBehaviour
 	{
 		Vector3 faceDirection = transform.forward;
 		transform.eulerAngles = new Vector3(0, Utils.GetAnglePY(Vector3.forward, faceDirection), 0);
-		Vector3 tarPos = faceDirection.normalized * distance;
 		iTween.MoveBy(transform.gameObject, iTween.Hash(
 				"z", distance,
 				"time", time, "EaseType", "linear"
